@@ -10,6 +10,9 @@ final class MotionTests: XCTestCase {
         let spring = SpringAnimation(CGRect.zero)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+        spring.valueChanged(disableActions: true) { newValue in
+            XCTAssert(CATransaction.disableActions())
+        }
 
         let expectation = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
         spring.completion = { (successful) in

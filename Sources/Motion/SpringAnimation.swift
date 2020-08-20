@@ -5,74 +5,10 @@
 //  Created by Adam Bell on 7/12/20.
 //
 
+import Combine
 import QuartzCore
 
-public class Animation: DisplayLinkObserver {
-
-    @Published public var enabled: Bool = false
-
-    public var completion: ((_ completedSuccessfully: Bool) -> Void)? = nil
-
-    public init() {
-        Animator.shared.configure(self)
-    }
-
-    deinit {
-        Animator.shared.unconfigure(self)
-    }
-
-    public func start() {
-        fatalError("Subclasses must implement this")
-    }
-
-    public func stop() {
-        fatalError("Subclasses must implement this")
-    }
-
-    // MARK: - DisplayLinkObserver
-
-    public func tick(_ dt: CFTimeInterval) {
-        fatalError("Subclasses must implement this")
-    }
-
-}
-
-extension Animation: Hashable, Equatable {
-
-    public static func == (lhs: Animation, rhs: Animation) -> Bool {
-        return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        return hasher.combine(ObjectIdentifier(self).hashValue)
-    }
-
-}
-
-public class SpringAnimation<Value: SIMDRepresentable>: Animation {
-
-    private typealias SIMDType = Value.SIMDType
-    private typealias Scalar = Value.SIMDType.Scalar
-
-    public var value: Value {
-        get {
-            return Value(_value)
-        }
-        set {
-            self._value = newValue.simdRepresentation()
-        }
-    }
-    private var _value: SIMDType = .zero
-
-    public var toValue: Value {
-        get {
-            return Value(_toValue)
-        }
-        set {
-            self._toValue = newValue.simdRepresentation()
-        }
-    }
-    private var _toValue: SIMDType = .zero
+public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
         get {
@@ -83,8 +19,6 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation {
         }
     }
     private var _velocity: SIMDType = .zero
-
-    public var valueChanged: ((Value) -> Void)? = nil
 
     public var friction: Double = 10.0
     public var stiffness: Double = 300.0
@@ -122,22 +56,22 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation {
             return
         }
 
-        let frictionForce = _velocity * Scalar(friction)
         let springForce = (_toValue - _value) * Scalar(stiffness)
+        let frictionForce = _velocity * Scalar(friction)
 
         let force = springForce - frictionForce
 
         self._velocity += force * Scalar(dt)
         self._value += _velocity * Scalar(dt)
 
-        valueChanged?(value)
+        _valueChanged?(value)
 
         if hasConverged && _velocity.approximatelyEqual(to: .zero) {
             // done
             self.value = toValue
             self.stop()
 
-            valueChanged?(value)
+            _valueChanged?(value)
             completion?(true)
         }
 
