@@ -70,11 +70,11 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
     }
 
     public func start() {
-        fatalError("Subclasses must implement this")
+        self.enabled = true
     }
 
     public func stop() {
-        fatalError("Subclasses must implement this")
+        self.enabled = false
     }
 
     // MARK: - DisplayLinkObserver

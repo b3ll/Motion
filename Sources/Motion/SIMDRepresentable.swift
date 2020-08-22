@@ -27,7 +27,7 @@ extension SIMD64: SupportedSIMDType where Scalar: SupportedScalar {}
 
 // MARK: - SIMDRepresentable
 
-public protocol SIMDRepresentable {
+public protocol SIMDRepresentable: Comparable {
 
     associatedtype SIMDType: SupportedSIMDType where SIMDType.Scalar: SupportedScalar
 
@@ -195,6 +195,10 @@ extension CGPoint: SIMDRepresentable {
         return SIMD2(Double(x), Double(y))
     }
 
+    public static func < (lhs: CGPoint, rhs: CGPoint) -> Bool {
+        return lhs.x < rhs.x && lhs.y < rhs.y
+    }
+
 }
 
 extension CGSize: SIMDRepresentable {
@@ -209,6 +213,10 @@ extension CGSize: SIMDRepresentable {
         return SIMD2(Double(width), Double(height))
     }
 
+    public static func < (lhs: CGSize, rhs: CGSize) -> Bool {
+        return lhs.width < rhs.width && lhs.height < rhs.height
+    }
+
 }
 
 extension CGRect: SIMDRepresentable {
@@ -221,6 +229,10 @@ extension CGRect: SIMDRepresentable {
 
     public func simdRepresentation() -> SIMD4<Double> {
         return SIMD4(Double(origin.x), Double(origin.y), Double(size.width), Double(size.height))
+    }
+
+    public static func < (lhs: CGRect, rhs: CGRect) -> Bool {
+        return lhs.origin < rhs.origin && lhs.size < rhs.size
     }
 
 }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Animator.swift
 //  
 //
 //  Created by Adam Bell on 7/30/20.

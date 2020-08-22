@@ -3,10 +3,7 @@ import XCTest
 
 final class MotionTests: XCTestCase {
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
+    func testSpring() {
         let spring = SpringAnimation(CGRect.zero)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
@@ -25,8 +22,30 @@ final class MotionTests: XCTestCase {
         wait(for: [expectation], timeout: 15.0)
     }
 
+    func testDecay() {
+        let decay = DecayAnimation<CGFloat>()
+        decay.value = .zero
+        decay.valueChanged(disableActions: true) { newValue in
+            XCTAssert(CATransaction.disableActions())
+
+            print("\(decay.value) \(decay.velocity)")
+        }
+
+        let expectation = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
+        decay.completion = { (successful) in
+            if successful {
+                expectation.fulfill()
+            }
+        }
+        decay.velocity = 2000.0
+        decay.start()
+
+        wait(for: [expectation], timeout: 15.0)
+    }
+
     static var allTests = [
-        ("testExample", testExample),
+        ("testSpring", testSpring),
+        ("testDecay", testDecay),
     ]
 
 }

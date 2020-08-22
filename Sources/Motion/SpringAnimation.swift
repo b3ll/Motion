@@ -40,12 +40,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         return _value.approximatelyEqual(to: _toValue)
     }
 
-    override public func start() {
-        self.enabled = true
-    }
-
     override public func stop() {
-        self.enabled = false
         self.velocity = .zero
     }
 

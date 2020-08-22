@@ -12,7 +12,7 @@ import Foundation
 
 // I hate that this has to exist, I really want to get rid of it.
 
-public protocol DoubleIntializable: FloatingPoint {
+public protocol DoubleIntializable: FloatingPoint & Comparable {
 
     init(_ value: Double)
 
@@ -24,7 +24,7 @@ extension CGFloat: DoubleIntializable, EquatableEnough {}
 
 // MARK: - EquatableEnough
 
-public protocol EquatableEnough {
+public protocol EquatableEnough: Comparable {
 
     func approximatelyEqual(to: Self) -> Bool
 
@@ -40,7 +40,7 @@ public extension EquatableEnough where Self: FloatingPoint & DoubleIntializable 
 
 // MARK: - SIMD Extensions
 
-extension SIMD2: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD2: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -48,9 +48,15 @@ extension SIMD2: EquatableEnough where Scalar: DoubleIntializable & EquatableEno
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD3: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD3: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -58,9 +64,15 @@ extension SIMD3: EquatableEnough where Scalar: DoubleIntializable & EquatableEno
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD4: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD4: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -68,9 +80,15 @@ extension SIMD4: EquatableEnough where Scalar: DoubleIntializable & EquatableEno
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD8: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD8: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -78,9 +96,15 @@ extension SIMD8: EquatableEnough where Scalar: DoubleIntializable & EquatableEno
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD16: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD16: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -88,9 +112,15 @@ extension SIMD16: EquatableEnough where Scalar: DoubleIntializable & EquatableEn
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD32: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD32: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -98,13 +128,25 @@ extension SIMD32: EquatableEnough where Scalar: DoubleIntializable & EquatableEn
         }
     }
 
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
+        }
+    }
+
 }
 
-extension SIMD64: EquatableEnough where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD64: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
 
     public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
             return $0 && self[$1].approximatelyEqual(to: other[$1])
+        }
+    }
+
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.indices.reduce(true) {
+            return $0 && lhs[$1] < rhs[$1]
         }
     }
 
