@@ -40,6 +40,8 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         _valueChanged?(value)
 
         if _velocity < SIMDType(repeating: 0.5) {
+            self.stop()
+            
             completion?(true)
         }
     }

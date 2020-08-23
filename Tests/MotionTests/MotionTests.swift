@@ -27,8 +27,6 @@ final class MotionTests: XCTestCase {
         decay.value = .zero
         decay.valueChanged(disableActions: true) { newValue in
             XCTAssert(CATransaction.disableActions())
-
-            print("\(decay.value) \(decay.velocity)")
         }
 
         let expectation = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
