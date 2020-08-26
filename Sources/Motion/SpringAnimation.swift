@@ -12,10 +12,10 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
         get {
-            return Value(_velocity)
+            return Value(-_velocity)
         }
         set {
-            self._velocity = newValue.simdRepresentation()
+            self._velocity = -newValue.simdRepresentation()
         }
     }
     private var _velocity: SIMDType = .zero
