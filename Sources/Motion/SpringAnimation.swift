@@ -36,17 +36,17 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self.friction = friction
     }
 
-    public var hasConverged: Bool {
-        return _value.approximatelyEqual(to: _toValue)
+    public override var hasResolved: Bool {
+        return _velocity.approximatelyEqual(to: .zero) && _value.approximatelyEqual(to: _toValue)
     }
 
-    override public func stop() {
+    public override func stop() {
         self.velocity = .zero
     }
 
     // MARK: - DisplayLinkObserver
 
-    override public func tick(_ dt: CFTimeInterval) {
+    public override func tick(_ dt: CFTimeInterval) {
         if dt > 1.0 {
             return
         }
@@ -61,7 +61,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         _valueChanged?(value)
 
-        if hasConverged && _velocity.approximatelyEqual(to: .zero) {
+        if hasResolved {
             // done
             self.value = toValue
             self.stop()

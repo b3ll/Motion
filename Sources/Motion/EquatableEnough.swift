@@ -12,7 +12,7 @@ import Foundation
 
 // I hate that this has to exist, I really want to get rid of it.
 
-public protocol DoubleIntializable: FloatingPoint & Comparable {
+public protocol DoubleIntializable: FloatingPoint & ExpressibleByFloatLiteral & Comparable {
 
     init(_ value: Double)
 

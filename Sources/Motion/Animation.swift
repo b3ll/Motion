@@ -77,10 +77,14 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
         self.enabled = false
     }
 
+    public var hasResolved: Bool {
+        fatalError("Subclasses must override this")
+    }
+
     // MARK: - DisplayLinkObserver
 
     public func tick(_ dt: CFTimeInterval) {
-        fatalError("Subclasses must implement this")
+        fatalError("Subclasses must override this")
     }
 
 }
