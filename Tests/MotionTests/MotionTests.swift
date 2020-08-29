@@ -1,3 +1,5 @@
+#if arch(x86_64)
+
 import XCTest
 @testable import Motion
 
@@ -47,3 +49,5 @@ final class MotionTests: XCTestCase {
     ]
 
 }
+
+#endif
