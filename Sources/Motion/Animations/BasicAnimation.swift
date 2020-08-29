@@ -8,6 +8,7 @@
 import Foundation
 import simd
 
+// Swift Enums are /so/ cool.
 public enum EasingFunction<Value: SIMDRepresentable> {
 
     case linear
