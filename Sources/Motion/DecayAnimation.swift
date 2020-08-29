@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import simd
 
 public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
@@ -24,6 +25,8 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     public override var hasResolved: Bool {
         return _velocity < SIMDType(repeating: 0.5)
     }
+
+    // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
         if dt > 1.0 {

@@ -7,6 +7,7 @@
 
 import CoreGraphics
 import Foundation
+import simd
 
 // MARK: - DoubleInitializable
 

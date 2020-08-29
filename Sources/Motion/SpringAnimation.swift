@@ -7,6 +7,7 @@
 
 import Combine
 import QuartzCore
+import simd
 
 public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
