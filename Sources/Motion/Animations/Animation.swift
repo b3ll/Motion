@@ -62,11 +62,11 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
     public var completion: ((_ completedSuccessfully: Bool) -> Void)? = nil
 
     public init() {
-        Animator.shared.configure(self)
+        Animator.shared.observe(self)
     }
 
     deinit {
-        Animator.shared.unconfigure(self)
+        Animator.shared.unobserve(self)
     }
 
     public func start() {

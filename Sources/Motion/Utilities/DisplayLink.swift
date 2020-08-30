@@ -8,7 +8,7 @@
 import Foundation
 import QuartzCore
 
-public protocol DisplayLinkObserver {
+public protocol DisplayLinkObserver: class {
 
     func tick(_ dt: CFTimeInterval)
 
@@ -23,7 +23,7 @@ internal class DisplayLink: NSObject {
     var timestamp: CFTimeInterval? = nil
     #endif
 
-    var observer: DisplayLinkObserver!
+    weak var observer: DisplayLinkObserver?
 
     var valid: Bool = false
 
