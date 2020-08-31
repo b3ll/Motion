@@ -19,7 +19,8 @@ final class MotionTests: XCTestCase {
                 expectation.fulfill()
             }
         }
-        spring.start()
+
+        tickAnimationUntilResolved(spring)
 
         wait(for: [expectation], timeout: 15.0)
     }
@@ -38,7 +39,8 @@ final class MotionTests: XCTestCase {
             }
         }
         decay.velocity = 2000.0
-        decay.start()
+
+        tickAnimationUntilResolved(decay)
 
         wait(for: [expectation], timeout: 15.0)
     }
@@ -47,6 +49,16 @@ final class MotionTests: XCTestCase {
         ("testSpring", testSpring),
         ("testDecay", testDecay),
     ]
+
+}
+
+private func tickAnimationUntilResolved<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
+    for _ in stride(from: 0.0, through: maxDuration, by: dt) {
+        animation.tick(dt)
+        if animation.hasResolved {
+            break
+        }
+    }
 
 }
 
