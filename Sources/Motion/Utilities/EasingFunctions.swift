@@ -34,13 +34,13 @@ public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
             x = fraction
             break
         case .easeIn:
-            x = 1.0 - cos((fraction * .pi) / 2.0)
+            x = Bezier.easeIn.solve(x: fraction)
             break
         case .easeOut:
-            x = sin((fraction * .pi) / 2.0)
+            x = Bezier.easeOut.solve(x: fraction)
             break
         case .easeInOut:
-            x = -(cos(fraction * .pi) - 1.0) / 2.0
+            x = Bezier.easeInOut.solve(x: fraction)
             break
         case let .custom(x1, y1, x2, y2):
             x = Bezier(x1: x1, y1: y1, x2: x2, y2: y2).solve(x: fraction)
@@ -56,7 +56,7 @@ public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
 
         return newValue
     }
-    
+
 }
 
 /*
@@ -181,6 +181,23 @@ public struct Bezier<Value: DoubleIntializable> {
 
     func solve(x: Value, epsilon: Value = 0.0001) -> Value {
         return sampleCurveY(t: solveCurveX(x: x, epsilon: epsilon))
+    }
+
+}
+
+// UIKit Constants for Animation Curves
+extension Bezier {
+
+    static var easeIn: Self {
+        return Self(x1: 0.42, y1: 0.0, x2: 1.0, y2: 1.0)
+    }
+
+    static var easeOut: Self {
+        return Self(x1: 0.0, y1: 0.0, x2: 0.58, y2: 1.0)
+    }
+
+    static var easeInOut: Self {
+        return Self(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0)
     }
 
 }
