@@ -28,3 +28,6 @@ public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Va
 
     return Value(rubberbanded)
 }
+
+// add function with range, if within range return input, otherwise calculate range from min max
+

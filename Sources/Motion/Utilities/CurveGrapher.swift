@@ -29,7 +29,7 @@ public struct EasingFunctionShape: Shape {
 
             let value = easingFunction.interpolate(minY...maxY, fraction: Double(percent))
 
-            return CGPoint(x: percent * rect.size.width, y: value) //CGFloat(minY + ((maxY - minY) * value)))
+            return CGPoint(x: percent * rect.size.width, y: value)
         }
 
         var path = Path()
