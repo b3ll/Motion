@@ -30,8 +30,8 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
 
     public func configure(response: Double, damping: Double) {
-        let stiffness = pow(2 * .pi / response, 2)
-        let friction = 4 * .pi * damping / response
+        let stiffness = pow(2.0 * .pi / response, 2.0)
+        let friction = 4.0 * .pi * damping / response
 
         self.stiffness = stiffness
         self.friction = friction
@@ -70,7 +70,6 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             _valueChanged?(value)
             completion?(true)
         }
-
     }
 
 }
