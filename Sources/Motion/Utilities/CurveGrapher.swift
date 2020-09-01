@@ -62,7 +62,7 @@ struct EasingFunctionGraphView: View {
 struct SwiftUIView_Previews: PreviewProvider {
 
     static var previews: some View {
-        ForEach(EasingFunction<CGFloat>.allCases, id: \.self) { easingFunction in
+        ForEach(EasingFunction<CGFloat>.allFunctions, id: \.self) { easingFunction in
             EasingFunctionGraphView(easingFunction: easingFunction)
                 .previewLayout(.sizeThatFits)
         }

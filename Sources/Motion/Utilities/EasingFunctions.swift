@@ -8,16 +8,32 @@
 import Foundation
 
 // Swift Enums are /so/ cool.
-public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
+public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
-    case linear
-    case easeIn
-    case easeOut
-    case easeInOut
-    case custom(x1: Double, y1: Double, x2: Double, y2: Double)
+    public static var linear: Self {
+        Self(bezier: .linear)
+    }
 
-    public static var allCases: [EasingFunction] {
-        return [.linear, .easeIn, .easeOut, .easeInOut, .custom(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0)]
+    public static var easeIn: Self {
+        Self(bezier: .easeIn)
+    }
+
+    public static var easeOut: Self {
+        Self(bezier: .easeOut)
+    }
+
+    public static var easeInOut: Self {
+        Self(bezier: .easeInOut)
+    }
+
+    let bezier: Bezier<Double>
+
+    init(bezier: Bezier<Double>) {
+        self.bezier = bezier
+    }
+
+    public static var allFunctions: [EasingFunction] {
+        return [.linear, .easeIn, .easeOut, .easeInOut, Self(bezier: Bezier(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0))]
     }
 
     public func interpolate(_ range: ClosedRange<Value>, fraction: Double) -> Value {
@@ -28,24 +44,7 @@ public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
     public func interpolate(_ range: ClosedRange<Value.SIMDType>, fraction: Double) -> Value.SIMDType {
         typealias Scalar = Value.SIMDType.Scalar
 
-        let x: Double
-        switch self {
-        case .linear:
-            x = fraction
-            break
-        case .easeIn:
-            x = Bezier.easeIn.solve(x: fraction)
-            break
-        case .easeOut:
-            x = Bezier.easeOut.solve(x: fraction)
-            break
-        case .easeInOut:
-            x = Bezier.easeInOut.solve(x: fraction)
-            break
-        case let .custom(x1, y1, x2, y2):
-            x = Bezier(x1: x1, y1: y1, x2: x2, y2: y2).solve(x: fraction)
-            break
-        }
+        let x = bezier.solve(x: fraction)
 
         let min = range.lowerBound
         let max = range.upperBound
@@ -55,6 +54,12 @@ public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
         let newValue = min + (delta * Scalar(x))
 
         return newValue
+    }
+
+    // MARK: - Hashable
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(bezier)
     }
 
 }
@@ -86,7 +91,7 @@ public enum EasingFunction<Value: SIMDRepresentable>: CaseIterable, Hashable {
 
 // Swift Adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
 
-public struct Bezier<Value: DoubleIntializable> {
+public struct Bezier<Value: DoubleIntializable>: Hashable {
 
     public let x1: Value
     public let x2: Value
@@ -187,6 +192,10 @@ public struct Bezier<Value: DoubleIntializable> {
 
 // UIKit Constants for Animation Curves
 extension Bezier {
+
+    static var linear: Self {
+        return Self(x1: 0.0, y1: 0.0, x2: 1.0, y2: 1.0)
+    }
 
     static var easeIn: Self {
         return Self(x1: 0.42, y1: 0.0, x2: 1.0, y2: 1.0)
