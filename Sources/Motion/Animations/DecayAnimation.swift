@@ -31,6 +31,14 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self.value = initialValue
     }
 
+    // MARK: - Disabled API
+
+    @available(*, unavailable, message: "Not Supported in DecayAnimation.")
+    public override var toValue: Value {
+        get { return .zero }
+        set { }
+    }
+
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {

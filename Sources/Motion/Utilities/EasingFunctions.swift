@@ -7,7 +7,6 @@
 
 import Foundation
 
-// Swift Enums are /so/ cool.
 public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
     public static var linear: Self {

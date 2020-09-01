@@ -103,8 +103,9 @@ extension Animation: Hashable, Equatable {
 
 class AnyAnimation: Hashable, Equatable, DisplayLinkObserver {
 
-    private let wrapped: AnyObject
-    private let tick: (_ dt: CFTimeInterval) -> Void
+    internal let wrapped: AnyObject
+    internal let tick: (_ dt: CFTimeInterval) -> Void
+    internal let hasResolved: () -> Bool
 
     internal let enabled: Published<Bool>.Publisher
 
@@ -112,6 +113,9 @@ class AnyAnimation: Hashable, Equatable, DisplayLinkObserver {
         self.wrapped = animation
         self.tick = animation.tick
         self.enabled = animation.$enabled
+        self.hasResolved = { [weak animation] in
+            animation?.hasResolved ?? false
+        }
     }
 
     // MARK: - Equatable
