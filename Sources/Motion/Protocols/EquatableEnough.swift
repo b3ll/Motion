@@ -31,10 +31,18 @@ public protocol EquatableEnough: Comparable {
 
 }
 
+public extension EquatableEnough {
+
+    static var epsilon: Double {
+        return 0.001
+    }
+
+}
+
 public extension EquatableEnough where Self: FloatingPoint & DoubleIntializable {
 
     func approximatelyEqual(to other: Self) -> Bool {
-        return abs(self - other) < Self(0.01)
+        return abs(self - other) < Self(Self.epsilon)
     }
 
 }

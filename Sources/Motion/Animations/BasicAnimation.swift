@@ -18,7 +18,7 @@ public class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
             self._fromValue = newValue.simdRepresentation()
         }
     }
-    private var _fromValue: SIMDType = .zero
+    internal var _fromValue: SIMDType = .zero
 
     var duration: CFTimeInterval = 0.3
 

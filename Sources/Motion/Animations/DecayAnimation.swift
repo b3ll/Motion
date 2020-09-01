@@ -18,12 +18,17 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
             self._velocity = newValue.simdRepresentation()
         }
     }
-    private var _velocity: SIMDType = .zero
+    internal var _velocity: SIMDType = .zero
 
     public var decayConstant: Double = 0.998
 
     public override var hasResolved: Bool {
         return _velocity < SIMDType(repeating: 0.5)
+    }
+
+    public init(_ initialValue: Value = .zero) {
+        super.init()
+        self.value = initialValue
     }
 
     // MARK: - DisplayLinkObserver

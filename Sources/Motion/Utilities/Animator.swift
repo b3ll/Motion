@@ -14,9 +14,9 @@ class Animator: NSObject, DisplayLinkObserver {
     private let displayLink: DisplayLink
 
     var runningAnimationsObserver: AnyCancellable? = nil
-    @Published private var runningAnimations: Set<AnyAnimation> = []
+    @Published internal var runningAnimations: Set<AnyAnimation> = []
 
-    private var animationObservers: NSMapTable<AnyAnimation, AnyCancellable> = .weakToStrongObjects()
+    internal var animationObservers: NSMapTable<AnyAnimation, AnyCancellable> = .weakToStrongObjects()
 
     static let shared = Animator()
 

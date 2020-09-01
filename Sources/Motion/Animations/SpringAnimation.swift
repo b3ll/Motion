@@ -19,7 +19,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             self._velocity = -newValue.simdRepresentation()
         }
     }
-    private var _velocity: SIMDType = .zero
+    internal var _velocity: SIMDType = .zero
 
     public var friction: Double = 10.0
     public var stiffness: Double = 300.0
