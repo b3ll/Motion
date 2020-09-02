@@ -15,7 +15,7 @@ public class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
         self.animations = animations.map { AnyAnimation($0) }
     }
 
-    public override var hasResolved: Bool {
+    public override func hasResolved() -> Bool {
         return animations.reduce(true) { (result, animation) -> Bool in
             return result && animation.hasResolved()
         }
@@ -53,7 +53,7 @@ public class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
 
         animations.forEach { $0.tick(dt) }
 
-        if !hasResolved {
+        if !hasResolved() {
             completion?(true)
         }
     }

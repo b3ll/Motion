@@ -37,7 +37,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self.friction = friction
     }
 
-    public override var hasResolved: Bool {
+    public override func hasResolved() -> Bool {
         return _velocity.approximatelyEqual(to: .zero) && _value.approximatelyEqual(to: _toValue)
     }
 
@@ -62,7 +62,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         _valueChanged?(value)
 
-        if hasResolved {
+        if hasResolved() {
             // done
             self.value = toValue
             self.stop()

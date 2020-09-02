@@ -31,7 +31,7 @@ public class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self._value = _fromValue
     }
 
-    public override var hasResolved: Bool {
+    public override func hasResolved() -> Bool {
         return _value.approximatelyEqual(to: _toValue)
     }
 
@@ -46,7 +46,7 @@ public class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         _value = easingFunction.interpolate(_fromValue..._toValue, fraction: fraction)
 
-        if hasResolved {
+        if hasResolved() {
             self.stop()
 
             _value = _toValue

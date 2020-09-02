@@ -77,7 +77,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
         self.enabled = false
     }
 
-    public var hasResolved: Bool {
+    public func hasResolved() -> Bool {
         fatalError("Subclasses must override this")
     }
 
@@ -113,9 +113,7 @@ class AnyAnimation: Hashable, Equatable, DisplayLinkObserver {
         self.wrapped = animation
         self.tick = animation.tick
         self.enabled = animation.$enabled
-        self.hasResolved = { [weak animation] in
-            animation?.hasResolved ?? false
-        }
+        self.hasResolved = animation.hasResolved
     }
 
     // MARK: - Equatable

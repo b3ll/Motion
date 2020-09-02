@@ -208,7 +208,7 @@ final class MotionTests: XCTestCase {
 private func tickAnimationUntilResolved<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
         animation.tick(dt)
-        if animation.hasResolved {
+        if animation.hasResolved() {
             break
         }
     }

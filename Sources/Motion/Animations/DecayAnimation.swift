@@ -22,7 +22,7 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var decayConstant: Double = 0.998
 
-    public override var hasResolved: Bool {
+    public override func hasResolved() -> Bool {
         return _velocity < SIMDType(repeating: 0.5)
     }
 
@@ -59,7 +59,7 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         _valueChanged?(value)
 
-        if hasResolved {
+        if hasResolved() {
             self.stop()
             
             completion?(true)
