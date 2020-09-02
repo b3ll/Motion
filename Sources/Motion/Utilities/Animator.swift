@@ -14,9 +14,9 @@ class Animator: NSObject, DisplayLinkObserver {
     private let displayLink: DisplayLink
 
     var runningAnimationsObserver: AnyCancellable? = nil
-    @Published internal var runningAnimations: Set<AnyAnimation> = []
+    @Published internal var runningAnimations: Set<AnyHashable /* Animation<Value> */> = []
 
-    internal var animationObservers: NSMapTable<AnyAnimation, AnyCancellable> = .weakToStrongObjects()
+    internal var animationObservers: NSMapTable<AnyObject, AnyCancellable> = .weakToStrongObjects()
 
     static let shared = Animator()
 
@@ -33,24 +33,24 @@ class Animator: NSObject, DisplayLinkObserver {
     // MARK: - Animations
 
     internal func observe<T: Animation<V>, V: SIMDRepresentable>(_ animation: T) {
-       let obs = animation.$enabled.sink { [weak self] (enabled) in
+       let obs = animation.$enabled.sink { [weak self, weak animation] (enabled) in
+            guard let animation = animation else { return }
             if enabled {
-                self?.runningAnimations.insert(AnyAnimation(animation))
+                let _ = self?.runningAnimations.insert(animation)
             } else {
-                self?.runningAnimations.remove(AnyAnimation(animation))
+                self?.runningAnimations.remove(animation)
             }
         }
 
-        animationObservers.setObject(obs, forKey: AnyAnimation(animation))
+        animationObservers.setObject(obs, forKey: animation)
     }
 
     internal func unobserve<T: Animation<V>, V: SIMDRepresentable>(_ animation: T) {
-        let anim = AnyAnimation(animation)
-        runningAnimations.remove(anim)
-        animationObservers.removeObject(forKey: anim)
+        runningAnimations.remove(animation)
+        animationObservers.removeObject(forKey: animation)
     }
 
-    private func updateDisplayLinkFor(_ runningAnimations: Set<AnyAnimation>) {
+    private func updateDisplayLinkFor(_ runningAnimations: Set<AnyHashable /* Animation<Value> */>) {
         if runningAnimations.isEmpty {
             displayLink.stop()
         } else {
@@ -62,7 +62,10 @@ class Animator: NSObject, DisplayLinkObserver {
 
     func tick(_ dt: CFTimeInterval) {
         for animation in runningAnimations {
-            animation.tick(dt)
+            // This is such a hack.
+            if let animation = animation as? DisplayLinkObserver {
+                animation.tick(dt)
+            }
         }
     }
 
