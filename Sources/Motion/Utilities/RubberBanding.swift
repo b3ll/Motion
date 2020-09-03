@@ -15,6 +15,14 @@ public func rubberband<Value: DoubleIntializable>(_ value: Value, coefficient: V
     return (1.0 - (1.0 / x1)) * range
 }
 
+public func rubberband<Value: DoubleIntializable>(_ value: Value, coefficient: Value, range: ClosedRange<Value>) -> Value {
+    if range.contains(value) {
+        return value
+    }
+
+    return rubberband(value, coefficient: coefficient, range: range.upperBound - range.lowerBound)
+}
+
 public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Value.SIMDType.Scalar, range: Value) -> Value {
     typealias SIMDType = Value.SIMDType
 
@@ -29,5 +37,10 @@ public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Va
     return Value(rubberbanded)
 }
 
-// add function with range, if within range return input, otherwise calculate range from min max
+public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Value.SIMDType.Scalar, range: ClosedRange<Value>) -> Value {
+    if range.contains(value) {
+        return value
+    }
 
+    return rubberband(value, coefficient: coefficient, range: range)
+}
