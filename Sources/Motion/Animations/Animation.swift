@@ -59,7 +59,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
         }
     }
 
-    public var completion: ((_ completedSuccessfully: Bool) -> Void)? = nil
+    public var completion: (() -> Void)? = nil
 
     public init() {
         Animator.shared.observe(self)

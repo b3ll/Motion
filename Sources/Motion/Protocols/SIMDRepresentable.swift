@@ -39,7 +39,8 @@ public protocol SIMDRepresentable: Comparable {
 
 }
 
-// These single floating point conformances technically are wasteful, but it's still a single register it gets packed in, so it's "fine"
+// These single floating point conformances technically are wasteful, but it's still a single register it gets packed in, so it's "fine".
+// Actually I think the compiler is smart and optimizes these to just ignore SIMD anyways. 
 
 extension Float: SIMDRepresentable {
 

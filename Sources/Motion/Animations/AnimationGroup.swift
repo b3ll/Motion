@@ -54,7 +54,8 @@ public class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
         animations.forEach { $0.tick(dt) }
 
         if !hasResolved() {
-            completion?(true)
+            stop()
+            completion?()
         }
     }
 

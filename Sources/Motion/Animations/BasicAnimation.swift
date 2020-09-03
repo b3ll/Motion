@@ -47,12 +47,12 @@ public class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
         _value = easingFunction.interpolate(_fromValue..._toValue, fraction: fraction)
 
         if hasResolved() {
-            self.stop()
+            stop()
 
-            _value = _toValue
+            self.value = toValue
             _valueChanged?(value)
 
-            completion?(true)
+            completion?()
         }
 
         accumulatedTime += dt

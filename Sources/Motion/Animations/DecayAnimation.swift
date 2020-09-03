@@ -8,6 +8,8 @@
 import Foundation
 import simd
 
+public let UIKitDecayConstant: Double = 0.998
+
 public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
@@ -20,13 +22,14 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: SIMDType = .zero
 
-    public var decayConstant: Double = 0.998
+    public var decayConstant: Double = UIKitDecayConstant
 
     public override func hasResolved() -> Bool {
         return _velocity < SIMDType(repeating: 0.5)
     }
 
-    public init(_ initialValue: Value = .zero) {
+    public init(_ initialValue: Value = .zero, decayConstant: Double = UIKitDecayConstant) {
+        self.decayConstant = decayConstant
         super.init()
         self.value = initialValue
     }
@@ -60,9 +63,9 @@ public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         _valueChanged?(value)
 
         if hasResolved() {
-            self.stop()
+            stop()
             
-            completion?(true)
+            completion?()
         }
     }
 

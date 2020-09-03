@@ -63,12 +63,12 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         _valueChanged?(value)
 
         if hasResolved() {
-            // done
-            self.value = toValue
-            self.stop()
+            stop()
 
+            self.value = toValue
             _valueChanged?(value)
-            completion?(true)
+            
+            completion?()
         }
     }
 
