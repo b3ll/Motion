@@ -24,6 +24,24 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     public var friction: Double = 10.0
     public var stiffness: Double = 300.0
 
+    public var clampingRange: ClosedRange<Value>? {
+        get {
+            if let clampingRange = _clampingRange {
+                return Value(clampingRange.lowerBound)...Value(clampingRange.upperBound)
+            } else {
+                return nil
+            }
+        }
+        set {
+            if let newValue = newValue {
+                self._clampingRange = newValue.lowerBound.simdRepresentation()...newValue.upperBound.simdRepresentation()
+            } else {
+                self._clampingRange = nil
+            }
+        }
+    }
+    internal var _clampingRange: ClosedRange<SIMDType>? = nil
+
     public init(_ initialValue: Value = .zero) {
         super.init()
         self.value = initialValue
@@ -59,6 +77,10 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         self._velocity += force * Scalar(dt)
         self._value += _velocity * Scalar(dt)
+
+        if let clampingRange = clampingRange {
+            self._value.clamp(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
+        }
 
         _valueChanged?(value)
 

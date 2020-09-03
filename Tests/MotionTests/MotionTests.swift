@@ -66,10 +66,8 @@ final class MotionTests: XCTestCase {
         spring.toValue = 10.0
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
-        spring.completion = { (successful) in
-            if successful {
-                expectCompletionCalled.fulfill()
-            }
+        spring.completion = {
+            expectCompletionCalled.fulfill()
         }
 
         tickAnyAnimationForDuration(AnyAnimation(spring))
@@ -125,10 +123,8 @@ final class MotionTests: XCTestCase {
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
         let expectToValueReached = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
-        spring.completion = { [unowned spring] (successful) in
-            if successful {
-                expectCompletionCalled.fulfill()
-            }
+        spring.completion = { [unowned spring] in
+            expectCompletionCalled.fulfill()
 
             if spring.value == spring.toValue {
                 expectToValueReached.fulfill()
@@ -165,16 +161,28 @@ final class MotionTests: XCTestCase {
         wait(for: [expectActionsDisabled], timeout: 5.0)
     }
 
+    func testSpringValueClamping() {
+        let spring = SpringAnimation(0.0)
+        spring.toValue = 10.0
+
+        let clampingRange = 0.0...1.0
+        spring.clampingRange = clampingRange
+
+        spring.valueChanged { newValue in
+            XCTAssert(clampingRange.contains(newValue))
+        }
+
+        tickAnimationUntilResolved(spring)
+    }
+
     func testDecay() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
 
         let expectCompletionCalled = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         let expectDecayVelocityZero = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
-        decay.completion = { [unowned decay] (successful) in
-            if successful {
-                expectCompletionCalled.fulfill()
-            }
+        decay.completion = { [unowned decay] in
+            expectCompletionCalled.fulfill()
 
             if decay.velocity <= 0.5 {
                 expectDecayVelocityZero.fulfill()
