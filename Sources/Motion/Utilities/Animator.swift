@@ -14,7 +14,7 @@ class Animator: NSObject, DisplayLinkObserver {
     private let displayLink: DisplayLink
 
     var runningAnimationsObserver: AnyCancellable? = nil
-    @Published internal var runningAnimations: Set<AnyHashable /* Animation<Value> */> = []
+    @Published internal var runningAnimations: NSHashTable<AnyObject /* Animation<Value> */> = .weakObjects()
 
     internal var animationObservers: NSMapTable<AnyObject, AnyCancellable> = .weakToStrongObjects()
 
@@ -36,7 +36,7 @@ class Animator: NSObject, DisplayLinkObserver {
        let obs = animation.$enabled.sink { [weak self, weak animation] (enabled) in
             guard let animation = animation else { return }
             if enabled {
-                let _ = self?.runningAnimations.insert(animation)
+                let _ = self?.runningAnimations.add(animation)
             } else {
                 self?.runningAnimations.remove(animation)
             }
@@ -50,8 +50,8 @@ class Animator: NSObject, DisplayLinkObserver {
         animationObservers.removeObject(forKey: animation)
     }
 
-    private func updateDisplayLinkFor(_ runningAnimations: Set<AnyHashable /* Animation<Value> */>) {
-        if runningAnimations.isEmpty {
+    private func updateDisplayLinkFor(_ runningAnimations: NSHashTable<AnyObject /* Animation<Value> */>) {
+        if runningAnimations.count == 0 {
             displayLink.stop()
         } else {
             displayLink.start()
@@ -61,7 +61,7 @@ class Animator: NSObject, DisplayLinkObserver {
     // MARK: - DisplayLinkObserver
 
     func tick(_ dt: CFTimeInterval) {
-        for animation in runningAnimations {
+        for animation in runningAnimations.objectEnumerator() {
             // This is such a hack.
             if let animation = animation as? DisplayLinkObserver {
                 animation.tick(dt)
