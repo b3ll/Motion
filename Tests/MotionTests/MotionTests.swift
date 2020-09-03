@@ -72,7 +72,7 @@ final class MotionTests: XCTestCase {
 
         tickAnyAnimationForDuration(AnyAnimation(spring))
 
-        wait(for: [expectCompletionCalled], timeout: 5.0)
+        wait(for: [expectCompletionCalled], timeout: 0.0)
     }
 
     // MARK: - Animation Tests
@@ -87,7 +87,7 @@ final class MotionTests: XCTestCase {
             // This should not get called.
             expectSpringEarlyReturn.fulfill()
         }
-        spring.tick(3.0)
+        tickAnimationOnce(spring, dt: 3.0)
 
         let expectDecayEarlyReturn = XCTestExpectation(description: "Decay should early return.")
         expectDecayEarlyReturn.isInverted = true
@@ -97,7 +97,7 @@ final class MotionTests: XCTestCase {
             // This should not get called.
             expectDecayEarlyReturn.fulfill()
         }
-        decay.tick(3.0)
+        tickAnimationOnce(decay, dt: 3.0)
 
         let expectBasicEarlyReturn = XCTestExpectation(description: "Basic should early return.")
         expectBasicEarlyReturn.isInverted = true
@@ -109,9 +109,9 @@ final class MotionTests: XCTestCase {
         basic.easingFunction = .linear
         basic.valueChanged { newValue in
             // This should not get called.
-            expectDecayEarlyReturn.fulfill()
+            expectBasicEarlyReturn.fulfill()
         }
-        basic.tick(3.0)
+        tickAnimationOnce(basic, dt: 3.0)
 
         wait(for: [expectSpringEarlyReturn, expectDecayEarlyReturn, expectBasicEarlyReturn], timeout: 0.0)
     }
@@ -133,7 +133,7 @@ final class MotionTests: XCTestCase {
 
         tickAnimationUntilResolved(spring)
 
-        wait(for: [expectCompletionCalled, expectToValueReached], timeout: 5.0)
+        wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
     }
 
     func testSpringVelocitySetting() {
@@ -149,16 +149,11 @@ final class MotionTests: XCTestCase {
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
-        let expectActionsDisabled = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
         spring.valueChanged(disableActions: true) { newValue in
-            if CATransaction.disableActions() {
-                expectActionsDisabled.fulfill()
-            }
+            XCTAssert(CATransaction.disableActions())
         }
 
-        tickAnimationUntilResolved(spring)
-
-        wait(for: [expectActionsDisabled], timeout: 5.0)
+        tickAnimationOnce(spring)
     }
 
     func testSpringValueClamping() {
@@ -192,7 +187,7 @@ final class MotionTests: XCTestCase {
 
         tickAnimationUntilResolved(decay)
 
-        wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 5.0)
+        wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
     }
 
     // MARK: - Animator Tests
@@ -228,6 +223,10 @@ final class MotionTests: XCTestCase {
         ("testAnimatorAddRemoveAnimation", testAnimatorAddRemoveAnimation),
     ]
 
+}
+
+private func tickAnimationOnce<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016) {
+    animation.tick(dt)
 }
 
 private func tickAnimationUntilResolved<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
