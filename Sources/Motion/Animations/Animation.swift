@@ -18,7 +18,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
 
     @Published public var enabled: Bool = false
 
-    public var value: Value {
+    internal(set) public var value: Value {
         get {
             return Value(_value)
         }
@@ -27,6 +27,11 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
         }
     }
     internal var _value: SIMDType = .zero
+
+    public func setValue(_ value: Value) {
+        self.value = value
+        _valueChanged?(value)
+    }
 
     public var toValue: Value {
         get {
@@ -42,7 +47,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
      This is meant to be set only by the -valueChanged: function vs. being set directly. It should be used inside of -tick: only.
      Unfortunately Swift doesn't really have the ability to define a property as only visible to subclasses but nowhere else.
      */
-    public var _valueChanged: ValueChangedCallback? = nil
+    internal var _valueChanged: ValueChangedCallback? = nil
 
     public func valueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) {
         guard let valueChangedCallback = valueChangedCallback else { self._valueChanged = nil; return }
