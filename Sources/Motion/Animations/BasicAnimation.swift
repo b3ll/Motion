@@ -38,10 +38,6 @@ public class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        if dt > 1.0 {
-            return
-        }
-
         let fraction = accumulatedTime / duration
 
         _value = easingFunction.interpolate(_fromValue..._toValue, fraction: fraction)
