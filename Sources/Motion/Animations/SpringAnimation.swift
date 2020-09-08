@@ -60,26 +60,58 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
 
     public override func stop() {
+        super.stop()
         self.velocity = .zero
     }
 
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        if dt > 1.0 {
-            return
+        let w0 = sqrt(stiffness)
+
+        let dampingRatio = friction / (2.0 * w0)
+
+        let x0 = _toValue - _value
+
+        let x: Value.SIMDType
+        if dampingRatio < 1.0 {
+            let decayEnvelope = exp(-dampingRatio * w0 * dt)
+            let wD = w0 * sqrt(1.0 - dampingRatio * dampingRatio)
+
+            let sin_wD_dt = sin(wD * dt)
+            let cos_wD_dt = cos(wD * dt)
+
+            let velocity_x0_dampingRatio_w0 = (_velocity + x0 * Scalar(dampingRatio * w0))
+
+            let A = x0
+            let B = velocity_x0_dampingRatio_w0 / Scalar(wD)
+
+            // Underdamped analytic equation for a spring. (position)
+            x = Scalar(decayEnvelope) * (A * Scalar(cos_wD_dt) + B * Scalar(sin_wD_dt))
+
+            // Derivative of the above analytic equation to get the speed of a spring. (velocity)
+            let d_x = (velocity_x0_dampingRatio_w0 * Scalar(cos_wD_dt) - x0 * Scalar(wD * sin_wD_dt))
+            _velocity = -(Scalar(dampingRatio * w0) * x - Scalar(decayEnvelope) * d_x)
+        } else if dampingRatio.approximatelyEqual(to: 1.0) {
+            let A = x0
+            let B = _velocity * Scalar(w0) * x0
+
+            x = Scalar(exp(-w0 * dt)) * (A + B * Scalar(dt))
+        } else /* if dampingRatio > 1.0 */ {
+            let x_ = sqrt(pow(friction, 2.0) - 4.0 * w0)
+            let gP = (-friction + x_) / 2.0
+            let gM = (-friction - x_) / 2.0
+
+            let A = x0 - (Scalar(gM) * x0 - _velocity) / Scalar(gM - gP)
+            let B = (Scalar(gM) * x0 - _velocity) / Scalar(gM - gP)
+
+            x = A * Scalar(exp(gM * dt)) + B * Scalar(exp(gP * dt))
         }
 
-        let springForce = (_toValue - _value) * Scalar(stiffness)
-        let frictionForce = _velocity * Scalar(friction)
-
-        let force = springForce - frictionForce
-
-        self._velocity += force * Scalar(dt)
-        self._value += _velocity * Scalar(dt)
+        self._value = (_toValue - x)
 
         if let clampingRange = clampingRange {
-            self._value.clamp(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
+            _value.clamp(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
         }
 
         _valueChanged?(value)
@@ -89,7 +121,7 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
             self.value = toValue
             _valueChanged?(value)
-            
+
             completion?()
         }
     }
