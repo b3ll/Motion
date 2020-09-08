@@ -77,45 +77,6 @@ final class MotionTests: XCTestCase {
 
     // MARK: - Animation Tests
 
-    func testAnimationDtFailure() {
-        let expectSpringEarlyReturn = XCTestExpectation(description: "Spring should early return.")
-        expectSpringEarlyReturn.isInverted = true
-
-        let spring = SpringAnimation(0.0)
-        spring.toValue = 10.0
-        spring.valueChanged { newValue in
-            // This should not get called.
-            expectSpringEarlyReturn.fulfill()
-        }
-        tickAnimationOnce(spring, dt: 3.0)
-
-        let expectDecayEarlyReturn = XCTestExpectation(description: "Decay should early return.")
-        expectDecayEarlyReturn.isInverted = true
-
-        let decay = DecayAnimation(0.0)
-        decay.valueChanged { newValue in
-            // This should not get called.
-            expectDecayEarlyReturn.fulfill()
-        }
-        tickAnimationOnce(decay, dt: 3.0)
-
-        let expectBasicEarlyReturn = XCTestExpectation(description: "Basic should early return.")
-        expectBasicEarlyReturn.isInverted = true
-
-        let basic = BasicAnimation<Double>()
-        basic.fromValue = 0.0
-        basic.toValue = 10.0
-        basic.duration = 10.0
-        basic.easingFunction = .linear
-        basic.valueChanged { newValue in
-            // This should not get called.
-            expectBasicEarlyReturn.fulfill()
-        }
-        tickAnimationOnce(basic, dt: 3.0)
-
-        wait(for: [expectSpringEarlyReturn, expectDecayEarlyReturn, expectBasicEarlyReturn], timeout: 0.0)
-    }
-
     func testSpring() {
         let spring = SpringAnimation(CGRect.zero)
         spring.value = .zero
@@ -205,6 +166,16 @@ final class MotionTests: XCTestCase {
         _ = spring
     }
 
+    func testPushback() {
+        let spring = SpringAnimation<CGFloat>(0.97)
+        spring.configure(response: 0.30, damping: 0.99)
+        spring.toValue = 1.0
+
+        for _ in stride(from: 0, to: 3, by: 1.0 / 60.0) {
+            spring.tick(1.0 / 60.0)
+        }
+    }
+
     override class func tearDown() {
         // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
         XCTAssert(Animator.shared.animationObservers.count == 0)
@@ -215,7 +186,7 @@ final class MotionTests: XCTestCase {
         ("testApproximatelyEqual", testApproximatelyEqual),
         ("testAnyAnimationEquality", testAnyAnimationEquality),
         ("testAnyAnimationTick", testAnyAnimationTick),
-        ("testAnimationDtFailure", testAnimationDtFailure),
+//        ("testAnimationDtFailure", testAnimationDtFailure),
         ("testSpring", testSpring),
         ("testSpringVelocitySetting", testSpringVelocitySetting),
         ("testSpring", testSpringActionsDisabled),

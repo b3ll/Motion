@@ -14,7 +14,7 @@ class Animator: NSObject, DisplayLinkObserver {
     private let displayLink: DisplayLink
 
     var runningAnimationsObserver: AnyCancellable? = nil
-    @Published internal var runningAnimations: NSHashTable<AnyObject /* Animation<Value> */> = .weakObjects()
+    internal var runningAnimations: NSHashTable<AnyObject /* Animation<Value> */> = .weakObjects()
 
     internal var animationObservers: NSMapTable<AnyObject, AnyCancellable> = .weakToStrongObjects()
 
@@ -24,10 +24,6 @@ class Animator: NSObject, DisplayLinkObserver {
         self.displayLink = DisplayLink()
         super.init()
         displayLink.observer = self
-
-        self.runningAnimationsObserver = $runningAnimations.sink { [weak self] (runningAnimations) in
-            self?.updateDisplayLinkFor(runningAnimations)
-        }
     }
 
     // MARK: - Animations
@@ -39,6 +35,10 @@ class Animator: NSObject, DisplayLinkObserver {
                 let _ = self?.runningAnimations.add(animation)
             } else {
                 self?.runningAnimations.remove(animation)
+            }
+
+            if let runningAnimations = self?.runningAnimations {
+                self?.updateDisplayLinkFor(runningAnimations)
             }
         }
 
@@ -61,7 +61,7 @@ class Animator: NSObject, DisplayLinkObserver {
     // MARK: - DisplayLinkObserver
 
     func tick(_ dt: CFTimeInterval) {
-        for animation in runningAnimations.objectEnumerator() {
+        for animation in (runningAnimations.copy() as! NSHashTable<AnyObject>).objectEnumerator() {
             // This is such a hack.
             if let animation = animation as? DisplayLinkObserver {
                 animation.tick(dt)

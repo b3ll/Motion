@@ -20,8 +20,9 @@ internal class DisplayLink: NSObject {
     var displayLink: CVDisplayLink! = nil
     #else
     var displayLink: CADisplayLink! = nil
-    var timestamp: CFTimeInterval? = nil
     #endif
+
+    var lastFrameTimestamp: CFTimeInterval? = nil
 
     weak var observer: DisplayLinkObserver?
 
@@ -67,7 +68,7 @@ internal class DisplayLink: NSObject {
     func stop() {
         #if os(macOS)
         #else
-        self.timestamp = 0.0
+        self.lastFrameTimestamp = 0.0
         #endif
 
         if !valid {
@@ -90,14 +91,15 @@ internal class DisplayLink: NSObject {
     }
     #else
     @objc private func tick() {
+        let currentTime = CACurrentMediaTime()
         let dt: CFTimeInterval
-        if let timestamp = timestamp, timestamp > 0.0 {
-            dt = displayLink.timestamp - timestamp
+        if let lastFrameTimestamp = lastFrameTimestamp, lastFrameTimestamp > 0.0 {
+            dt = currentTime - lastFrameTimestamp
         } else {
             dt = displayLink.duration
         }
+        self.lastFrameTimestamp = CACurrentMediaTime()
         observer?.tick(dt)
-        self.timestamp = displayLink.timestamp
     }
     #endif
 
