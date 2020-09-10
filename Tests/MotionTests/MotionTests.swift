@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import Motion
 
 final class MotionTests: XCTestCase {
@@ -97,6 +98,27 @@ final class MotionTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
     }
 
+    func testCriticallyDampedSpring() {
+        let spring = SpringAnimation(CGRect.zero)
+        spring.value = .zero
+        spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+        spring.configure(response: 1.0, damping: 1.0)
+
+        let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
+        let expectToValueReached = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
+        spring.completion = { [unowned spring] in
+            expectCompletionCalled.fulfill()
+
+            if spring.value == spring.toValue {
+                expectToValueReached.fulfill()
+            }
+        }
+
+        tickAnimationUntilResolved(spring)
+
+        wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
+    }
+
     func testSpringVelocitySetting() {
         let spring = SpringAnimation(0.0)
         spring.velocity = 100.0
@@ -119,7 +141,7 @@ final class MotionTests: XCTestCase {
 
     func testSpringValueClamping() {
         let spring = SpringAnimation(0.0)
-        spring.toValue = 10.0
+        spring.toValue = 1.0
 
         let clampingRange = 0.0...1.0
         spring.clampingRange = clampingRange

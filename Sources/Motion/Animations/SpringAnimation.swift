@@ -73,6 +73,10 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
         let x0 = _toValue - _value
 
+        /**
+         A lot of this looks illegible, but they're various (optimized) implentations of the analytic versions of Spring functions (depending on the damping ratio).
+
+         */
         let x: Value.SIMDType
         if dampingRatio < 1.0 {
             let decayEnvelope = exp(-dampingRatio * w0 * dt)
@@ -93,10 +97,14 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             let d_x = (velocity_x0_dampingRatio_w0 * Scalar(cos_wD_dt) - x0 * Scalar(wD * sin_wD_dt))
             _velocity = -(Scalar(dampingRatio * w0) * x - Scalar(decayEnvelope) * d_x)
         } else if dampingRatio.approximatelyEqual(to: 1.0) {
-            let A = x0
-            let B = _velocity * Scalar(w0) * x0
+            let decayEnvelope = exp(-w0 * dt)
 
-            x = Scalar(exp(-w0 * dt)) * (A + B * Scalar(dt))
+            let A = x0
+            let B = _velocity + Scalar(w0) * x0
+
+            x = Scalar(decayEnvelope) * (A + B * Scalar(dt))
+
+            _velocity = Scalar(-decayEnvelope) * (x0 * Scalar(dt * w0 * w0) + (_velocity * Scalar(dt * w0)) - _velocity)
         } else /* if dampingRatio > 1.0 */ {
             let x_ = sqrt((friction * friction) - 4.0 * w0)
             let gP = (-friction + x_) / 2.0
@@ -114,12 +122,11 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self._value = (_toValue - x)
 
         if let clampingRange = clampingRange {
-            let clampedValue = _value.clamped(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
+            let clampedValue = Value(_value.clamped(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation()))
             _valueChanged?(clampedValue)
         } else {
             _valueChanged?(value)
         }
-
 
         if hasResolved() {
             stop()
