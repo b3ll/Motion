@@ -75,6 +75,10 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
     }
 
     public func start() {
+        if hasResolved() {
+            return
+        }
+
         self.enabled = true
     }
 

@@ -98,12 +98,15 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
             x = Scalar(exp(-w0 * dt)) * (A + B * Scalar(dt))
         } else /* if dampingRatio > 1.0 */ {
-            let x_ = sqrt(pow(friction, 2.0) - 4.0 * w0)
+            let x_ = sqrt((friction * friction) - 4.0 * w0)
             let gP = (-friction + x_) / 2.0
             let gM = (-friction - x_) / 2.0
 
-            let A = x0 - (Scalar(gM) * x0 - _velocity) / Scalar(gM - gP)
-            let B = (Scalar(gM) * x0 - _velocity) / Scalar(gM - gP)
+            let gM_x0_velocity = Scalar(gM) * x0 - _velocity
+            let gM_gP = gM - gP
+
+            let A = x0 - gM_x0_velocity / Scalar(gM_gP)
+            let B = gM_x0_velocity / Scalar(gM_gP)
 
             x = A * Scalar(exp(gM * dt)) + B * Scalar(exp(gP * dt))
         }
@@ -111,10 +114,12 @@ public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         self._value = (_toValue - x)
 
         if let clampingRange = clampingRange {
-            _value.clamp(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
+            let clampedValue = _value.clamped(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation())
+            _valueChanged?(clampedValue)
+        } else {
+            _valueChanged?(value)
         }
 
-        _valueChanged?(value)
 
         if hasResolved() {
             stop()
