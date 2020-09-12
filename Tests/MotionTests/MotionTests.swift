@@ -119,6 +119,50 @@ final class MotionTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
     }
 
+    func testOverDampedSpring() {
+        let spring = SpringAnimation(CGRect.zero, stiffness: 2.0, friction: 10.0)
+        spring.value = .zero
+        spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+
+        spring.valueChanged { newValue in
+            print(newValue)
+        }
+
+        let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
+        let expectToValueReached = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
+        spring.completion = { [unowned spring] in
+            expectCompletionCalled.fulfill()
+
+            if spring.value == spring.toValue {
+                expectToValueReached.fulfill()
+            }
+        }
+
+        tickAnimationUntilResolved(spring, maxDuration: 120.0)
+
+        wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
+    }
+
+    func testSpringEvaluation() {
+        let t = 0.50
+
+        let underDampedSpring = SpringAnimation<CGFloat>(response: 1.0, damping: 0.80)
+        underDampedSpring.toValue = 10.0
+        underDampedSpring.tick(t)
+
+        XCTAssert(underDampedSpring.value.approximatelyEqual(to: 9.223))
+
+        let criticallyDampedSpring = SpringAnimation<CGFloat>(response: 1.0, damping: 1.0)
+        criticallyDampedSpring.toValue = 10.0
+        criticallyDampedSpring.tick(t)
+
+        XCTAssert(criticallyDampedSpring.value.approximatelyEqual(to: 8.210))
+
+        let overDampedSpring = SpringAnimation<CGFloat>(stiffness: 2.0, friction: 10.0)
+        overDampedSpring.toValue = 10.0
+        overDampedSpring.tick(t)
+    }
+
     func testSpringVelocitySetting() {
         let spring = SpringAnimation(0.0)
         spring.velocity = 100.0

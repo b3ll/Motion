@@ -70,14 +70,16 @@ public struct SpringAnimationShape: Shape {
 
     public let graphType: GraphType
 
-    public init(_ animation: SpringAnimation<CGFloat>, graphType: GraphType) {
+    public let duration: CFTimeInterval
+
+    public init(_ animation: SpringAnimation<CGFloat>, graphType: GraphType, duration: CFTimeInterval) {
         self.springAnimation = animation
         self.graphType = graphType
+        self.duration = duration
     }
 
     public func path(in rect: CGRect) -> Path {
         let dt = 1.0 / 60.0
-        let t = 3.0
 
         springAnimation.stop()
         springAnimation.value = 0.0
@@ -85,8 +87,8 @@ public struct SpringAnimationShape: Shape {
 
         let height = rect.size.height / 2.0
 
-        let points: [CGPoint] = stride(from: 0.0, to: t, by: dt).map { (i) -> CGPoint in
-            let percent: CGFloat = CGFloat(i / t)
+        let points: [CGPoint] = stride(from: 0.0, to: duration, by: dt).map { (i) -> CGPoint in
+            let percent: CGFloat = CGFloat(i / duration)
 
             let point: CGPoint
 
@@ -115,12 +117,20 @@ public struct SpringAnimationGraphView: View {
 
     public let graphType: SpringAnimationShape.GraphType
 
+    public let duration: CFTimeInterval
+
+    public init(springAnimation: SpringAnimation<CGFloat>, graphType: SpringAnimationShape.GraphType, duration: CFTimeInterval = 3.0) {
+        self.springAnimation = springAnimation
+        self.graphType = graphType
+        self.duration = duration
+    }
+
     public var body: some View {
         ZStack(alignment: .topLeading) {
             Rectangle()
                 .foregroundColor(.black)
 
-            SpringAnimationShape(springAnimation, graphType: graphType)
+            SpringAnimationShape(springAnimation, graphType: graphType, duration: duration)
                 .stroke(lineWidth: 4.0)
                 .foregroundColor(.blue)
                 .padding(12.0)
@@ -145,20 +155,30 @@ struct SwiftUIView_Previews: PreviewProvider {
         return springAnimation
     }
 
+    static let criticallyDamped = { () -> SpringAnimation<CGFloat> in
+        let springAnimation = SpringAnimation<CGFloat>()
+        springAnimation.friction = 10.0
+        springAnimation.stiffness = 2.0
+        return springAnimation
+    }()
+
     static var previews: some View {
-        Group {
+                Group {
             ForEach(EasingFunction<CGFloat>.allFunctions, id: \.self) { easingFunction in
                 EasingFunctionGraphView(easingFunction: easingFunction)
                     .previewLayout(.sizeThatFits)
             }
         }
 
-        if #available(iOS 14.0, *) {
+        if #available(iOS 14.0, macOS 11.0, *) {
             LazyVGrid(columns: [GridItem(.fixed(320)), GridItem(.fixed(320)), GridItem(.fixed(320))], alignment: .center, spacing: 2.0) {
                 ForEach((1...10), id: \.self) { dampingConstant in
                     SpringAnimationGraphView(springAnimation: springAnimation(response: 1.0, damping: Double(dampingConstant) / 10.0), graphType: .position)
                         .previewLayout(.sizeThatFits)
                 }
+
+                // Critically Damped
+                SpringAnimationGraphView(springAnimation: criticallyDamped, graphType: .position, duration: 30.0)
             }
             .background(Color.black)
             .previewLayout(.sizeThatFits)
@@ -168,6 +188,9 @@ struct SwiftUIView_Previews: PreviewProvider {
                     SpringAnimationGraphView(springAnimation: springAnimation(response: 1.0, damping: Double(dampingConstant) / 10.0), graphType: .position)
                         .previewLayout(.sizeThatFits)
                 }
+
+                // Critically Damped
+                SpringAnimationGraphView(springAnimation: criticallyDamped, graphType: .position, duration: 30.0)
             }
         }
     }
