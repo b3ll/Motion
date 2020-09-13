@@ -9,7 +9,7 @@ import Combine
 import QuartzCore
 import simd
 
-public class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
+public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
         get {

@@ -10,7 +10,7 @@ import simd
 
 public let UIKitDecayConstant: Double = 0.998
 
-public class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
+public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
         get {

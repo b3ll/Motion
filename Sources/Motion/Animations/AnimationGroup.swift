@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
+public final class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
 
     let animations: [AnyAnimation]
 
