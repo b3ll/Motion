@@ -108,7 +108,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         }
     }
 
-    @inlinable public func solveSpring<Value: SupportedSIMDType>(dt: CFTimeInterval, x0: Value, velocity: inout Value) -> Value where Value.Scalar: SupportedScalar {
+    @inlinable public func solveSpring<Value: SupportedSIMDType>(dt: CFTimeInterval, x0: Value, velocity: inout Value) -> Value {
         typealias Scalar = Value.Scalar
 
         let w0 = sqrt(stiffness)

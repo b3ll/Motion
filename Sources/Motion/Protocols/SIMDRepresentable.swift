@@ -11,7 +11,7 @@ import simd
 
 // MARK: - Supported Types
 
-public protocol SupportedSIMDType: SIMD, EquatableEnough {
+public protocol SupportedSIMDType: SIMD, EquatableEnough where Scalar: SupportedScalar {
 
 }
 
@@ -29,7 +29,7 @@ extension SIMD64: SupportedSIMDType where Scalar: SupportedScalar {}
 
 public protocol SIMDRepresentable: Comparable {
 
-    associatedtype SIMDType: SupportedSIMDType where SIMDType.Scalar: SupportedScalar
+    associatedtype SIMDType: SupportedSIMDType
 
     init(_ simdRepresentation: SIMDType)
 
