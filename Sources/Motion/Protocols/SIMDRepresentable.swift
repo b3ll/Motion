@@ -8,6 +8,7 @@
 import CoreGraphics
 import Foundation
 import simd
+import RealModule
 
 // MARK: - Supported Types
 
@@ -15,7 +16,15 @@ public protocol SupportedSIMDType: SIMD, EquatableEnough where Scalar: Supported
 
 }
 
-public typealias SupportedScalar = FloatingPoint & DoubleIntializable & ExpressibleByFloatLiteral & EquatableEnough
+public protocol SupportedScalar: SIMDScalar, DoubleIntializable, EquatableEnough, RealModule.Real {
+    static func exp(_ x: Self) -> Self
+    static func sin(_ x: Self) -> Self
+    static func cos(_ x: Self) -> Self
+    static func pow(_ x: Self, _ n: Int) -> Self
+}
+
+extension Float: SupportedScalar {}
+extension Double: SupportedScalar {}
 
 extension SIMD2: SupportedSIMDType where Scalar: SupportedScalar {}
 extension SIMD3: SupportedSIMDType where Scalar: SupportedScalar {}
@@ -237,4 +246,3 @@ extension CGRect: SIMDRepresentable {
     }
 
 }
-
