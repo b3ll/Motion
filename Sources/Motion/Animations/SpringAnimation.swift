@@ -21,8 +21,24 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: SIMDType = .zero
 
-    public var friction: Double = 10.0
-    public var stiffness: Double = 300.0
+    private var spring: Spring<Value.SIMDType>
+
+    public var damping: Value.SIMDType.Scalar {
+        get {
+            return spring.damping
+        }
+        set {
+            spring.damping = newValue
+        }
+    }
+    public var stiffness: Value.SIMDType.Scalar {
+        get {
+            return spring.stiffness
+        }
+        set {
+            spring.stiffness = newValue
+        }
+    }
 
     public var clampingRange: ClosedRange<Value>? {
         get {
@@ -42,28 +58,25 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _clampingRange: ClosedRange<SIMDType>? = nil
 
-    public init(_ initialValue: Value = .zero) {
+    public init(initialValue: Value = .zero) {
+        self.spring = Spring<Value.SIMDType>()
         super.init()
         self.value = initialValue
     }
 
-    public convenience init(_ initialValue: Value = .zero, response: Double, damping: Double) {
-        self.init(initialValue)
-        configure(response: response, damping: damping)
+    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+        self.init(initialValue: initialValue)
+        configure(response: response, dampingRatio: dampingRatio)
     }
 
-    public convenience init(_ initialValue: Value = .zero, stiffness: Double, friction: Double) {
-        self.init(initialValue)
+    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
+        self.init(initialValue: initialValue)
         self.stiffness = stiffness
-        self.friction = friction
+        self.damping = damping
     }
 
-    public func configure(response: Double, damping: Double) {
-        let stiffness = pow(2.0 * .pi / response, 2.0)
-        let friction = 4.0 * .pi * damping / response
-
-        self.stiffness = stiffness
-        self.friction = friction
+    public func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+        spring.configure(response: response, dampingRatio: dampingRatio)
     }
 
     public override func hasResolved() -> Bool { 
@@ -78,21 +91,12 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-
-        /**
-         A lot of this looks illegible, but they're various (optimized) implentations of the analytic versions of Spring functions (depending on the damping ratio).
-
-         Long story short, each equation is split into two coefficients A and B, each of which changes (decays, oscillates, etc.) differently based on the damping ratio.
-
-         We calculate the position and velocity for each, which is seeded into the next frame.
-         */
-
         let x0 = _toValue - _value
 
-        self._value = (_toValue - solveSpring(dt: dt, x0: x0, velocity: &_velocity))
+        self._value = (_toValue - spring.solveSpring(dt: Value.SIMDType.Scalar(dt), x0: x0, velocity: &_velocity))
 
-        if let clampingRange = clampingRange {
-            let clampedValue = Value(_value.clamped(lowerBound: clampingRange.lowerBound.simdRepresentation(), upperBound: clampingRange.upperBound.simdRepresentation()))
+        if let clampingRange = _clampingRange {
+            let clampedValue = Value(_value.clamped(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound))
             _valueChanged?(clampedValue)
         } else {
             _valueChanged?(value)
@@ -107,67 +111,6 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             completion?()
         }
     }
-
-    @inlinable public func solveSpring<Value: SupportedSIMDType>(dt: CFTimeInterval, x0: Value, velocity: inout Value) -> Value {
-        typealias Scalar = Value.Scalar
-
-        let w0 = sqrt(stiffness)
-
-        let dampingRatio = friction / (2.0 * w0)
-
-        let x: Value
-        if dampingRatio < 1.0 {
-            let decayEnvelope = exp(-dampingRatio * w0 * dt)
-            let wD = w0 * sqrt(1.0 - dampingRatio * dampingRatio)
-
-            let sin_wD_dt = sin(wD * dt)
-            let cos_wD_dt = cos(wD * dt)
-
-            let velocity_x0_dampingRatio_w0 = (velocity + x0 * Scalar(dampingRatio * w0))
-
-            let A = x0
-            let B = velocity_x0_dampingRatio_w0 / Scalar(wD)
-
-            // Underdamped analytic equation for a spring. (position)
-            x = Scalar(decayEnvelope) * (A * Scalar(cos_wD_dt) + B * Scalar(sin_wD_dt))
-
-            // Derivative of the above analytic equation to get the speed of a spring. (velocity)
-            let d_x = (velocity_x0_dampingRatio_w0 * Scalar(cos_wD_dt) - x0 * Scalar(wD * sin_wD_dt))
-            velocity = -(Scalar(dampingRatio * w0) * x - Scalar(decayEnvelope) * d_x)
-        } else if dampingRatio.approximatelyEqual(to: 1.0) {
-            let decayEnvelope = exp(-w0 * dt)
-
-            let A = x0
-            let B = velocity + Scalar(w0) * x0
-
-            // Critically damped analytic equation for a spring. (position)
-            x = Scalar(decayEnvelope) * (A + B * Scalar(dt))
-
-            // Derivative of the above analytic equation to get the speed of a spring. (velocity)
-            velocity = Scalar(-decayEnvelope) * (x0 * Scalar(dt * w0 * w0) + (velocity * Scalar(dt * w0)) - velocity)
-        } else /* if dampingRatio > 1.0 */ {
-            let x_ = sqrt((friction * friction) - 4.0 * w0)
-
-            let r0 = (-friction + x_) / 2.0
-            let r1 = (-friction - x_) / 2.0
-
-            let r1_r0 = r1 - r0
-
-            let A = x0 - (((Scalar(r1) * x0) - velocity) / Scalar(r1_r0))
-            let B = A + x0
-
-            let decayEnvelopeA = exp(r1 * dt)
-            let decayEnvelopeB = exp(r0 * dt)
-
-            // Overdamped analytic equation for a spring. (position)
-            x = Scalar(decayEnvelopeA) * A + Scalar(decayEnvelopeB) * B
-
-            // Derivative of the above analytic equation to get the speed of a spring. (velocity)
-            velocity = Scalar(decayEnvelopeA * r1) * A + Scalar(decayEnvelopeB * r0) * B
-        }
-
-        return x
-    }
-
+    
 }
 

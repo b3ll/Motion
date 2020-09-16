@@ -10,10 +10,17 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            testSpringAnimationExecutionCGRect()
+
+            testSpringAnimationExecutionDouble()
+
+            testSpringAnimationExecutionSIMD64()
+        }
+
         return true
     }
 

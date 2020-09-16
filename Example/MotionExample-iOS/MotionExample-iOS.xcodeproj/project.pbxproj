@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66823DF8250D62DB00E7B2A4 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66823DF7250D62DB00E7B2A4 /* PerformanceTests.swift */; };
 		66D6541924F631E800206BB7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541824F631E800206BB7 /* AppDelegate.swift */; };
 		66D6541B24F631E800206BB7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541A24F631E800206BB7 /* SceneDelegate.swift */; };
 		66D6541D24F631E800206BB7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541C24F631E800206BB7 /* ViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		66823DF7250D62DB00E7B2A4 /* PerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceTests.swift; sourceTree = "<group>"; };
 		66D6541524F631E800206BB7 /* MotionExample-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MotionExample-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D6541824F631E800206BB7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		66D6541A24F631E800206BB7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				66D6541C24F631E800206BB7 /* ViewController.swift */,
 				66D6543224F6323C00206BB7 /* BouncyView.swift */,
 				66D6541E24F631E800206BB7 /* Main.storyboard */,
+				66823DF7250D62DB00E7B2A4 /* PerformanceTests.swift */,
 				66D6542124F631EA00206BB7 /* Assets.xcassets */,
 				66D6542324F631EA00206BB7 /* LaunchScreen.storyboard */,
 				66D6542624F631EA00206BB7 /* Info.plist */,
@@ -166,6 +169,7 @@
 				66D6541D24F631E800206BB7 /* ViewController.swift in Sources */,
 				66D6541924F631E800206BB7 /* AppDelegate.swift in Sources */,
 				66D6543324F6323C00206BB7 /* BouncyView.swift in Sources */,
+				66823DF8250D62DB00E7B2A4 /* PerformanceTests.swift in Sources */,
 				66D6541B24F631E800206BB7 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

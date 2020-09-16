@@ -11,8 +11,8 @@ import UIKit
 class BouncyView: UIView {
 
     lazy var spring: SpringAnimation<CGFloat> = {
-        let animation = SpringAnimation<CGFloat>(1.0)
-        animation.configure(response: 0.4, damping: 0.4)
+        let animation = SpringAnimation<CGFloat>(initialValue: 1.0)
+        animation.configure(response: 0.4, dampingRatio: 0.4)
         animation.valueChanged(disableActions: true) { [weak self] (newValue) in
             self?.layer.transform = CATransform3DMakeScale(newValue, newValue, 1.0)
         }

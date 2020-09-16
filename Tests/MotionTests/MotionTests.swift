@@ -55,15 +55,15 @@ final class MotionTests: XCTestCase {
     // MARK: - AnyAnimation Tests
 
     func testAnyAnimationEquality() {
-        let spring = SpringAnimation(0.0)
-        let spring2 = SpringAnimation(0.0)
+        let spring = SpringAnimation(initialValue: 0.0)
+        let spring2 = SpringAnimation(initialValue: 0.0)
 
         XCTAssertEqual(AnyAnimation(spring), AnyAnimation(spring))
         XCTAssertNotEqual(AnyAnimation(spring), AnyAnimation(spring2))
     }
 
     func testAnyAnimationTick() {
-        let spring = SpringAnimation(0.0)
+        let spring = SpringAnimation(initialValue: 0.0)
         spring.toValue = 10.0
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
@@ -79,7 +79,7 @@ final class MotionTests: XCTestCase {
     // MARK: - Animation Tests
 
     func testSpring() {
-        let spring = SpringAnimation(CGRect.zero)
+        let spring = SpringAnimation(initialValue: CGRect.zero)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
@@ -99,10 +99,10 @@ final class MotionTests: XCTestCase {
     }
 
     func testCriticallyDampedSpring() {
-        let spring = SpringAnimation(CGRect.zero)
+        let spring = SpringAnimation(initialValue: CGRect.zero)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
-        spring.configure(response: 1.0, damping: 1.0)
+        spring.configure(response: 1.0, dampingRatio: 1.0)
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
         let expectToValueReached = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
@@ -120,7 +120,7 @@ final class MotionTests: XCTestCase {
     }
 
     func testOverDampedSpring() {
-        let spring = SpringAnimation(CGRect.zero, stiffness: 2.0, friction: 10.0)
+        let spring = SpringAnimation(initialValue: CGRect.zero, stiffness: 2.0, damping: 10.0)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
@@ -146,25 +146,25 @@ final class MotionTests: XCTestCase {
     func testSpringEvaluation() {
         let t = 0.50
 
-        let underDampedSpring = SpringAnimation<CGFloat>(response: 1.0, damping: 0.80)
+        let underDampedSpring = SpringAnimation<CGFloat>(response: 1.0, dampingRatio: 0.80)
         underDampedSpring.toValue = 10.0
         underDampedSpring.tick(t)
 
         XCTAssert(underDampedSpring.value.approximatelyEqual(to: 9.223))
 
-        let criticallyDampedSpring = SpringAnimation<CGFloat>(response: 1.0, damping: 1.0)
+        let criticallyDampedSpring = SpringAnimation<CGFloat>(response: 1.0, dampingRatio: 1.0)
         criticallyDampedSpring.toValue = 10.0
         criticallyDampedSpring.tick(t)
 
         XCTAssert(criticallyDampedSpring.value.approximatelyEqual(to: 8.210))
 
-        let overDampedSpring = SpringAnimation<CGFloat>(stiffness: 2.0, friction: 10.0)
+        let overDampedSpring = SpringAnimation<CGFloat>(stiffness: 2.0, damping: 10.0)
         overDampedSpring.toValue = 10.0
         overDampedSpring.tick(t)
     }
 
     func testSpringVelocitySetting() {
-        let spring = SpringAnimation(0.0)
+        let spring = SpringAnimation(initialValue: 0.0)
         spring.velocity = 100.0
 
         // Spring velocity is inversed for internal calculations.
@@ -172,7 +172,7 @@ final class MotionTests: XCTestCase {
     }
 
     func testSpringActionsDisabled() {
-        let spring = SpringAnimation(CGRect.zero)
+        let spring = SpringAnimation(initialValue: CGRect.zero)
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
@@ -184,7 +184,7 @@ final class MotionTests: XCTestCase {
     }
 
     func testSpringValueClamping() {
-        let spring = SpringAnimation(0.0)
+        let spring = SpringAnimation(initialValue: 0.0)
         spring.toValue = 1.0
 
         let clampingRange = 0.0...1.0
@@ -222,7 +222,7 @@ final class MotionTests: XCTestCase {
     func testAnimatorAddRemoveAnimation() {
         let observedAnimationCount = Animator.shared.animationObservers.count
 
-        var spring: SpringAnimation<CGFloat>? = SpringAnimation(0.0)
+        var spring: SpringAnimation<CGFloat>? = SpringAnimation(initialValue: 0.0)
         XCTAssert(Animator.shared.animationObservers.count == observedAnimationCount + 1)
 
         spring = nil
@@ -233,8 +233,8 @@ final class MotionTests: XCTestCase {
     }
 
     func testPushback() {
-        let spring = SpringAnimation<CGFloat>(0.97)
-        spring.configure(response: 0.30, damping: 0.99)
+        let spring = SpringAnimation<CGFloat>(initialValue: 0.97)
+        spring.configure(response: 0.30, dampingRatio: 0.99)
         spring.toValue = 1.0
 
         for _ in stride(from: 0, to: 3, by: 1.0 / 60.0) {

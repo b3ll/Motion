@@ -136,7 +136,7 @@ public struct SpringAnimationGraphView: View {
                 .padding(12.0)
 
             HStack {
-                Text(String(format: "Friction: %.2f", springAnimation.friction))
+                Text(String(format: "Damping: %.2f", springAnimation.damping))
                 Text(String(format: "Stiffness: %.2f", springAnimation.stiffness))
             }
             .foregroundColor(.white)
@@ -151,13 +151,13 @@ struct SwiftUIView_Previews: PreviewProvider {
 
     static func springAnimation(response: Double, damping: Double) -> SpringAnimation<CGFloat> {
         let springAnimation = SpringAnimation<CGFloat>()
-        springAnimation.configure(response: response, damping: damping)
+        springAnimation.configure(response: response, dampingRatio: damping)
         return springAnimation
     }
 
     static let criticallyDamped = { () -> SpringAnimation<CGFloat> in
         let springAnimation = SpringAnimation<CGFloat>()
-        springAnimation.friction = 10.0
+        springAnimation.damping = 10.0
         springAnimation.stiffness = 2.0
         return springAnimation
     }()
