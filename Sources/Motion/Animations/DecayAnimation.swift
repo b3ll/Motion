@@ -8,8 +8,6 @@
 import Foundation
 import simd
 
-public let UIKitDecayConstant: Double = 0.998
-
 public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
 
     public var velocity: Value {
@@ -22,14 +20,23 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: SIMDType = .zero
 
-    public var decayConstant: Double = UIKitDecayConstant
+    public var decayConstant: Value.SIMDType.Scalar {
+        set {
+            decay.decayConstant = newValue
+        }
+        get {
+            return decay.decayConstant
+        }
+    }
+
+    private var decay: Decay<Value.SIMDType>
 
     public override func hasResolved() -> Bool {
         return _velocity < SIMDType(repeating: 0.5)
     }
 
-    public init(_ initialValue: Value = .zero, decayConstant: Double = UIKitDecayConstant) {
-        self.decayConstant = decayConstant
+    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIKitDecayConstant)) {
+        self.decay = Decay(decayConstant: decayConstant)
         super.init()
         self.value = initialValue
     }
@@ -45,20 +52,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        if dt > 1.0 {
-            return
-        }
-
-        let scaledDT = dt * 1000.0
-        let scaledV = _velocity / 1000.0
-
-        let decayAmount = pow(decayConstant, scaledDT)
-
-        let decayedVelocityAmount = decayConstant * (1.0 - decayAmount) / (1.0 - decayConstant)
-
-        self._value += scaledV * Scalar(decayedVelocityAmount)
-
-        self._velocity = scaledV * Scalar(decayAmount * 1000.0)
+        _value = decay.solve(dt: Value.SIMDType.Scalar(dt), x0: _value, velocity: &_velocity)
 
         _valueChanged?(value)
 

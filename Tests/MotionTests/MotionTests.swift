@@ -124,10 +124,6 @@ final class MotionTests: XCTestCase {
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
-        spring.valueChanged { newValue in
-            print(newValue)
-        }
-
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
         let expectToValueReached = XCTestExpectation(description: "Spring animated from \(spring.value) to \(spring.toValue)")
         spring.completion = { [unowned spring] in
@@ -200,6 +196,9 @@ final class MotionTests: XCTestCase {
     func testDecay() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
+        decay.valueChanged { newValue in
+            print(newValue)
+        }
 
         let expectCompletionCalled = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         let expectDecayVelocityZero = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
