@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Numerics
+import RealModule
 import simd
 
 public struct Spring<Value: SupportedSIMDType> {
@@ -31,6 +31,7 @@ public struct Spring<Value: SupportedSIMDType> {
         self.stiffness = stiffness
         self.damping = damping
 
+        // Explicitly update constants.
         updateConstants()
     }
 
