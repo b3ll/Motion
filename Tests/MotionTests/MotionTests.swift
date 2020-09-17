@@ -172,7 +172,7 @@ final class MotionTests: XCTestCase {
         spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
-        spring.valueChanged(disableActions: true) { newValue in
+        spring.onValueChanged(disableActions: true) { newValue in
             XCTAssert(CATransaction.disableActions())
         }
 
@@ -186,7 +186,7 @@ final class MotionTests: XCTestCase {
         let clampingRange = 0.0...1.0
         spring.clampingRange = clampingRange
 
-        spring.valueChanged { newValue in
+        spring.onValueChanged { newValue in
             XCTAssert(clampingRange.contains(newValue))
         }
 
@@ -196,10 +196,7 @@ final class MotionTests: XCTestCase {
     func testDecay() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
-        decay.valueChanged { newValue in
-            print(newValue)
-        }
-
+   
         let expectCompletionCalled = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         let expectDecayVelocityZero = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         decay.completion = { [unowned decay] in

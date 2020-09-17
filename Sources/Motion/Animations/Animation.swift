@@ -44,12 +44,12 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
     internal var _toValue: SIMDType = .zero
 
     /**
-     This is meant to be set only by the -valueChanged: function vs. being set directly. It should be used inside of -tick: only.
+     This is meant to be set only by the -onValueChanged: function vs. being set directly. It should be used inside of -tick: only.
      Unfortunately Swift doesn't really have the ability to define a property as only visible to subclasses but nowhere else.
      */
     internal var _valueChanged: ValueChangedCallback? = nil
 
-    public func valueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) {
+    public func onValueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) {
         guard let valueChangedCallback = valueChangedCallback else { self._valueChanged = nil; return }
 
         if disableActions {

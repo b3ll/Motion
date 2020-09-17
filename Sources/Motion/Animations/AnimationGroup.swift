@@ -42,7 +42,7 @@ public final class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
     }
 
     @available(*, unavailable, message: "Not Supported in AnimationGroup.")
-    public override func valueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) { }
+    public override func onValueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) { }
 
     // MARK: - DisplayLinkObserver
 
