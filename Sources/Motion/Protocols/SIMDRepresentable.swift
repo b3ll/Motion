@@ -38,7 +38,7 @@ extension SIMD64: SupportedSIMDType where Scalar: SupportedScalar {}
 
 public protocol SIMDRepresentable: Comparable {
 
-    associatedtype SIMDType: SupportedSIMDType
+    associatedtype SIMDType: SupportedSIMDType = Self
 
     init(_ simdRepresentation: SIMDType)
 
@@ -48,8 +48,28 @@ public protocol SIMDRepresentable: Comparable {
 
 }
 
+extension SIMDRepresentable where SIMDType == Self {
+
+    @inlinable public init(_ simdRepresentation: SIMDType) {
+        self = simdRepresentation
+    }
+
+    @inlinable public func simdRepresentation() -> Self {
+        return self
+    }
+
+}
+
+extension SIMD2: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD3: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD4: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD8: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD16: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD32: SIMDRepresentable where Scalar: SupportedScalar {}
+extension SIMD64: SIMDRepresentable where Scalar: SupportedScalar {}
+
 // These single floating point conformances technically are wasteful, but it's still a single register it gets packed in, so it's "fine".
-// Actually I think the compiler is smart and optimizes these to just ignore SIMD anyways. 
+// Actually I think the compiler is smart and optimizes these anyways.
 
 extension Float: SIMDRepresentable {
 
@@ -75,104 +95,6 @@ extension Double: SIMDRepresentable {
 
     @inlinable public func simdRepresentation() -> SIMD2<Double> {
         return SIMD2(self, 0.0)
-    }
-
-}
-
-extension SIMD2: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD2<Scalar> {
-        return self
-    }
-
-}
-
-extension SIMD3: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> Self {
-        return self
-    }
-
-}
-
-extension SIMD4: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD4<Scalar> {
-        return self
-    }
-
-}
-
-extension SIMD8: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD8<Scalar> {
-        return self
-    }
-
-}
-
-extension SIMD16: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD16<Scalar> {
-        return self
-    }
-
-}
-
-extension SIMD32: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD32<Scalar> {
-        return self
-    }
-
-}
-
-extension SIMD64: SIMDRepresentable where Self.Scalar: SupportedScalar {
-
-    public typealias SIMDType = Self
-
-    @inlinable public init(_ simdRepresentation: Self) {
-        self = simdRepresentation
-    }
-
-    @inlinable public func simdRepresentation() -> SIMD64<Scalar> {
-        return self
     }
 
 }
