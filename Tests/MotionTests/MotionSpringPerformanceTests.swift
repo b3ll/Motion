@@ -21,7 +21,7 @@ fileprivate func generateSpringAnimations<Value: SIMDRepresentable>(toValue: Val
     return springAnimations
 }
 
-final class MotionPerformanceTests: XCTestCase {
+final class MotionSpringPerformanceTests: XCTestCase {
 
     func testSpringExecutionDouble() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
@@ -123,8 +123,12 @@ final class MotionPerformanceTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testSpringAnimationExecutionCGRect", testSpringAnimationExecutionCGRect),
+        ("testSpringExecutionDouble", testSpringExecutionDouble),
         ("testSpringAnimationExecutionDouble", testSpringAnimationExecutionDouble),
+        ("testSpringExecutionCGRect", testSpringExecutionCGRect),
+        ("testSpringAnimationExecutionCGRect", testSpringAnimationExecutionCGRect),
+        ("testSpringExecutionSIMD64", testSpringExecutionSIMD64),
+        ("testSpringAnimationExecutionSIMD64", testSpringAnimationExecutionSIMD64),
     ]
 
 }
