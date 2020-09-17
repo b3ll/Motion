@@ -9,7 +9,7 @@ import Foundation
 import RealModule
 import simd
 
-public struct Spring<Value: SupportedSIMDType> {
+public struct Spring<Value: SupportedSIMD> {
 
     public var stiffness: Value.Scalar {
         didSet {
@@ -73,7 +73,7 @@ public struct Spring<Value: SupportedSIMDType> {
     @_specialize(where Value_ == SIMD32<Double>, Value == SIMD32<Double>)
     @_specialize(where Value_ == SIMD64<Float>, Value == SIMD64<Float>)
     @_specialize(where Value_ == SIMD64<Double>, Value == SIMD64<Double>)
-    @inlinable public func solveSpring<Value_: SupportedSIMDType>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.Scalar {
+    @inlinable public func solveSpring<Value_: SupportedSIMD>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.Scalar {
         let x: Value_
         if dampingRatio < 1.0 {
             let decayEnvelope = Value_.Scalar.exp(-dampingRatio * w0 * dt)

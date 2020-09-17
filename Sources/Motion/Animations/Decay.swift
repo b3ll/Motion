@@ -11,7 +11,7 @@ import simd
 
 public let UIKitDecayConstant: Double = 0.998
 
-public struct Decay<Value: SupportedSIMDType> {
+public struct Decay<Value: SupportedSIMD> {
 
     public var decayConstant: Value.Scalar {
         didSet {
@@ -45,7 +45,7 @@ public struct Decay<Value: SupportedSIMDType> {
     @_specialize(where Value_ == SIMD32<Double>, Value == SIMD32<Double>)
     @_specialize(where Value_ == SIMD64<Float>, Value == SIMD64<Float>)
     @_specialize(where Value_ == SIMD64<Double>, Value == SIMD64<Double>)
-    @inlinable public func solve<Value_: SupportedSIMDType>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.Scalar {
+    @inlinable public func solve<Value_: SupportedSIMD>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.Scalar {
         let d_1000_dt = Value.Scalar.pow(decayConstant, 1000.0 * dt)
 
         // Analytic decay equation with constants extracted out.

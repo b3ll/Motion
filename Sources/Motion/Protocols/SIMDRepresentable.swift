@@ -12,9 +12,7 @@ import RealModule
 
 // MARK: - Supported Types
 
-public protocol SupportedSIMDType: SIMD, EquatableEnough where Scalar: SupportedScalar {
-
-}
+public protocol SupportedSIMD: SIMD, EquatableEnough where Scalar: SupportedScalar {}
 
 public protocol SupportedScalar: SIMDScalar, DoubleIntializable, EquatableEnough, RealModule.Real {
     static func exp(_ x: Self) -> Self
@@ -26,19 +24,19 @@ public protocol SupportedScalar: SIMDScalar, DoubleIntializable, EquatableEnough
 extension Float: SupportedScalar {}
 extension Double: SupportedScalar {}
 
-extension SIMD2: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD3: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD4: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD8: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD16: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD32: SupportedSIMDType where Scalar: SupportedScalar {}
-extension SIMD64: SupportedSIMDType where Scalar: SupportedScalar {}
+extension SIMD2: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD3: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD4: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD8: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD16: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD32: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD64: SupportedSIMD where Scalar: SupportedScalar {}
 
 // MARK: - SIMDRepresentable
 
 public protocol SIMDRepresentable: Comparable {
 
-    associatedtype SIMDType: SupportedSIMDType = Self
+    associatedtype SIMDType: SupportedSIMD = Self
 
     init(_ simdRepresentation: SIMDType)
 
