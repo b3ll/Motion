@@ -101,14 +101,14 @@ extension Double: SIMDRepresentable {
 
 extension CGFloat: SIMDRepresentable {
 
-    public typealias SIMDType = SIMD2<Double>
+    public typealias SIMDType = SIMD2<CGFloat.NativeType>
 
-    @inlinable public init(_ simdRepresentation: SIMD2<Double>) {
+    @inlinable public init(_ simdRepresentation: SIMD2<CGFloat.NativeType>) {
         self = CGFloat(simdRepresentation[0])
     }
 
-    @inlinable public func simdRepresentation() -> SIMD2<Double> {
-        return SIMD2(Double(self), 0.0)
+    @inlinable public func simdRepresentation() -> SIMD2<CGFloat.NativeType> {
+        return SIMD2(CGFloat.NativeType(self), 0.0)
     }
 
 }
