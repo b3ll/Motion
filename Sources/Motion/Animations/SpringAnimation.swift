@@ -19,9 +19,9 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             self._velocity = -newValue.simdRepresentation()
         }
     }
-    internal var _velocity: SIMDType = .zero
+    internal var _velocity: Value.SIMDType = .zero
 
-    private var spring: Spring<Value.SIMDType>
+    private var spring: Spring<Value>
 
     public var damping: Value.SIMDType.Scalar {
         get {
@@ -56,10 +56,10 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             }
         }
     }
-    internal var _clampingRange: ClosedRange<SIMDType>? = nil
+    internal var _clampingRange: ClosedRange<Value.SIMDType>? = nil
 
     public init(initialValue: Value = .zero) {
-        self.spring = Spring<Value.SIMDType>()
+        self.spring = Spring()
         super.init()
         self.value = initialValue
     }
@@ -93,7 +93,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     public override func tick(_ dt: CFTimeInterval) {
         let x0 = _toValue - _value
 
-        self._value = (_toValue - spring.solveSpring(dt: Value.SIMDType.Scalar(dt), x0: x0, velocity: &_velocity))
+        self._value = (_toValue - spring.solve(dt: Value.SIMDType.Scalar(dt), x0: x0, velocity: &_velocity))
 
         if let clampingRange = _clampingRange {
             let clampedValue = Value(_value.clamped(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound))

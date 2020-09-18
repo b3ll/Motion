@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "Motion",
             dependencies: [
-                .product(name: "Numerics", package: "swift-numerics"),
+                .product(name: "RealModule", package: "swift-numerics"),
             ]),
         .testTarget(
             name: "MotionTests",

@@ -12,7 +12,7 @@ import RealModule
 
 // MARK: - Supported Types
 
-public protocol SupportedSIMD: SIMD, EquatableEnough where Scalar: SupportedScalar {}
+public protocol SupportedSIMD: SIMD, SIMDRepresentable, EquatableEnough where Scalar: SupportedScalar {}
 
 public protocol SupportedScalar: SIMDScalar, DoubleIntializable, EquatableEnough, RealModule.Real {
     static func exp(_ x: Self) -> Self

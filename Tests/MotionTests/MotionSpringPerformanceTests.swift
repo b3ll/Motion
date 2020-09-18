@@ -33,7 +33,7 @@ final class MotionSpringPerformanceTests: XCTestCase {
             startMeasuring()
 
             for (index, spring) in springs.enumerated() {
-                let _ = spring.solveSpring(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
+                let _ = spring.solve(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
             }
 
             stopMeasuring()
@@ -66,7 +66,7 @@ final class MotionSpringPerformanceTests: XCTestCase {
             startMeasuring()
 
             for (index, spring) in springs.enumerated() {
-                let _ = spring.solveSpring(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
+                let _ = spring.solve(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
             }
 
             stopMeasuring()
@@ -100,7 +100,7 @@ final class MotionSpringPerformanceTests: XCTestCase {
             startMeasuring()
 
             for (index, spring) in springs.enumerated() {
-                let _ = spring.solveSpring(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
+                let _ = spring.solve(dt: targetFrameTime, x0: toValue, velocity: &velocities[index])
             }
 
             stopMeasuring()

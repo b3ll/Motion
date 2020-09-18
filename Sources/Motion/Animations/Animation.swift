@@ -11,9 +11,6 @@ import QuartzCore
 
 public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
 
-    internal typealias SIMDType = Value.SIMDType
-    internal typealias Scalar = Value.SIMDType.Scalar
-
     public typealias ValueChangedCallback = ((Value) -> Void)
 
     @Published public var enabled: Bool = false
@@ -26,7 +23,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
             self._value = newValue.simdRepresentation()
         }
     }
-    internal var _value: SIMDType = .zero
+    internal var _value: Value.SIMDType = .zero
 
     public func setValue(_ value: Value) {
         self.value = value
@@ -41,7 +38,7 @@ public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
             self._toValue = newValue.simdRepresentation()
         }
     }
-    internal var _toValue: SIMDType = .zero
+    internal var _toValue: Value.SIMDType = .zero
 
     /**
      This is meant to be set only by the -onValueChanged: function vs. being set directly. It should be used inside of -tick: only.

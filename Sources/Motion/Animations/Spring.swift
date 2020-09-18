@@ -9,25 +9,25 @@ import Foundation
 import RealModule
 import simd
 
-public struct Spring<Value: SupportedSIMD> {
+public struct Spring<Value: SIMDRepresentable> {
 
-    public var stiffness: Value.Scalar {
+    public var stiffness: Value.SIMDType.Scalar {
         didSet {
             updateConstants()
         }
     }
 
-    public var damping: Value.Scalar {
+    public var damping: Value.SIMDType.Scalar {
         didSet {
             updateConstants()
         }
     }
 
-    private(set) public var w0: Value.Scalar = 0.0
-    private(set) public var dampingRatio: Value.Scalar = 0.0
-    private(set) public var wD: Value.Scalar = 0.0
+    private(set) public var w0: Value.SIMDType.Scalar = 0.0
+    private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
+    private(set) public var wD: Value.SIMDType.Scalar = 0.0
 
-    public init(stiffness: Value.Scalar = 300.0, damping: Value.Scalar = 10.0) {
+    public init(stiffness: Value.SIMDType.Scalar = 300.0, damping: Value.SIMDType.Scalar = 10.0) {
         self.stiffness = stiffness
         self.damping = damping
 
@@ -35,8 +35,8 @@ public struct Spring<Value: SupportedSIMD> {
         updateConstants()
     }
 
-    public mutating func configure(response: Value.Scalar, dampingRatio: Value.Scalar) {
-        let stiffness = Value.Scalar.pow(2.0 * .pi / response, 2.0)
+    public mutating func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+        let stiffness = Value.SIMDType.Scalar.pow(2.0 * .pi / response, 2.0)
         let damping = 4.0 * .pi * dampingRatio / response
 
         self.stiffness = stiffness
@@ -73,7 +73,7 @@ public struct Spring<Value: SupportedSIMD> {
     @_specialize(where Value_ == SIMD32<Double>, Value == SIMD32<Double>)
     @_specialize(where Value_ == SIMD64<Float>, Value == SIMD64<Float>)
     @_specialize(where Value_ == SIMD64<Double>, Value == SIMD64<Double>)
-    @inlinable public func solveSpring<Value_: SupportedSIMD>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.Scalar {
+    @inlinable public func solve<Value_: SupportedSIMD>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.SIMDType.Scalar {
         let x: Value_
         if dampingRatio < 1.0 {
             let decayEnvelope = Value_.Scalar.exp(-dampingRatio * w0 * dt)
@@ -93,7 +93,7 @@ public struct Spring<Value: SupportedSIMD> {
             let d_x = velocity_x0_dampingRatio_w0 * cos_wD_dt - x0 * (wD * sin_wD_dt)
             velocity = -(dampingRatio * w0 * x - decayEnvelope * d_x)
         } else if dampingRatio.approximatelyEqual(to: 1.0) {
-            let decayEnvelope = Value.Scalar.exp(-w0 * dt)
+            let decayEnvelope = Value_.Scalar.exp(-w0 * dt)
 
             let A = x0
             let B = velocity + w0 * x0
@@ -127,6 +127,13 @@ public struct Spring<Value: SupportedSIMD> {
         }
 
         return x
+    }
+
+    @inlinable public func solve(dt: Value.SIMDType.Scalar, x0: Value, velocity: inout Value) -> Value {
+        var velocity_ = velocity.simdRepresentation()
+        let x0_ = x0.simdRepresentation()
+        let x = solve(dt: dt, x0: x0_, velocity: &velocity_)
+        return Value(x)
     }
 
 }

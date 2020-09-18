@@ -18,7 +18,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
             self._velocity = newValue.simdRepresentation()
         }
     }
-    internal var _velocity: SIMDType = .zero
+    internal var _velocity: Value.SIMDType = .zero
 
     public var decayConstant: Value.SIMDType.Scalar {
         set {
@@ -29,10 +29,10 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         }
     }
 
-    private var decay: Decay<Value.SIMDType>
+    private var decay: Decay<Value>
 
     public override func hasResolved() -> Bool {
-        return _velocity < SIMDType(repeating: 0.5)
+        return _velocity < Value.SIMDType(repeating: 0.5)
     }
 
     public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIKitDecayConstant)) {
