@@ -59,27 +59,27 @@ public struct Spring<Value: SIMDRepresentable> {
 
       We calculate the position and velocity for each, which is seeded into the next frame.
      */
-    @_specialize(where Value_ == SIMD2<Float>, Value == SIMD2<Float>)
-    @_specialize(where Value_ == SIMD2<Double>, Value == SIMD2<Double>)
-    @_specialize(where Value_ == SIMD3<Float>, Value == SIMD3<Float>)
-    @_specialize(where Value_ == SIMD3<Double>, Value == SIMD3<Double>)
-    @_specialize(where Value_ == SIMD4<Float>, Value == SIMD4<Float>)
-    @_specialize(where Value_ == SIMD4<Double>, Value == SIMD4<Double>)
-    @_specialize(where Value_ == SIMD8<Float>, Value == SIMD8<Float>)
-    @_specialize(where Value_ == SIMD8<Double>, Value == SIMD8<Double>)
-    @_specialize(where Value_ == SIMD16<Float>, Value == SIMD16<Float>)
-    @_specialize(where Value_ == SIMD16<Double>, Value == SIMD16<Double>)
-    @_specialize(where Value_ == SIMD32<Float>, Value == SIMD32<Float>)
-    @_specialize(where Value_ == SIMD32<Double>, Value == SIMD32<Double>)
-    @_specialize(where Value_ == SIMD64<Float>, Value == SIMD64<Float>)
-    @_specialize(where Value_ == SIMD64<Double>, Value == SIMD64<Double>)
-    @inlinable public func solve<Value_: SupportedSIMD>(dt: Value_.Scalar, x0: Value_, velocity: inout Value_) -> Value_ where Value_.Scalar == Value.SIMDType.Scalar {
-        let x: Value_
+    @_specialize(where SIMDType == SIMD2<Float>, Value == SIMD2<Float>)
+    @_specialize(where SIMDType == SIMD2<Double>, Value == SIMD2<Double>)
+    @_specialize(where SIMDType == SIMD3<Float>, Value == SIMD3<Float>)
+    @_specialize(where SIMDType == SIMD3<Double>, Value == SIMD3<Double>)
+    @_specialize(where SIMDType == SIMD4<Float>, Value == SIMD4<Float>)
+    @_specialize(where SIMDType == SIMD4<Double>, Value == SIMD4<Double>)
+    @_specialize(where SIMDType == SIMD8<Float>, Value == SIMD8<Float>)
+    @_specialize(where SIMDType == SIMD8<Double>, Value == SIMD8<Double>)
+    @_specialize(where SIMDType == SIMD16<Float>, Value == SIMD16<Float>)
+    @_specialize(where SIMDType == SIMD16<Double>, Value == SIMD16<Double>)
+    @_specialize(where SIMDType == SIMD32<Float>, Value == SIMD32<Float>)
+    @_specialize(where SIMDType == SIMD32<Double>, Value == SIMD32<Double>)
+    @_specialize(where SIMDType == SIMD64<Float>, Value == SIMD64<Float>)
+    @_specialize(where SIMDType == SIMD64<Double>, Value == SIMD64<Double>)
+    @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType.Scalar == Value.SIMDType.Scalar {
+        let x: SIMDType
         if dampingRatio < 1.0 {
-            let decayEnvelope = Value_.Scalar.exp(-dampingRatio * w0 * dt)
+            let decayEnvelope = SIMDType.Scalar.exp(-dampingRatio * w0 * dt)
 
-            let sin_wD_dt = Value_.Scalar.sin(wD * dt)
-            let cos_wD_dt = Value_.Scalar.cos(wD * dt)
+            let sin_wD_dt = SIMDType.Scalar.sin(wD * dt)
+            let cos_wD_dt = SIMDType.Scalar.cos(wD * dt)
 
             let velocity_x0_dampingRatio_w0 = (velocity + x0 * (dampingRatio * w0))
 
@@ -93,7 +93,7 @@ public struct Spring<Value: SIMDRepresentable> {
             let d_x = velocity_x0_dampingRatio_w0 * cos_wD_dt - x0 * (wD * sin_wD_dt)
             velocity = -(dampingRatio * w0 * x - decayEnvelope * d_x)
         } else if dampingRatio.approximatelyEqual(to: 1.0) {
-            let decayEnvelope = Value_.Scalar.exp(-w0 * dt)
+            let decayEnvelope = SIMDType.Scalar.exp(-w0 * dt)
 
             let A = x0
             let B = velocity + w0 * x0
@@ -116,8 +116,8 @@ public struct Spring<Value: SIMDRepresentable> {
             let A = x0 - ((r1 * x0 - velocity) / r1_r0)
             let B = A + x0
 
-            let decayEnvelopeA = Value_.Scalar.exp(r1 * dt)
-            let decayEnvelopeB = Value_.Scalar.exp(r0 * dt)
+            let decayEnvelopeA = SIMDType.Scalar.exp(r1 * dt)
+            let decayEnvelopeB = SIMDType.Scalar.exp(r0 * dt)
 
             // Overdamped analytic equation for a spring. (position)
             x = decayEnvelopeA * A + decayEnvelopeB * B
