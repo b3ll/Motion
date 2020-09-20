@@ -115,14 +115,14 @@ extension CGFloat: SIMDRepresentable {
 
 extension CGPoint: SIMDRepresentable {
 
-    public typealias SIMDType = SIMD2<Double>
+    public typealias SIMDType = SIMD2<CGFloat.NativeType>
 
-    @inlinable public init(_ simdRepresentation: SIMD2<Double>) {
+    @inlinable public init(_ simdRepresentation: SIMD2<CGFloat.NativeType>) {
         self.init(x: simdRepresentation[0], y: simdRepresentation[1])
     }
 
-    @inlinable public func simdRepresentation() -> SIMD2<Double> {
-        return SIMD2(Double(x), Double(y))
+    @inlinable public func simdRepresentation() -> SIMD2<CGFloat.NativeType> {
+        return SIMD2(CGFloat.NativeType(x), CGFloat.NativeType(y))
     }
 
     @inlinable public static func < (lhs: CGPoint, rhs: CGPoint) -> Bool {
@@ -133,14 +133,14 @@ extension CGPoint: SIMDRepresentable {
 
 extension CGSize: SIMDRepresentable {
 
-    public typealias SIMDType = SIMD2<Double>
+    public typealias SIMDType = SIMD2<CGFloat.NativeType>
 
-    @inlinable public init(_ simdRepresentation: SIMD2<Double>) {
+    @inlinable public init(_ simdRepresentation: SIMD2<CGFloat.NativeType>) {
         self.init(width: simdRepresentation[0], height: simdRepresentation[1])
     }
 
-    @inlinable public func simdRepresentation() -> SIMD2<Double> {
-        return SIMD2(Double(width), Double(height))
+    @inlinable public func simdRepresentation() -> SIMD2<CGFloat.NativeType> {
+        return SIMD2(CGFloat.NativeType(width), CGFloat.NativeType(height))
     }
 
     @inlinable public static func < (lhs: CGSize, rhs: CGSize) -> Bool {
@@ -151,14 +151,14 @@ extension CGSize: SIMDRepresentable {
 
 extension CGRect: SIMDRepresentable {
 
-    public typealias SIMDType = SIMD4<Double>
+    public typealias SIMDType = SIMD4<CGFloat.NativeType>
 
-    @inlinable public init(_ simdRepresentation: SIMD4<Double>) {
+    @inlinable public init(_ simdRepresentation: SIMD4<CGFloat.NativeType>) {
         self.init(x: simdRepresentation[0], y: simdRepresentation[1], width: simdRepresentation[2], height: simdRepresentation[3])
     }
 
     @inlinable public func simdRepresentation() -> SIMD4<Double> {
-        return SIMD4(Double(origin.x), Double(origin.y), Double(size.width), Double(size.height))
+        return SIMD4(CGFloat.NativeType(origin.x), CGFloat.NativeType(origin.y), CGFloat.NativeType(size.width), CGFloat.NativeType(size.height))
     }
 
     @inlinable public static func < (lhs: CGRect, rhs: CGRect) -> Bool {
