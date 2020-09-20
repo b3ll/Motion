@@ -15,10 +15,13 @@ let package = Package(
         .library(
             name: "Motion",
             targets: ["Motion"]),
+        .library(
+            name: "MotionC",
+            targets: ["MotionC"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/apple/swift-numerics", from: "0.0.5"),
+        .package(url: "https://github.com/apple/swift-numerics", from: "0.0.8"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -27,10 +30,21 @@ let package = Package(
             name: "Motion",
             dependencies: [
                 .product(name: "RealModule", package: "swift-numerics"),
+                "MotionC",
             ]),
         .testTarget(
             name: "MotionTests",
             dependencies: ["Motion"]),
+        .testTarget(
+            name: "MotionPerformanceTests",
+            dependencies: ["Motion"],
+            swiftSettings: [
+                .unsafeFlags(["-O"])
+            ]),
+        .target(
+            name: "MotionC",
+            dependencies: [
+            ]),
     ],
     swiftLanguageVersions: [.v5]
 )

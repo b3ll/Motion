@@ -8,6 +8,7 @@
 import XCTest
 
 @testable import Motion
+@testable import MotionC
 
 fileprivate let targetFrameTime: CFTimeInterval = 1.0 / 60.0
 fileprivate let defaultToValue: Double = 320.0
@@ -74,7 +75,7 @@ final class MotionSpringPerformanceTests: XCTestCase {
     }
 
     // Measure execution of 500 springs animating CGRects (technically 4000 springs :D)
-    // SIMD go brrrrrrrrrr
+    // haha SIMD go brrrrrrrrrr
     func testSpringAnimationExecutionCGRect() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             let springAnimations = generateSpringAnimations(toValue: CGRect(x: defaultToValue, y: defaultToValue, width: defaultToValue, height: defaultToValue))
@@ -116,6 +117,22 @@ final class MotionSpringPerformanceTests: XCTestCase {
             for springAnimation in springAnimations {
                 springAnimation.tick(targetFrameTime)
                 let _ = springAnimation.value
+            }
+
+            stopMeasuring()
+        }
+    }
+
+    func testCSpringSIMD4() {
+        measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var springs: [SpringC] = (0...500).map { _ in return SpringC(stiffness: 300.0, damping: 10.0) }
+            var velocities = Array<SIMD4<Double>>(repeating: .zero, count: 500)
+            let toValue = SIMD4<Double>(repeating: Double(arc4random() % 3000))
+
+            startMeasuring()
+
+            for i in (0..<500) {
+                let _ = SolveSpring(&springs[i], targetFrameTime, toValue, &velocities[i])
             }
 
             stopMeasuring()
