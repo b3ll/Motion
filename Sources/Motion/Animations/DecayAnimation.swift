@@ -29,7 +29,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         }
     }
 
-    private var decay: Decay<Value>
+    fileprivate var decay: Decay<Value.SIMDType>
 
     public override func hasResolved() -> Bool {
         return _velocity < Value.SIMDType(repeating: 0.5)
@@ -52,15 +52,33 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        _value = decay.solve(dt: Value.SIMDType.Scalar(dt), x0: _value, velocity: &_velocity)
+        tickOptimized(Value.SIMDType.Scalar(dt), decay: &decay, value: &_value, velocity: &_velocity)
 
         _valueChanged?(value)
 
         if hasResolved() {
             stop()
-            
+
             completion?()
         }
+    }
+
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, decay: inout Decay<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
+        value = decay.solve(dt: dt, x0: value, velocity: &velocity)
     }
 
 }

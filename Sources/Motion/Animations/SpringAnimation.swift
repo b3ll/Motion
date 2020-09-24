@@ -21,7 +21,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: Value.SIMDType = .zero
 
-    private var spring: Spring<Value>
+    fileprivate var spring: Spring<Value.SIMDType>
 
     public var damping: Value.SIMDType.Scalar {
         get {
@@ -91,16 +91,9 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        let x0 = _toValue - _value
+        tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
-        self._value = (_toValue - spring.solve(dt: Value.SIMDType.Scalar(dt), x0: x0, velocity: &_velocity))
-
-        if let clampingRange = _clampingRange {
-            let clampedValue = Value(_value.clamped(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound))
-            _valueChanged?(clampedValue)
-        } else {
-            _valueChanged?(value)
-        }
+        _valueChanged?(value)
 
         if hasResolved() {
             stop()
@@ -111,6 +104,36 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             completion?()
         }
     }
+
+    /*
+     This looks hideous, yes, but it forces the compiler to generate specialized versions (where the type is hardcoded) of the spring evaluation function.
+     Normally this would be specialized, but becuase of the dynamic dispatch of -tick:, it fails to specialize.
+     This results in a performance boost of more than 2x.
+     */
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout Spring<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
+        let x0 = toValue - value
+
+        let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
+
+        value = toValue - x
+
+        if let clampingRange = clampingRange {
+            value.clamp(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound)
+        }
+    }
     
 }
-

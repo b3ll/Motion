@@ -9,25 +9,25 @@ import Foundation
 import RealModule
 import simd
 
-public struct Spring<Value: SIMDRepresentable> {
+public struct Spring<SIMDType: SupportedSIMD> {
 
-    public var stiffness: Value.SIMDType.Scalar {
+    public var stiffness: SIMDType.Scalar {
         didSet {
             updateConstants()
         }
     }
 
-    public var damping: Value.SIMDType.Scalar {
+    public var damping: SIMDType.Scalar {
         didSet {
             updateConstants()
         }
     }
 
-    private(set) public var w0: Value.SIMDType.Scalar = 0.0
-    private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
-    private(set) public var wD: Value.SIMDType.Scalar = 0.0
+    private(set) public var w0: SIMDType.Scalar = 0.0
+    private(set) public var dampingRatio: SIMDType.Scalar = 0.0
+    private(set) public var wD: SIMDType.Scalar = 0.0
 
-    public init(stiffness: Value.SIMDType.Scalar = 300.0, damping: Value.SIMDType.Scalar = 10.0) {
+    public init(stiffness: SIMDType.Scalar = 300.0, damping: SIMDType.Scalar = 10.0) {
         self.stiffness = stiffness
         self.damping = damping
 
@@ -35,8 +35,8 @@ public struct Spring<Value: SIMDRepresentable> {
         updateConstants()
     }
 
-    public mutating func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
-        let stiffness = Value.SIMDType.Scalar.pow(2.0 * .pi / response, 2.0)
+    public mutating func configure(response: SIMDType.Scalar, dampingRatio: SIMDType.Scalar) {
+        let stiffness = SIMDType.Scalar.pow(2.0 * .pi / response, 2.0)
         let damping = 4.0 * .pi * dampingRatio / response
 
         self.stiffness = stiffness
@@ -50,30 +50,13 @@ public struct Spring<Value: SIMDRepresentable> {
     }
 
     /**
-     This looks hideous, yes, but it forces the compiler to generate hardcoded versions (where the type is hardcoded) of the spring evaluation function below.
-     This results in a performance boost of more than 2x.
-
       A lot of this looks illegible, but they're various (optimized) implentations of the analytic versions of Spring functions (depending on the damping ratio).
 
       Long story short, each equation is split into two coefficients A and B, each of which changes (decays, oscillates, etc.) differently based on the damping ratio.
 
       We calculate the position and velocity for each, which is seeded into the next frame.
      */
-    @_specialize(where SIMDType == SIMD2<Float>, Value == SIMD2<Float>)
-    @_specialize(where SIMDType == SIMD2<Double>, Value == SIMD2<Double>)
-    @_specialize(where SIMDType == SIMD3<Float>, Value == SIMD3<Float>)
-    @_specialize(where SIMDType == SIMD3<Double>, Value == SIMD3<Double>)
-    @_specialize(where SIMDType == SIMD4<Float>, Value == SIMD4<Float>)
-    @_specialize(where SIMDType == SIMD4<Double>, Value == SIMD4<Double>)
-    @_specialize(where SIMDType == SIMD8<Float>, Value == SIMD8<Float>)
-    @_specialize(where SIMDType == SIMD8<Double>, Value == SIMD8<Double>)
-    @_specialize(where SIMDType == SIMD16<Float>, Value == SIMD16<Float>)
-    @_specialize(where SIMDType == SIMD16<Double>, Value == SIMD16<Double>)
-    @_specialize(where SIMDType == SIMD32<Float>, Value == SIMD32<Float>)
-    @_specialize(where SIMDType == SIMD32<Double>, Value == SIMD32<Double>)
-    @_specialize(where SIMDType == SIMD64<Float>, Value == SIMD64<Float>)
-    @_specialize(where SIMDType == SIMD64<Double>, Value == SIMD64<Double>)
-    @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType.Scalar == Value.SIMDType.Scalar {
+    @inlinable public func solve(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType {
         let x: SIMDType
         if dampingRatio < 1.0 {
             let decayEnvelope = SIMDType.Scalar.exp(-dampingRatio * w0 * dt)
@@ -127,13 +110,6 @@ public struct Spring<Value: SIMDRepresentable> {
         }
 
         return x
-    }
-
-    @inlinable public func solve(dt: Value.SIMDType.Scalar, x0: Value, velocity: inout Value) -> Value {
-        var velocity_ = velocity.simdRepresentation()
-        let x0_ = x0.simdRepresentation()
-        let x = solve(dt: dt, x0: x0_, velocity: &velocity_)
-        return Value(x)
     }
 
 }
