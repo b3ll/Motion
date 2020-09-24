@@ -9,19 +9,23 @@ import CoreGraphics
 import Foundation
 import simd
 
-// MARK: - DoubleInitializable
+// MARK: - FloatingPointInitializable
 
-// I hate that this has to exist, I really want to get rid of it.
+/**
+ I hate that this has to exist, I really want to get rid of it.
+ It really only exists so that when working with Scalars and SIMD, one can convert to / from them using Doubles or Floating point numbers.
+ Technically there shouldn't be any overhead by this, it's just to make the compiler believe that it's ok to convert types.
+ */
+public protocol FloatingPointInitializable: FloatingPoint & ExpressibleByFloatLiteral & Comparable {
 
-public protocol DoubleIntializable: FloatingPoint & ExpressibleByFloatLiteral & Comparable {
-
+    init(_ value: Float)
     init(_ value: Double)
 
 }
 
-extension Float: DoubleIntializable, EquatableEnough {}
-extension Double: DoubleIntializable, EquatableEnough {}
-extension CGFloat: DoubleIntializable, EquatableEnough {}
+extension Float: FloatingPointInitializable, EquatableEnough {}
+extension Double: FloatingPointInitializable, EquatableEnough {}
+extension CGFloat: FloatingPointInitializable, EquatableEnough {}
 
 // MARK: - EquatableEnough
 
@@ -39,17 +43,33 @@ public extension EquatableEnough {
 
 }
 
-public extension EquatableEnough where Self: FloatingPoint & DoubleIntializable {
+public extension EquatableEnough where Self: FloatingPointInitializable {
+
+    @inlinable static var epsilon: Self {
+        return 0.001
+    }
+
+}
+
+public extension EquatableEnough where Self: SupportedSIMD {
+
+    @inlinable static var epsilon: Scalar {
+        return .epsilon
+    }
+
+}
+
+public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitializable {
 
     @inlinable func approximatelyEqual(to other: Self) -> Bool {
-        return abs(self - other) < Self(Self.epsilon)
+        return abs(self - other) < .epsilon
     }
 
 }
 
 // MARK: - SIMD Extensions
 
-extension SIMD2: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD2: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -65,7 +85,7 @@ extension SIMD2: EquatableEnough, Comparable where Scalar: DoubleIntializable & 
 
 }
 
-extension SIMD3: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD3: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -81,7 +101,7 @@ extension SIMD3: EquatableEnough, Comparable where Scalar: DoubleIntializable & 
 
 }
 
-extension SIMD4: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD4: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -97,7 +117,7 @@ extension SIMD4: EquatableEnough, Comparable where Scalar: DoubleIntializable & 
 
 }
 
-extension SIMD8: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD8: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -113,7 +133,7 @@ extension SIMD8: EquatableEnough, Comparable where Scalar: DoubleIntializable & 
 
 }
 
-extension SIMD16: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD16: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -129,7 +149,7 @@ extension SIMD16: EquatableEnough, Comparable where Scalar: DoubleIntializable &
 
 }
 
-extension SIMD32: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD32: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {
@@ -145,7 +165,7 @@ extension SIMD32: EquatableEnough, Comparable where Scalar: DoubleIntializable &
 
 }
 
-extension SIMD64: EquatableEnough, Comparable where Scalar: DoubleIntializable & EquatableEnough {
+extension SIMD64: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     @inlinable public func approximatelyEqual(to other: Self) -> Bool {
         return self.indices.reduce(true) {

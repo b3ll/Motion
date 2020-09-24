@@ -8,14 +8,14 @@
 import Foundation
 import QuartzCore
 
-public func rubberband<Value: DoubleIntializable>(_ value: Value, coefficient: Value, range: Value) -> Value {
+public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coefficient: Value, range: Value) -> Value {
     // Without this, the swift type checker is super slow.
     let x1 = (value * coefficient / range) + 1.0
 
     return (1.0 - (1.0 / x1)) * range
 }
 
-public func rubberband<Value: DoubleIntializable>(_ value: Value, coefficient: Value, range: ClosedRange<Value>) -> Value {
+public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coefficient: Value, range: ClosedRange<Value>) -> Value {
     if range.contains(value) {
         return value
     }

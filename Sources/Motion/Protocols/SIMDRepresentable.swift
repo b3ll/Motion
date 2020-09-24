@@ -14,7 +14,7 @@ import RealModule
 
 public protocol SupportedSIMD: SIMD, SIMDRepresentable, EquatableEnough where Scalar: SupportedScalar {}
 
-public protocol SupportedScalar: SIMDScalar, DoubleIntializable, EquatableEnough, RealModule.Real {
+public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, EquatableEnough, RealModule.Real {
     static func exp(_ x: Self) -> Self
     static func sin(_ x: Self) -> Self
     static func cos(_ x: Self) -> Self

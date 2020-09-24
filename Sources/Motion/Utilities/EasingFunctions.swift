@@ -90,7 +90,7 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
 // Swift Adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
 
-public struct Bezier<Value: DoubleIntializable>: Hashable {
+public struct Bezier<Value: FloatingPointInitializable>: Hashable {
 
     public let x1: Value
     public let x2: Value
