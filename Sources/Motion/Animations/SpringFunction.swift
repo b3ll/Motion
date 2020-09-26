@@ -1,5 +1,5 @@
 //
-//  Spring.swift
+//  SpringFunction.swift
 //  
 //
 //  Created by Adam Bell on 9/15/20.
@@ -9,7 +9,7 @@ import Foundation
 import RealModule
 import simd
 
-public struct Spring<Value: SIMDRepresentable> {
+public struct SpringFunction<Value: SIMDRepresentable> {
 
     public var stiffness: Value.SIMDType.Scalar {
         didSet {
@@ -122,7 +122,7 @@ public struct Spring<Value: SIMDRepresentable> {
 
 }
 
-extension Spring where Value: SupportedSIMD {
+extension SpringFunction where Value: SupportedSIMD {
 
     @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         return solveSIMD(dt: dt, x0: x0, velocity: &velocity)
