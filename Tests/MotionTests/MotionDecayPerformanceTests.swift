@@ -25,7 +25,7 @@ final class MotionDecayPerformanceTests: XCTestCase {
 
     func testDecayExecutionDouble() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let decays = Array(repeating: Decay<SIMD2<Double>>(), count: 500)
+            let decays = Array(repeating: DecayFunction<SIMD2<Double>>(), count: 500)
 
             var velocities = Array<SIMD2<Double>>(repeating: .zero, count: 500)
 
@@ -57,7 +57,7 @@ final class MotionDecayPerformanceTests: XCTestCase {
 
     func testDecayExecutionCGRect() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let decays = Array(repeating: Decay<SIMD4<Double>>(), count: 500)
+            let decays = Array(repeating: DecayFunction<SIMD4<Double>>(), count: 500)
 
             var velocities = Array<SIMD4<Double>>(repeating: .zero, count: 500)
 
@@ -88,7 +88,7 @@ final class MotionDecayPerformanceTests: XCTestCase {
 
     func testDecayExecutionSIMD64() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let decays = Array(repeating: Decay<SIMD64<Double>>(), count: 500)
+            let decays = Array(repeating: DecayFunction<SIMD64<Double>>(), count: 500)
 
             var velocities = Array<SIMD64<Double>>(repeating: .zero, count: 500)
 

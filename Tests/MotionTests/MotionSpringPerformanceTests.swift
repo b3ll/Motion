@@ -25,8 +25,8 @@ final class MotionSpringPerformanceTests: XCTestCase {
 
     func testSpringExecutionDouble() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let springs = Array(repeating: Spring<SIMD2<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
-            let toValue = SIMD2<Double>(repeating: 64.0)
+            let springs = Array(repeating: SpringFunction<SIMD2<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
+            let toValue = SIMD2<Double>(64.0, 0.0)
 
             var velocities = Array<SIMD2<Double>>(repeating: .zero, count: 500)
 
@@ -56,9 +56,9 @@ final class MotionSpringPerformanceTests: XCTestCase {
         }
     }
 
-    func testSpringExecutionCGRect() {
+    func testSpringExecutionSIMD4CGRect() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let springs = Array(repeating: Spring<SIMD4<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
+            let springs = Array(repeating: SpringFunction<SIMD4<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
             let toValue = SIMD4<Double>(repeating: 64.0)
 
             var velocities = Array<SIMD4<Double>>(repeating: .zero, count: 500)
@@ -90,9 +90,26 @@ final class MotionSpringPerformanceTests: XCTestCase {
         }
     }
 
+    func testSpringExecutionCGRect() {
+        measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let springs = Array(repeating: SpringFunction<CGRect>(stiffness: 300.0, damping: 10.0), count: 500)
+            let toValue = CGRect(x: 320.0, y: 320.0, width: 320.0, height: 320.0)
+
+            var velocities = Array<CGRect>(repeating: .zero, count: 500)
+
+            startMeasuring()
+
+            for (i, spring) in springs.enumerated() {
+                let _ = spring.solve(dt: targetFrameTime, x0: toValue, velocity: &velocities[i])
+            }
+
+            stopMeasuring()
+        }
+    }
+
     func testSpringExecutionSIMD64() {
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
-            let springs = Array(repeating: Spring<SIMD64<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
+            let springs = Array(repeating: SpringFunction<SIMD64<Double>>(stiffness: 300.0, damping: 10.0), count: 500)
             let toValue = SIMD64<Double>(repeating: 64.0)
 
             var velocities = Array<SIMD64<Double>>(repeating: .zero, count: 500)
