@@ -20,7 +20,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: Value.SIMDType = .zero
 
-    public var decayConstant: Value.SIMDType.Scalar {
+    public var decayConstant: Value.SIMDType.SIMDType.Scalar {
         set {
             decay.decayConstant = newValue
         }
@@ -35,7 +35,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
         return _velocity < Value.SIMDType(repeating: 0.5)
     }
 
-    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIKitDecayConstant)) {
+    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.SIMDType.Scalar = Value.SIMDType.SIMDType.Scalar(UIKitDecayConstant)) {
         self.decay = Decay(decayConstant: decayConstant)
         super.init()
         self.value = initialValue
@@ -52,7 +52,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        tickOptimized(Value.SIMDType.Scalar(dt), decay: &decay, value: &_value, velocity: &_velocity)
+        tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), decay: &decay, value: &_value, velocity: &_velocity)
 
         _valueChanged?(value)
 
@@ -77,7 +77,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, decay: inout Decay<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, decay: inout Decay<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
         value = decay.solve(dt: dt, x0: value, velocity: &velocity)
     }
 
