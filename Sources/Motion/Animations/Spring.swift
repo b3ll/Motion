@@ -9,7 +9,7 @@ import Foundation
 import RealModule
 import simd
 
-public struct SIMDSpring<Value: SIMDRepresentable> {
+public struct Spring<Value: SIMDRepresentable> {
 
     public var stiffness: Value.SIMDType.Scalar {
         didSet {
@@ -122,7 +122,7 @@ public struct SIMDSpring<Value: SIMDRepresentable> {
 
 }
 
-extension SIMDSpring where Value: SupportedSIMD {
+extension Spring where Value: SupportedSIMD {
 
     @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         return solveSIMD(dt: dt, x0: x0, velocity: &velocity)

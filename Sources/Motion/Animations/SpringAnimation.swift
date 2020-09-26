@@ -21,7 +21,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: Value.SIMDType = .zero
 
-    fileprivate var spring: SIMDSpring<Value.SIMDType>
+    fileprivate var spring: Spring<Value.SIMDType>
 
     public var damping: Value.SIMDType.SIMDType.Scalar {
         get {
@@ -59,7 +59,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     internal var _clampingRange: ClosedRange<Value.SIMDType>? = nil
 
     public init(initialValue: Value = .zero) {
-        self.spring = SIMDSpring()
+        self.spring = Spring()
         super.init()
         self.value = initialValue
     }
@@ -124,7 +124,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout SIMDSpring<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout Spring<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
         let x0 = toValue - value
 
         let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
