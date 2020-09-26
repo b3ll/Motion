@@ -18,6 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
             testSpringAnimationExecutionDouble()
 
+            testSpringExecutionSIMD64()
+
             testSpringAnimationExecutionSIMD64()
         }
 

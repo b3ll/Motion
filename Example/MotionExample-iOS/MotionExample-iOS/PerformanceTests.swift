@@ -15,7 +15,7 @@ let log = OSLog(
     category: .pointsOfInterest
 )
 
-func testSpringAnimationExecutionCGRect() {
+@inline(never) func testSpringAnimationExecutionCGRect() {
     let targetFrameTime: CFTimeInterval = 1.0 / 60.0
 
     // Measure execution of 500 springs animating CGRects (technically 4000 springs :D)
@@ -49,7 +49,7 @@ func testSpringAnimationExecutionCGRect() {
     print("done")
 }
 
-func testSpringAnimationExecutionDouble() {
+@inline(never) func testSpringAnimationExecutionDouble() {
     let targetFrameTime: CFTimeInterval = 1.0 / 60.0
 
     for _ in (0...10) {
@@ -80,7 +80,37 @@ func testSpringAnimationExecutionDouble() {
     print("done")
 }
 
-func testSpringAnimationExecutionSIMD64() {
+@inline(never) func testSpringExecutionSIMD64() {
+    let targetFrameTime: CFTimeInterval = 1.0 / 60.0
+
+    for _ in (0...10) {
+        let springs = Array<SpringFunction<SIMD64<Double>>>(repeating: SpringFunction<SIMD64<Double>>(), count: 500)
+
+        let toValue = SIMD64<Double>(repeating: 320.0)
+
+        var velocities = Array<SIMD64<Double>>(repeating: .zero, count: 500)
+
+        let start = CFAbsoluteTimeGetCurrent()
+
+        let signpostID = OSSignpostID(log: log)
+
+        os_signpost(.begin, log: log, name: "Springs SIMD64", signpostID: signpostID)
+
+        for (i, spring) in springs.enumerated() {
+            let _ = spring.solve(dt: targetFrameTime, x0: toValue, velocity: &velocities[i])
+        }
+
+        os_signpost(.end, log: log, name: "Springs SIMD64", signpostID: signpostID)
+
+        let time = CFAbsoluteTimeGetCurrent() - start
+
+        print(time)
+    }
+
+    print("done")
+}
+
+@inline(never) func testSpringAnimationExecutionSIMD64() {
     let targetFrameTime: CFTimeInterval = 1.0 / 60.0
 
     for _ in (0...10) {
@@ -94,14 +124,14 @@ func testSpringAnimationExecutionSIMD64() {
 
         let signpostID = OSSignpostID(log: log)
 
-        os_signpost(.begin, log: log, name: "Springs SIMD64", signpostID: signpostID)
+        os_signpost(.begin, log: log, name: "Spring Animations SIMD64", signpostID: signpostID)
 
         for springAnimation in springs {
             springAnimation.tick(targetFrameTime)
             let _ = springAnimation.value
         }
 
-        os_signpost(.end, log: log, name: "Springs SIMD64", signpostID: signpostID)
+        os_signpost(.end, log: log, name: "Spring Animations SIMD64", signpostID: signpostID)
 
         let time = CFAbsoluteTimeGetCurrent() - start
 
