@@ -21,9 +21,9 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     }
     internal var _velocity: Value.SIMDType = .zero
 
-    fileprivate var spring: Spring<Value.SIMDType>
+    fileprivate var spring: SIMDSpring<Value.SIMDType>
 
-    public var damping: Value.SIMDType.Scalar {
+    public var damping: Value.SIMDType.SIMDType.Scalar {
         get {
             return spring.damping
         }
@@ -31,7 +31,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
             spring.damping = newValue
         }
     }
-    public var stiffness: Value.SIMDType.Scalar {
+    public var stiffness: Value.SIMDType.SIMDType.Scalar {
         get {
             return spring.stiffness
         }
@@ -59,23 +59,23 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     internal var _clampingRange: ClosedRange<Value.SIMDType>? = nil
 
     public init(initialValue: Value = .zero) {
-        self.spring = Spring()
+        self.spring = SIMDSpring()
         super.init()
         self.value = initialValue
     }
 
-    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
         configure(response: response, dampingRatio: dampingRatio)
     }
 
-    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
+    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
         self.stiffness = stiffness
         self.damping = damping
     }
 
-    public func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+    public func configure(response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
         spring.configure(response: response, dampingRatio: dampingRatio)
     }
 
@@ -91,7 +91,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
+        tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
         _valueChanged?(value)
 
@@ -124,7 +124,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout Spring<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout SIMDSpring<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
         let x0 = toValue - value
 
         let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
