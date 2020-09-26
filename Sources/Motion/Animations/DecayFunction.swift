@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DecayFunction.swift
 //  
 //
 //  Created by Adam Bell on 9/16/20.
@@ -11,7 +11,7 @@ import simd
 
 public let UIKitDecayConstant: Double = 0.998
 
-public struct Decay<Value: SIMDRepresentable> {
+public struct DecayFunction<Value: SIMDRepresentable> {
 
     public var decayConstant: Value.SIMDType.Scalar {
         didSet {
@@ -53,7 +53,7 @@ public struct Decay<Value: SIMDRepresentable> {
 
 }
 
-extension Decay where Value: SupportedSIMD {
+extension DecayFunction where Value: SupportedSIMD {
 
     @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         return solveSIMD(dt: dt, x0: x0, velocity: &velocity)
