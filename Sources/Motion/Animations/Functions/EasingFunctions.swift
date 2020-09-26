@@ -25,9 +25,9 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
         Self(bezier: .easeInOut)
     }
 
-    let bezier: Bezier<Double>
+    public let bezier: Bezier<Value.SIMDType.Scalar>
 
-    init(bezier: Bezier<Double>) {
+    public init(bezier: Bezier<Value.SIMDType.Scalar>) {
         self.bezier = bezier
     }
 
@@ -35,14 +35,7 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
         return [.linear, .easeIn, .easeOut, .easeInOut, Self(bezier: Bezier(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0))]
     }
 
-    public func interpolate(_ range: ClosedRange<Value>, fraction: Double) -> Value {
-        let newValue = interpolate(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), fraction: fraction)
-        return Value(newValue)
-    }
-
-    public func interpolate(_ range: ClosedRange<Value.SIMDType>, fraction: Double) -> Value.SIMDType {
-        typealias Scalar = Value.SIMDType.Scalar
-
+    @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
         let x = bezier.solve(x: fraction)
 
         let min = range.lowerBound
@@ -50,15 +43,28 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
         let delta = (max - min)
 
-        let newValue = min + (delta * Scalar(x))
+        let newValue = min + (delta * x)
 
         return newValue
+    }
+
+    @inlinable public func solve(_ range: ClosedRange<Value>, fraction: Value.SIMDType.Scalar) -> Value {
+        let newValue = solveSIMD(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), fraction: fraction)
+        return Value(newValue)
     }
 
     // MARK: - Hashable
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(bezier)
+    }
+
+}
+
+extension EasingFunction where Value: SupportedSIMD {
+
+    @inlinable public func solve<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
+        return solveSIMD(range, fraction: fraction)
     }
 
 }
@@ -90,21 +96,21 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
 // Swift Adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
 
-public struct Bezier<Value: FloatingPointInitializable>: Hashable {
+public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
 
-    public let x1: Value
-    public let x2: Value
-    public let y1: Value
-    public let y2: Value
+    public let x1: Scalar
+    public let x2: Scalar
+    public let y1: Scalar
+    public let y2: Scalar
 
-    private let cx: Value
-    private let cy: Value
-    private let bx: Value
-    private let by: Value
-    private let ax: Value
-    private let ay: Value
+    private let cx: Scalar
+    private let cy: Scalar
+    private let bx: Scalar
+    private let by: Scalar
+    private let ax: Scalar
+    private let ay: Scalar
 
-    init(x1: Value, y1: Value, x2: Value, y2: Value) {
+    public init(x1: Scalar, y1: Scalar, x2: Scalar, y2: Scalar) {
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -121,23 +127,23 @@ public struct Bezier<Value: FloatingPointInitializable>: Hashable {
         self.ay = 1.0 - cy - by
     }
 
-    func sampleCurveX(t: Value) -> Value {
+    func sampleCurveX(t: Scalar) -> Scalar {
         // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
         return ((ax * t + bx) * t + cx) * t
     }
 
-    func sampleCurveY(t: Value) -> Value {
+    func sampleCurveY(t: Scalar) -> Scalar {
         return ((ay * t + by) * t + cy) * t
     }
 
-    func sampleCurveDerivativeX(t: Value) -> Value {
+    func sampleCurveDerivativeX(t: Scalar) -> Scalar {
         return (3.0 * ax * t + 2.0 * bx) * t + cx
     }
 
     // Given an x value, find a parametric value it came from.
-    func solveCurveX(x: Value, epsilon: Value) -> Value {
-        var x2: Value = 0.0
-        var d2: Value = 0.0
+    public func solveCurveX(x: Scalar, epsilon: Scalar) -> Scalar {
+        var x2: Scalar = 0.0
+        var d2: Scalar = 0.0
         var t2 = x
 
         // First try a few iterations of Newton's method -- normally very fast.
@@ -154,8 +160,8 @@ public struct Bezier<Value: FloatingPointInitializable>: Hashable {
         }
 
         // Fall back to the bisection method for reliability.
-        var t0: Value = 0.0
-        var t1: Value = 1.0
+        var t0: Scalar = 0.0
+        var t1: Scalar = 1.0
         t2 = x
 
         if t2 < t0 {
@@ -183,7 +189,7 @@ public struct Bezier<Value: FloatingPointInitializable>: Hashable {
         return t2
     }
 
-    func solve(x: Value, epsilon: Value = 0.0001) -> Value {
+    public func solve(x: Scalar, epsilon: Scalar = 0.0001) -> Scalar {
         return sampleCurveY(t: solveCurveX(x: x, epsilon: epsilon))
     }
 

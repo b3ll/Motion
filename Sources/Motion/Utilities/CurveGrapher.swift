@@ -27,7 +27,7 @@ public struct EasingFunctionShape: Shape {
             let minY = rect.size.height * 0.15
             let maxY = rect.size.height * 0.85
 
-            let value = easingFunction.interpolate(minY...maxY, fraction: Double(percent))
+            let value = easingFunction.solve(minY...maxY, fraction: Double(percent))
 
             return CGPoint(x: percent * rect.size.width, y: value)
         }

@@ -16,13 +16,26 @@ public final class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
         }
         set {
             self._fromValue = newValue.simdRepresentation()
+            updateRange()
         }
     }
-    internal var _fromValue: Value.SIMDType = .zero
+    internal var _fromValue: Value.SIMDType = .zero {
+        didSet {
+            updateRange()
+        }
+    }
 
-    var duration: CFTimeInterval = 0.3
+    internal override var _toValue: Value.SIMDType {
+        didSet {
+            updateRange()
+        }
+    }
 
-    var easingFunction: EasingFunction<Value> = .linear
+    fileprivate var _range: ClosedRange<Value.SIMDType> = Value.SIMDType.zero...Value.SIMDType.zero
+
+    public var duration: CFTimeInterval = 0.3
+
+    public var easingFunction: EasingFunction<Value.SIMDType> = .linear
 
     private var accumulatedTime: CFTimeInterval = 0.0
 
@@ -35,23 +48,44 @@ public final class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
         return _value.approximatelyEqual(to: _toValue)
     }
 
+    fileprivate func updateRange() {
+        _range = _fromValue..._toValue
+    }
+
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
         let fraction = accumulatedTime / duration
 
-        _value = easingFunction.interpolate(_fromValue..._toValue, fraction: fraction)
+        tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.SIMDType.Scalar(fraction), value: &_value)
+
+        _valueChanged?(value)
+
+        accumulatedTime += dt
 
         if hasResolved() {
             stop()
 
-            self.value = toValue
-            _valueChanged?(value)
-
             completion?()
         }
+    }
 
-        accumulatedTime += dt
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
+        value = easingFunction.solve(range, fraction: fraction)
     }
 
 }
