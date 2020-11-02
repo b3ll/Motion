@@ -39,7 +39,9 @@ internal class DisplayLink: NSObject {
             if let userInfo = userInfo {
                 let slef = Unmanaged<DisplayLink>.fromOpaque(userInfo).takeUnretainedValue()
                 let dt = CFTimeInterval(outputTime.pointee.videoTime - currentTime.pointee.videoTime) / CFTimeInterval(outputTime.pointee.videoTimeScale)
-                slef.tick(dt)
+                DispatchQueue.main.async {
+                    slef.tick(dt)
+                }
             }
             return kCVReturnSuccess
         }, Unmanaged.passUnretained(self).toOpaque())
