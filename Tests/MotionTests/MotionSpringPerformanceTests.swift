@@ -41,7 +41,6 @@ final class MotionSpringPerformanceTests: XCTestCase {
     }
 
     func testSpringAnimationExecutionDouble() {
-
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             let springAnimations = generateSpringAnimations(toValue: defaultToValue)
 
@@ -138,14 +137,5 @@ final class MotionSpringPerformanceTests: XCTestCase {
             stopMeasuring()
         }
     }
-
-    static var allTests = [
-        ("testSpringExecutionDouble", testSpringExecutionDouble),
-        ("testSpringAnimationExecutionDouble", testSpringAnimationExecutionDouble),
-        ("testSpringExecutionCGRect", testSpringExecutionCGRect),
-        ("testSpringAnimationExecutionCGRect", testSpringAnimationExecutionCGRect),
-        ("testSpringExecutionSIMD64", testSpringExecutionSIMD64),
-        ("testSpringAnimationExecutionSIMD64", testSpringAnimationExecutionSIMD64),
-    ]
 
 }

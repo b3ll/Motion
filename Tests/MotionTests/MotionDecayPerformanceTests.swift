@@ -40,7 +40,6 @@ final class MotionDecayPerformanceTests: XCTestCase {
     }
 
     func testDecayAnimationExecutionDouble() {
-
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             let decayAnimations: [DecayAnimation<Double>] = generateDecayAnimations(velocity: defaultVelocity)
 
@@ -116,14 +115,5 @@ final class MotionDecayPerformanceTests: XCTestCase {
             stopMeasuring()
         }
     }
-
-    static var allTests = [
-        ("testDecayExecutionDouble", testDecayExecutionDouble),
-        ("testDecayAnimationExecutionDouble", testDecayAnimationExecutionDouble),
-        ("testDecayExecutionCGRect", testDecayExecutionCGRect),
-        ("testDecayAnimationExecutionCGRect", testDecayAnimationExecutionCGRect),
-        ("testDecayExecutionSIMD64", testDecayExecutionSIMD64),
-        ("testDecayAnimationExecutionSIMD64", testDecayAnimationExecutionSIMD64),
-    ]
-
+    
 }
