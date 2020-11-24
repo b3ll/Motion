@@ -8,7 +8,7 @@
 import Foundation
 import simd
 
-public final class DecayAnimation<Value: SIMDRepresentable>: Animation<Value> {
+public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     public var velocity: Value {
         get {

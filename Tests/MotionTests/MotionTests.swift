@@ -52,7 +52,11 @@ final class MotionTests: XCTestCase {
         XCTAssert(SIMD64(repeating: nonEqualValue1) < SIMD64(repeating: nonEqualValue2))
     }
 
-    // MARK: - Animation Tests
+    // MARK: - ValueAnimation Tests
+
+    /// TODO
+
+    // MARK: - SpringAnimation Tests
 
     func testSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
@@ -190,6 +194,8 @@ final class MotionTests: XCTestCase {
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }
 
+    // MARK: - DecayAnimation Tests
+
     func testDecay() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
@@ -210,7 +216,7 @@ final class MotionTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
     }
 
-    // MARK: - Basic Animation Tests
+    // MARK: - BasicAnimation Tests
 
     func testBasicAnimation() {
         let basicAnimation = BasicAnimation<CGFloat>()
@@ -317,39 +323,19 @@ final class MotionTests: XCTestCase {
         _ = spring
     }
 
-    func testPushback() {
-        let spring = SpringAnimation<CGFloat>(initialValue: 0.97)
-        spring.configure(response: 0.30, dampingRatio: 0.99)
-        spring.toValue = 1.0
-
-        for _ in stride(from: 0, to: 3, by: 1.0 / 60.0) {
-            spring.tick(1.0 / 60.0)
-        }
-    }
-
     override class func tearDown() {
         // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
         XCTAssert(Animator.shared.animationObservers.count == 0)
         XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
     }
 
-    static var allTests = [
-        ("testApproximatelyEqual", testApproximatelyEqual),
-//        ("testAnimationDtFailure", testAnimationDtFailure),
-        ("testSpring", testSpring),
-        ("testSpringVelocitySetting", testSpringVelocitySetting),
-        ("testSpring", testSpringActionsDisabled),
-        ("testDecay", testDecay),
-        ("testAnimatorAddRemoveAnimation", testAnimatorAddRemoveAnimation),
-    ]
-
 }
 
-private func tickAnimationOnce<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016) {
+private func tickAnimationOnce(_ animation: Animation, dt: CFTimeInterval = 0.016) {
     animation.tick(dt)
 }
 
-private func tickAnimationUntilResolved(_ animation: AnimationBase, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
+private func tickAnimationUntilResolved(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
         animation.tick(dt)
         if animation.hasResolved() {
@@ -358,8 +344,8 @@ private func tickAnimationUntilResolved(_ animation: AnimationBase, dt: CFTimeIn
     }
 }
 
-//private func tickAnyAnimationForDuration(_ animation: AnyAnimation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
-//    for _ in stride(from: 0.0, through: maxDuration, by: dt) {
-//        animation.tick(dt)
-//    }
-//}
+private func tickAnimationForDuration(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
+    for _ in stride(from: 0.0, through: maxDuration, by: dt) {
+        animation.tick(dt)
+    }
+}

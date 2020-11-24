@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import QuartzCore
 
-public class AnimationBase: DisplayLinkObserver {
+public class Animation: DisplayLinkObserver {
 
     @Published public var enabled: Bool = false
 
@@ -47,7 +47,7 @@ public class AnimationBase: DisplayLinkObserver {
 
 }
 
-public class Animation<Value: SIMDRepresentable>: AnimationBase {
+public class ValueAnimation<Value: SIMDRepresentable>: Animation {
 
     public typealias ValueChangedCallback = ((Value) -> Void)
 
@@ -109,9 +109,9 @@ public class Animation<Value: SIMDRepresentable>: AnimationBase {
 
 }
 
-extension Animation: Hashable, Equatable {
+extension ValueAnimation: Hashable, Equatable {
 
-    public static func == (lhs: Animation, rhs: Animation) -> Bool {
+    public static func == (lhs: ValueAnimation, rhs: ValueAnimation) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
 

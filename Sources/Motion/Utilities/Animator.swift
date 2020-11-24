@@ -14,9 +14,9 @@ class Animator: NSObject, DisplayLinkObserver {
     private let displayLink: DisplayLink
 
     var runningAnimationsObserver: AnyCancellable? = nil
-    internal var runningAnimations: NSHashTable<AnimationBase> = .weakObjects()
+    internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
-    internal var animationObservers: NSMapTable<AnimationBase, AnyCancellable> = .weakToStrongObjects()
+    internal var animationObservers: NSMapTable<Animation, AnyCancellable> = .weakToStrongObjects()
 
     static let shared = Animator()
 
@@ -28,7 +28,7 @@ class Animator: NSObject, DisplayLinkObserver {
 
     // MARK: - Animations
 
-    internal func observe(_ animation: AnimationBase) {
+    internal func observe(_ animation: Animation) {
        let obs = animation.$enabled.sink { [weak self, weak animation] (enabled) in
             guard let animation = animation else { return }
             if enabled {
@@ -45,12 +45,12 @@ class Animator: NSObject, DisplayLinkObserver {
         animationObservers.setObject(obs, forKey: animation)
     }
 
-    internal func unobserve(_ animation: AnimationBase) {
+    internal func unobserve(_ animation: Animation) {
         runningAnimations.remove(animation)
         animationObservers.removeObject(forKey: animation)
     }
 
-    private func updateDisplayLinkFor(_ runningAnimations: NSHashTable<AnimationBase>) {
+    private func updateDisplayLinkFor(_ runningAnimations: NSHashTable<Animation>) {
         if runningAnimations.count == 0 {
             displayLink.stop()
         } else {

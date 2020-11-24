@@ -8,7 +8,7 @@
 import Foundation
 import simd
 
-public final class BasicAnimation<Value: SIMDRepresentable>: Animation<Value> {
+public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     public var fromValue: Value {
         get {

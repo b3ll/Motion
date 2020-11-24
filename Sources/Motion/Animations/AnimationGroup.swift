@@ -9,11 +9,11 @@ import Foundation
 
 // This class is largely untested / unfinished.
 
-public final class AnimationGroup: AnimationBase {
+public final class AnimationGroup: Animation {
 
-    let animations: [AnimationBase]
+    let animations: [Animation]
 
-    init(_ animations: AnimationBase...) {
+    init(_ animations: Animation...) {
         self.animations = animations
         super.init()
     }
@@ -55,3 +55,4 @@ public final class AnimationGroup: AnimationBase {
     }
 
 }
+
