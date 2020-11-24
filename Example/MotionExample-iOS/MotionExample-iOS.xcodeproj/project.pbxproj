@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		66823DF8250D62DB00E7B2A4 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66823DF7250D62DB00E7B2A4 /* PerformanceTests.swift */; };
+		66D251DE256D01210074F335 /* MotionBenchmark in Frameworks */ = {isa = PBXBuildFile; productRef = 66D251DD256D01210074F335 /* MotionBenchmark */; };
 		66D6541924F631E800206BB7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541824F631E800206BB7 /* AppDelegate.swift */; };
 		66D6541B24F631E800206BB7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541A24F631E800206BB7 /* SceneDelegate.swift */; };
 		66D6541D24F631E800206BB7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541C24F631E800206BB7 /* ViewController.swift */; };
@@ -37,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66D251DE256D01210074F335 /* MotionBenchmark in Frameworks */,
 				66D6543124F6322500206BB7 /* Motion in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -111,6 +113,7 @@
 			name = "MotionExample-iOS";
 			packageProductDependencies = (
 				66D6543024F6322500206BB7 /* Motion */,
+				66D251DD256D01210074F335 /* MotionBenchmark */,
 			);
 			productName = "MotionExample-iOS";
 			productReference = 66D6541524F631E800206BB7 /* MotionExample-iOS.app */;
@@ -374,6 +377,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		66D251DD256D01210074F335 /* MotionBenchmark */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MotionBenchmark;
+		};
 		66D6543024F6322500206BB7 /* Motion */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Motion;

@@ -5,6 +5,7 @@
 //  Created by Adam Bell on 8/25/20.
 //
 
+import MotionBenchmark
 import UIKit
 
 @main
@@ -14,13 +15,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            testSpringAnimationExecutionCGRect()
+//            testSpringAnimationExecutionCGRect()
+//
+//            testSpringAnimationExecutionDouble()
+//
+//            testSpringExecutionSIMD64()
+//
+//            testSpringAnimationExecutionSIMD64()
 
-            testSpringAnimationExecutionDouble()
-
-            testSpringExecutionSIMD64()
-
-            testSpringAnimationExecutionSIMD64()
+            RunBenchmark()
         }
 
         return true

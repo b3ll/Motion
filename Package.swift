@@ -15,10 +15,14 @@ let package = Package(
         .library(
             name: "Motion",
             targets: ["Motion"]),
+        .library(
+            name: "MotionBenchmark",
+            targets: ["MotionBenchmark"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/apple/swift-numerics", from: "0.0.8"),
+        .package(name: "Benchmark", url: "https://github.com/google/swift-benchmark", .branch("master")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -31,6 +35,17 @@ let package = Package(
         .testTarget(
             name: "MotionTests",
             dependencies: ["Motion"]),
+        .target(
+            name: "MotionBenchmark",
+            dependencies: [
+                "Motion",
+                "Benchmark",
+            ]),
+        .target(
+            name: "MotionBenchmarkRunner",
+            dependencies: [
+                "MotionBenchmark",
+            ]),
     ],
     swiftLanguageVersions: [.v5]
 )
