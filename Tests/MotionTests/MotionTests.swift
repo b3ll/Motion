@@ -52,30 +52,6 @@ final class MotionTests: XCTestCase {
         XCTAssert(SIMD64(repeating: nonEqualValue1) < SIMD64(repeating: nonEqualValue2))
     }
 
-    // MARK: - AnyAnimation Tests
-
-    func testAnyAnimationEquality() {
-        let spring = SpringAnimation(initialValue: 0.0)
-        let spring2 = SpringAnimation(initialValue: 0.0)
-
-        XCTAssertEqual(AnyAnimation(spring), AnyAnimation(spring))
-        XCTAssertNotEqual(AnyAnimation(spring), AnyAnimation(spring2))
-    }
-
-    func testAnyAnimationTick() {
-        let spring = SpringAnimation(initialValue: 0.0)
-        spring.toValue = 10.0
-
-        let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
-        spring.completion = {
-            expectCompletionCalled.fulfill()
-        }
-
-        tickAnyAnimationForDuration(AnyAnimation(spring))
-
-        wait(for: [expectCompletionCalled], timeout: 0.0)
-    }
-
     // MARK: - Animation Tests
 
     func testSpring() {
@@ -246,8 +222,6 @@ final class MotionTests: XCTestCase {
 
     static var allTests = [
         ("testApproximatelyEqual", testApproximatelyEqual),
-        ("testAnyAnimationEquality", testAnyAnimationEquality),
-        ("testAnyAnimationTick", testAnyAnimationTick),
 //        ("testAnimationDtFailure", testAnimationDtFailure),
         ("testSpring", testSpring),
         ("testSpringVelocitySetting", testSpringVelocitySetting),
@@ -262,7 +236,7 @@ private func tickAnimationOnce<Value: SIMDRepresentable>(_ animation: Animation<
     animation.tick(dt)
 }
 
-private func tickAnimationUntilResolved<Value: SIMDRepresentable>(_ animation: Animation<Value>, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
+private func tickAnimationUntilResolved(_ animation: AnimationBase, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
         animation.tick(dt)
         if animation.hasResolved() {
@@ -271,8 +245,8 @@ private func tickAnimationUntilResolved<Value: SIMDRepresentable>(_ animation: A
     }
 }
 
-private func tickAnyAnimationForDuration(_ animation: AnyAnimation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
-    for _ in stride(from: 0.0, through: maxDuration, by: dt) {
-        animation.tick(dt)
-    }
-}
+//private func tickAnyAnimationForDuration(_ animation: AnyAnimation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
+//    for _ in stride(from: 0.0, through: maxDuration, by: dt) {
+//        animation.tick(dt)
+//    }
+//}

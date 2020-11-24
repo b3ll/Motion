@@ -9,11 +9,47 @@ import Combine
 import Foundation
 import QuartzCore
 
-public class Animation<Value: SIMDRepresentable>: DisplayLinkObserver {
-
-    public typealias ValueChangedCallback = ((Value) -> Void)
+public class AnimationBase: DisplayLinkObserver {
 
     @Published public var enabled: Bool = false
+
+    public var completion: (() -> Void)? = nil
+
+    public init() {
+        Animator.shared.observe(self)
+    }
+
+    deinit {
+        Animator.shared.unobserve(self)
+    }
+
+    public func start() {
+        if hasResolved() {
+            return
+        }
+
+        self.enabled = true
+    }
+
+    public func stop(resolveImmediately: Bool = false) {
+        self.enabled = false
+    }
+
+    public func hasResolved() -> Bool {
+        fatalError("Subclasses must override this")
+    }
+
+    // MARK: - DisplayLinkObserver
+
+    public func tick(_ dt: CFTimeInterval) {
+        fatalError("Subclasses must override this")
+    }
+
+}
+
+public class Animation<Value: SIMDRepresentable>: AnimationBase {
+
+    public typealias ValueChangedCallback = ((Value) -> Void)
 
     internal(set) public var value: Value {
         get {
@@ -103,41 +139,6 @@ extension Animation: Hashable, Equatable {
 
     public func hash(into hasher: inout Hasher) {
         return hasher.combine(ObjectIdentifier(self).hashValue)
-    }
-
-}
-
-class AnyAnimation: Hashable, Equatable, DisplayLinkObserver {
-
-    internal let wrapped: AnyObject
-    internal let tick: (_ dt: CFTimeInterval) -> Void
-    internal let hasResolved: () -> Bool
-
-    internal let enabled: Published<Bool>.Publisher
-
-    init<T: Animation<V>, V: SIMDRepresentable>(_ animation: T) {
-        self.wrapped = animation
-        self.tick = animation.tick
-        self.enabled = animation.$enabled
-        self.hasResolved = animation.hasResolved
-    }
-
-    // MARK: - Equatable
-
-    public static func == (lhs: AnyAnimation, rhs: AnyAnimation) -> Bool {
-        return ObjectIdentifier(lhs.wrapped) == ObjectIdentifier(rhs.wrapped)
-    }
-
-    // MARK: - Hashable
-
-    public func hash(into hasher: inout Hasher) {
-        return hasher.combine(ObjectIdentifier(wrapped).hashValue)
-    }
-
-    // MARK: - DisplayLinkObserver
-
-    func tick(_ dt: CFTimeInterval) {
-        tick(dt)
     }
 
 }
