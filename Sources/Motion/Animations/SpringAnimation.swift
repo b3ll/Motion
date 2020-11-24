@@ -83,7 +83,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: Animation<Value> {
         return _velocity.approximatelyEqual(to: .zero) && _value.approximatelyEqual(to: _toValue)
     }
 
-    public override func stop() {
+    public override func stop(resolveImmediately: Bool = false) {
         super.stop()
         self.velocity = .zero
     }

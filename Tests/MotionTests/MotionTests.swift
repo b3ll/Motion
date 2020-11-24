@@ -169,6 +169,27 @@ final class MotionTests: XCTestCase {
         tickAnimationUntilResolved(spring)
     }
 
+    func testSpringResolveImmediately() {
+        let spring = SpringAnimation(initialValue: 0.0)
+        spring.toValue = 1.0
+
+        let expectValueChangedCalled = XCTestExpectation(description: "Spring value changed to \(spring.toValue)")
+        let expectCompletionCalled = XCTestExpectation(description: "Spring completed")
+
+        spring.onValueChanged { newValue in
+            if newValue == 1.0 {
+                expectValueChangedCalled.fulfill()
+            }
+        }
+        spring.completion = {
+            expectCompletionCalled.fulfill()
+        }
+
+        tickAnimationUntilResolved(spring)
+
+        wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
+    }
+
     func testDecay() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
