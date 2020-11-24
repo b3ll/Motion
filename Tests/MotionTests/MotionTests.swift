@@ -210,6 +210,98 @@ final class MotionTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
     }
 
+    // MARK: - Basic Animation Tests
+
+    func testBasicAnimation() {
+        let basicAnimation = BasicAnimation<CGFloat>()
+        basicAnimation.fromValue = 0.0
+        basicAnimation.toValue = 10.0
+        basicAnimation.duration = 1.0
+
+        let expectValueChangedCalled = XCTestExpectation(description: "Basic animation value changed to \(basicAnimation.toValue)")
+        let expectCompletionCalled = XCTestExpectation(description: "Basic animation completed")
+
+        basicAnimation.onValueChanged { newValue in
+            if newValue == 10.0 {
+                expectValueChangedCalled.fulfill()
+            }
+        }
+        basicAnimation.completion = { [unowned basicAnimation] in
+            if basicAnimation.value == basicAnimation.toValue {
+                expectCompletionCalled.fulfill()
+            }
+        }
+
+        tickAnimationUntilResolved(basicAnimation)
+
+        wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
+    }
+
+    func testBasicAnimationResolveImmediately() {
+        let basicAnimation = BasicAnimation<CGFloat>()
+        basicAnimation.fromValue = 0.0
+        basicAnimation.toValue = 1.0
+        basicAnimation.duration = 1.0
+
+        let expectValueChangedCalled = XCTestExpectation(description: "Basic animation value changed to \(basicAnimation.toValue)")
+        let expectCompletionCalled = XCTestExpectation(description: "Basic animation completed")
+
+        basicAnimation.onValueChanged { newValue in
+            if newValue == 1.0 {
+                expectValueChangedCalled.fulfill()
+            }
+        }
+        basicAnimation.completion = {
+            expectCompletionCalled.fulfill()
+        }
+
+        tickAnimationUntilResolved(basicAnimation)
+
+        wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
+    }
+
+    // MARK: - AnimationGroup Tests
+
+    func testAnimationGroup() {
+        let expectBasicAnimationValueChangedCalled = XCTestExpectation(description: "Basic animation value changed")
+        let expectBasicAnimationCompletionCalled = XCTestExpectation(description: "Basic animation completed")
+
+        let basicAnimation = BasicAnimation<CGFloat>()
+        basicAnimation.fromValue = 0.0
+        basicAnimation.toValue = 10.0
+        basicAnimation.duration = 1.0
+        basicAnimation.onValueChanged { newValue in
+            expectBasicAnimationValueChangedCalled.fulfill()
+        }
+        basicAnimation.completion = {
+            expectBasicAnimationCompletionCalled.fulfill()
+        }
+
+        let expectSpringAnimationValueChangedCalled = XCTestExpectation(description: "Spring animation value changed")
+        let expectSpringAnimationCompletionCalled = XCTestExpectation(description: "Spring animation completed")
+
+        let spring = SpringAnimation(initialValue: CGFloat(0.0))
+        spring.value = .zero
+        spring.toValue = 320.0
+        spring.onValueChanged { newValue in
+            expectSpringAnimationValueChangedCalled.fulfill()
+        }
+        spring.completion = {
+            expectSpringAnimationCompletionCalled.fulfill()
+        }
+
+        let expectAnimationGroupCompletionCalled = XCTestExpectation(description: "AnimationGroup completed")
+
+        let animationGroup = AnimationGroup(basicAnimation, spring)
+        animationGroup.completion = {
+            expectAnimationGroupCompletionCalled.fulfill()
+        }
+
+        tickAnimationUntilResolved(animationGroup)
+
+        wait(for: [expectBasicAnimationValueChangedCalled, expectBasicAnimationCompletionCalled, expectSpringAnimationValueChangedCalled, expectSpringAnimationCompletionCalled, expectAnimationGroupCompletionCalled], timeout: 0.0)
+    }
+
     // MARK: - Animator Tests
 
     func testAnimatorAddRemoveAnimation() {
