@@ -97,36 +97,14 @@ public class Animation<Value: SIMDRepresentable>: AnimationBase {
         }
     }
 
-    public var completion: (() -> Void)? = nil
-
-    public init() {
-        Animator.shared.observe(self)
-    }
-
-    deinit {
-        Animator.shared.unobserve(self)
-    }
-
-    public func start() {
-        if hasResolved() {
-            return
-        }
-
-        self.enabled = true
-    }
-
-    public func stop() {
+    public override func stop(resolveImmediately: Bool = false) {
         self.enabled = false
-    }
 
-    public func hasResolved() -> Bool {
-        fatalError("Subclasses must override this")
-    }
-
-    // MARK: - DisplayLinkObserver
-
-    public func tick(_ dt: CFTimeInterval) {
-        fatalError("Subclasses must override this")
+        if resolveImmediately {
+            self._value = _toValue
+            _valueChanged?(value)
+            completion?()
+        }
     }
 
 }

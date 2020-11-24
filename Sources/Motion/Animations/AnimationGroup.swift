@@ -7,12 +7,15 @@
 
 import Foundation
 
-public final class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
+// This class is largely untested / unfinished.
 
-    let animations: [AnyAnimation]
+public final class AnimationGroup: AnimationBase {
 
-    init(animations: [Animation<Value>]) {
-        self.animations = animations.map { AnyAnimation($0) }
+    let animations: [AnimationBase]
+
+    init(_ animations: AnimationBase...) {
+        self.animations = animations
+        super.init()
     }
 
     public override func hasResolved() -> Bool {
@@ -21,28 +24,20 @@ public final class AnimationGroup<Value: SIMDRepresentable>: Animation<Value> {
         }
     }
 
-    // MARK: - Disabled API
-
-    @available(*, unavailable, message: "Not Supported in AnimationGroup.")
-    public override var value: Value {
-        get { return .zero }
-        set { }
+    public override func start() {
+        animations.forEach { $0.stop() }
     }
 
-    @available(*, unavailable, message: "Not Supported in AnimationGroup.")
-    public override var toValue: Value {
-        get { return .zero }
-        set { }
-    }
+    public override func stop(resolveImmediately: Bool = false) {
+        if !resolveImmediately {
+            super.stop()
+        } else {
+            self.enabled = false
 
-    @available(*, unavailable, message: "Not Supported in AnimationGroup.")
-    public override var _valueChanged: ValueChangedCallback? {
-        get { return nil }
-        set { }
+            animations.forEach { $0.stop(resolveImmediately: resolveImmediately) }
+            completion?()
+        }
     }
-
-    @available(*, unavailable, message: "Not Supported in AnimationGroup.")
-    public override func onValueChanged(disableActions: Bool = false, _ valueChangedCallback: ValueChangedCallback?) { }
 
     // MARK: - DisplayLinkObserver
 
