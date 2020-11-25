@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         self.bouncyView = BouncyView(frame: .zero)
-        bouncyView.backgroundColor = .blue
+        bouncyView.backgroundColor = UIColor(red: 0.47, green: 0.80, blue: 0.99, alpha: 1.00)
         view.addSubview(bouncyView)
     }
 

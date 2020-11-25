@@ -36,7 +36,7 @@ class BouncyView: UIView {
         super.touchesEnded(touches, with: event)
 
         spring.toValue = 1.0
-        spring.velocity = -50.0
+        spring.velocity = 50.0
         spring.start()
     }
 

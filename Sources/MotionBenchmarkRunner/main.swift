@@ -8,6 +8,7 @@
 import Foundation
 import Benchmark
 import Motion
+import MotionBenchmark
 
 #if os(macOS)
 RunBenchmark()

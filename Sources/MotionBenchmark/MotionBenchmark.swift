@@ -1,5 +1,5 @@
 //
-//  main.swift
+//  MotionBenchmark.swift
 //  
 //
 //  Created by Adam Bell on 11/24/20.
@@ -25,6 +25,8 @@ func createAndAnimateSprings<Value: SIMDRepresentable>(to toValue: Value, count:
 let AnimationCount = 5000
 let ToValue = 320.0
 
+// Measure execution of 5000 springs serially for each supported SIMD type.
+// SIMD go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 public func RunBenchmark() {
     let springSuite = BenchmarkSuite(name: "SIMD Springs", settings: TimeUnit(.ms)) { suite in
         suite.benchmark("Execute 5000 CGFloat springs") { state in
