@@ -8,6 +8,22 @@
 import Foundation
 import QuartzCore
 
+#if targetEnvironment(simulator)
+// lol, calling private C-functions from Swift is definitely something
+// We also don't want to be doing this dlopen at 60+fps so we just cache the function pointer.
+internal var SimulatorSlowAnimationsCoefficient_: (@convention(c) () -> Float) = {
+    let handle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_NOW)
+    let symbol = dlsym(handle, "UIAnimationDragCoefficient")
+    let function = unsafeBitCast(symbol, to: (@convention(c) () -> Float).self)
+    dlclose(handle)
+    return function
+}()
+
+internal func SimulatorSlowAnimationsCoefficient() -> Float {
+    return SimulatorSlowAnimationsCoefficient_()
+}
+#endif
+
 public protocol DisplayLinkObserver: class {
 
     func tick(_ dt: CFTimeInterval)
@@ -94,12 +110,21 @@ internal class DisplayLink: NSObject {
     #else
     @objc private func tick() {
         let currentTime = CACurrentMediaTime()
+        #if targetEnvironment(simulator)
+        var dt: CFTimeInterval
+        #else
         let dt: CFTimeInterval
+        #endif
         if let lastFrameTimestamp = lastFrameTimestamp, lastFrameTimestamp > 0.0 {
             dt = currentTime - lastFrameTimestamp
         } else {
             dt = displayLink.duration
         }
+
+        #if targetEnvironment(simulator)
+            dt /= Double(SimulatorSlowAnimationsCoefficient())
+        #endif
+
         self.lastFrameTimestamp = CACurrentMediaTime()
         observer?.tick(dt)
     }

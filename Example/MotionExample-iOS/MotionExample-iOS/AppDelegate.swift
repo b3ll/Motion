@@ -5,6 +5,7 @@
 //  Created by Adam Bell on 8/25/20.
 //
 
+import Motion
 import MotionBenchmark
 import UIKit
 
@@ -13,7 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-
         if CommandLine.arguments.contains("--benchmark") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 RunBenchmark()
