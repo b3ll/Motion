@@ -7,34 +7,52 @@
 
 import Foundation
 
+/// An easing function powered by a `Bezier` that can be used with a `BasicAnimation`.
 public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
+    /// An easing function with a linear bezier curve.
     public static var linear: Self {
         Self(bezier: .linear)
     }
 
+    /// An easing function with an ease-in bezier curve that matches UIKit's `kCAMediaTimingFunctionEaseIn`.
     public static var easeIn: Self {
         Self(bezier: .easeIn)
     }
 
+    /// An easing function with an ease-out bezier curve that matches`kCAMediaTimingFunctionEaseOut`.
     public static var easeOut: Self {
         Self(bezier: .easeOut)
     }
 
+    /// An easing function with an ease-out bezier curve that matches`kCAMediaTimingFunctionEaseInOut`.
     public static var easeInOut: Self {
         Self(bezier: .easeInOut)
     }
 
+    /// The easing function's bezier curve.
     public let bezier: Bezier<Value.SIMDType.Scalar>
 
+    /**
+     Initializes the easing function with a given `Bezier`.
+     */
     public init(bezier: Bezier<Value.SIMDType.Scalar>) {
         self.bezier = bezier
     }
 
-    public static var allFunctions: [EasingFunction] {
+    internal static var allFunctions: [EasingFunction] {
         return [.linear, .easeIn, .easeOut, .easeInOut, Self(bezier: Bezier(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0))]
     }
 
+    /**
+     Solves for a SIMD value within a given range based on the easing function.
+
+     - Parameters:
+        - range: The starting and ending values to interpolate between.
+        - fraction: The fraction of progress through the easing curve (from 0.0 to 1.0).
+
+     - Returns: An interpolated SIMD value between the supplied range's bounds based on a fraction (from 0.0 to 1.0) of the easing function.
+     */
     @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
         let x = bezier.solve(x: fraction)
 
@@ -48,6 +66,11 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
         return newValue
     }
 
+    /**
+     Solves for a `Value` within a given range based on the easing function.
+
+     - Note: This mirrors the `solveSIMD` variant, but works for `Value` types.
+     */
     @inlinable public func solve(_ range: ClosedRange<Value>, fraction: Value.SIMDType.Scalar) -> Value {
         let newValue = solveSIMD(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), fraction: fraction)
         return Value(newValue)
@@ -55,6 +78,7 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
     // MARK: - Hashable
 
+    /// Hashes this easing curve into a hash.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(bezier)
     }
@@ -63,6 +87,11 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
 extension EasingFunction where Value: SupportedSIMD {
 
+    /**
+     Solves for a `Value` within a given range based on the easing function when the `Value` type conforms to `SupportedSIMD`.
+
+     - Note: This mirrors the `solveSIMD` variant, but works for `Value` types and acts as a fast path to skip boxing and unboxing `Value`.
+     */
     @inlinable public func solve<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
         return solveSIMD(range, fraction: fraction)
     }
@@ -94,8 +123,9 @@ extension EasingFunction where Value: SupportedSIMD {
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Swift Adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
-
+/**
+ A Swift adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
+ */
 public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
 
     public let x1: Scalar
@@ -110,6 +140,15 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
     private let ax: Scalar
     private let ay: Scalar
 
+    /**
+     Initializes the bezier curve with two points.
+
+     - Parameters:
+       - x1: The x value of the first point.
+       - y1: The y value of the first point.
+       - x2: The x value of the second point.
+       - y2: The y value of the second point.
+     */
     public init(x1: Scalar, y1: Scalar, x2: Scalar, y2: Scalar) {
         self.x1 = x1
         self.y1 = y1
@@ -127,20 +166,20 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
         self.ay = 1.0 - cy - by
     }
 
-    func sampleCurveX(t: Scalar) -> Scalar {
+    private func sampleCurveX(t: Scalar) -> Scalar {
         // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
         return ((ax * t + bx) * t + cx) * t
     }
 
-    func sampleCurveY(t: Scalar) -> Scalar {
+    private func sampleCurveY(t: Scalar) -> Scalar {
         return ((ay * t + by) * t + cy) * t
     }
 
-    func sampleCurveDerivativeX(t: Scalar) -> Scalar {
+    private func sampleCurveDerivativeX(t: Scalar) -> Scalar {
         return (3.0 * ax * t + 2.0 * bx) * t + cx
     }
 
-    // Given an x value, find a parametric value it came from.
+    /// Solves for the y value given an x value.
     public func solveCurveX(x: Scalar, epsilon: Scalar) -> Scalar {
         var x2: Scalar = 0.0
         var d2: Scalar = 0.0
@@ -189,27 +228,32 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
         return t2
     }
 
+    /// Solves for the y value for the bezier curve for a given x value and an optional epsilon.
     public func solve(x: Scalar, epsilon: Scalar = 0.0001) -> Scalar {
         return sampleCurveY(t: solveCurveX(x: x, epsilon: epsilon))
     }
 
 }
 
-// UIKit Constants for Animation Curves
+/// UIKit Constants for Animation Curves
 extension Bezier {
 
+    /// A `Bezier` with a linear ramp.
     static var linear: Self {
         return Self(x1: 0.0, y1: 0.0, x2: 1.0, y2: 1.0)
     }
 
+    /// A `Bezier` that starts out slow and then speeds up.
     static var easeIn: Self {
         return Self(x1: 0.42, y1: 0.0, x2: 1.0, y2: 1.0)
     }
 
+    /// A `Bezier` that starts out fast and then slows down.
     static var easeOut: Self {
         return Self(x1: 0.0, y1: 0.0, x2: 0.58, y2: 1.0)
     }
 
+    /// A `Bezier` that starts out slow, speeds up, and then slows down.
     static var easeInOut: Self {
         return Self(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0)
     }
