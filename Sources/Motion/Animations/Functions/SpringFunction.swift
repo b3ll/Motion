@@ -9,14 +9,25 @@ import Foundation
 import RealModule
 import simd
 
+/**
+ This class provides an interface to use various optimized implementations of the analytic versions of spring functions with `SupportedSIMD` and `Value` types.
+
+ Note: This can be used on its own, but it's mainly used by `SpringAnimation`'s `tick` method.
+*/
 public struct SpringFunction<Value: SIMDRepresentable> {
 
+    /// The stiffness coefficient of the string.
     public var stiffness: Value.SIMDType.Scalar {
         didSet {
             updateConstants()
         }
     }
 
+    /**
+     The damping amount of the spring.
+
+     - Description: This is equivalent to the friction of the spring.
+     */
     public var damping: Value.SIMDType.Scalar {
         didSet {
             updateConstants()
@@ -27,6 +38,13 @@ public struct SpringFunction<Value: SIMDRepresentable> {
     private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
     private(set) public var wD: Value.SIMDType.Scalar = 0.0
 
+    /**
+     Initializes a spring function.
+
+     - Parameters:
+        - stiffness: How stiff the spring should be.
+        - damping: How much friction should be exerted on the spring.
+     */
     public init(stiffness: Value.SIMDType.Scalar = 300.0, damping: Value.SIMDType.Scalar = 10.0) {
         self.stiffness = stiffness
         self.damping = damping
@@ -35,6 +53,15 @@ public struct SpringFunction<Value: SIMDRepresentable> {
         updateConstants()
     }
 
+    /**
+     Convenience function to configure the stiffness and damping based on easier to work with constants.
+
+     - Parameters:
+        - response: How long (approximately) it should take the spring to reach its destination (in seconds).
+        - dampingRatio: How much the spring should bounce around its destination specified as a ratio from 0.0 (bounce forever) to 1.0 (don't bounce at all).
+
+     - Description: For more info check out the WWDC talk on this: https://developer.apple.com/videos/play/wwdc2018/803/
+     */
     public mutating func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
         let stiffness = Value.SIMDType.Scalar.pow(2.0 * .pi / response, 2.0)
         let damping = 4.0 * .pi * dampingRatio / response
@@ -50,11 +77,22 @@ public struct SpringFunction<Value: SIMDRepresentable> {
     }
 
     /**
-      A lot of this looks illegible, but they're various (optimized) implentations of the analytic versions of Spring functions (depending on the damping ratio).
+     Solves the spring function based on the given parameters for a `SupportedSIMD` type.
 
-      Long story short, each equation is split into two coefficients A and B, each of which changes (decays, oscillates, etc.) differently based on the damping ratio.
+     A lot of this looks illegible, but they're various (optimized) implentations of the analytic versions of spring functions (depending on the damping ratio).
 
-      We calculate the position and velocity for each, which is seeded into the next frame.
+     Long story short, each equation is split into two coefficients A and B, each of which changes (decays, oscillates, etc.) differently based on the damping ratio.
+
+     We calculate the position and velocity for each, which is seeded into the next frame.
+
+     If you're curious, something like this is helpful https://www.myphysicslab.com/springs/spring-analytic-en.html
+
+     - Parameters:
+        - dt: The duration in seconds since the last frame.
+        - x0: The starting point of the spring.
+        - velocity: The velocity of the spring.
+
+     - Returns: The new position of the spring as it advances towards zero.
      */
     @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         let x: SIMDType
@@ -112,6 +150,11 @@ public struct SpringFunction<Value: SIMDRepresentable> {
         return x
     }
 
+    /**
+     Solves the spring function for a given `Value`.
+
+     - Note: This mirrors the `SupportedSIMD` version above, but for `Value` types.
+     */
     @inlinable public func solve(dt: Value.SIMDType.Scalar, x0: Value, velocity velocity_: inout Value) -> Value {
         var velocity = velocity_.simdRepresentation()
         let x = solveSIMD(dt: dt, x0: x0.simdRepresentation(), velocity: &velocity)
@@ -124,6 +167,11 @@ public struct SpringFunction<Value: SIMDRepresentable> {
 
 extension SpringFunction where Value: SupportedSIMD {
 
+    /**
+     Solves the spring function for a given `Value` when `Value` conforms to `SupportedSIMD`.
+
+     - Note: This mirrors the `SupportedSIMD` version above, but acts as a fast path to call the `solveSIMD` method directly instead of boxing and unboxing the same value.
+     */
     @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         return solveSIMD(dt: dt, x0: x0, velocity: &velocity)
     }
