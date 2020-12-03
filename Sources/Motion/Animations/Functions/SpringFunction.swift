@@ -12,7 +12,8 @@ import simd
 /**
  This class provides an interface to use various optimized implementations of the analytic versions of spring functions with `SupportedSIMD` and `Value` types.
 
- Note: This can be used on its own, but it's mainly used by `SpringAnimation`'s `tick` method.
+ - Note: This can be used on its own, but it's mainly used by `SpringAnimation`'s `tick` method.
+ - SeeAlso: `SpringAnimation`
 */
 public struct SpringFunction<Value: SIMDRepresentable> {
 
@@ -34,8 +35,13 @@ public struct SpringFunction<Value: SIMDRepresentable> {
         }
     }
 
+    /// The undamped angular frequency of the spring.
     private(set) public var w0: Value.SIMDType.Scalar = 0.0
+
+    /// The damping ratio of the spring.
     private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
+
+    /// A cached constant representing the decaying amount of the harmonic frequency derived from `w0 * sqrt(1.0 - dampingRatio^2)`.
     private(set) public var wD: Value.SIMDType.Scalar = 0.0
 
     /**
@@ -83,16 +89,16 @@ public struct SpringFunction<Value: SIMDRepresentable> {
 
      Long story short, each equation is split into two coefficients A and B, each of which changes (decays, oscillates, etc.) differently based on the damping ratio.
 
-     We calculate the position and velocity for each, which is seeded into the next frame.
+     We calculate the value and velocity for each, which is seeded into the next frame.
 
      If you're curious, something like this is helpful https://www.myphysicslab.com/springs/spring-analytic-en.html
 
      - Parameters:
         - dt: The duration in seconds since the last frame.
-        - x0: The starting point of the spring.
+        - x0: The starting value of the spring.
         - velocity: The velocity of the spring.
 
-     - Returns: The new position of the spring as it advances towards zero.
+     - Returns: The new value of the spring as it advances towards zero.
      */
     @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
         let x: SIMDType

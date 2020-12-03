@@ -7,7 +7,12 @@
 
 import Foundation
 
-/// An easing function powered by a `Bezier` that can be used with a `BasicAnimation`.
+/**
+ An easing function powered by a `Bezier` that can be used with a `BasicAnimation`.
+
+ - Note: This can be used on its own, but it's mainly used by `BasicAnimation`'s `tick` method.
+ - SeeAlso: `BasicAnimation`
+ */
 public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
     /// An easing function with a linear bezier curve.
