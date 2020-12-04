@@ -4,3 +4,6 @@
 xcuserdata/
 /.swiftpm
 Pods
+Benchmark/Packages
+Benchmark/.build
+Benchmark/.swiftpm
