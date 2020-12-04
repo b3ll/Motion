@@ -31,7 +31,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         }
     }
 
-    fileprivate var _range: ClosedRange<Value.SIMDType> = Value.SIMDType.zero...Value.SIMDType.zero
+    internal var _range: ClosedRange<Value.SIMDType> = Value.SIMDType.zero...Value.SIMDType.zero
 
     public var duration: CFTimeInterval = 0.3
 
@@ -45,7 +45,11 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     public override func hasResolved() -> Bool {
-        return _value.approximatelyEqual(to: _toValue)
+        return hasResolved(value: &_value)
+    }
+
+    internal func hasResolved(value: inout Value.SIMDType) -> Bool {
+        return value.approximatelyEqual(to: _toValue)
     }
 
     fileprivate func updateRange() {
@@ -84,7 +88,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
         value = easingFunction.solve(range, fraction: fraction)
     }
 

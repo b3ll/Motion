@@ -29,10 +29,14 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         }
     }
 
-    fileprivate var decay: DecayFunction<Value.SIMDType>
+    internal var decay: DecayFunction<Value.SIMDType>
 
     public override func hasResolved() -> Bool {
-        return _velocity < Value.SIMDType(repeating: 0.5)
+        return hasResolved(velocity: &_velocity)
+    }
+
+    internal func hasResolved(velocity: inout Value.SIMDType) -> Bool {
+        return velocity < Value.SIMDType(repeating: 0.5)
     }
 
     public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.SIMDType.Scalar = Value.SIMDType.SIMDType.Scalar(UIKitDecayConstant)) {
@@ -77,7 +81,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, decay: inout DecayFunction<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, decay: inout DecayFunction<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
         value = decay.solve(dt: dt, x0: value, velocity: &velocity)
     }
 

@@ -21,7 +21,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     }
     internal var _velocity: Value.SIMDType = .zero
 
-    fileprivate var spring: SpringFunction<Value.SIMDType>
+    internal var spring: SpringFunction<Value.SIMDType>
 
     public var damping: Value.SIMDType.SIMDType.Scalar {
         get {
@@ -79,8 +79,12 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         spring.configure(response: response, dampingRatio: dampingRatio)
     }
 
-    public override func hasResolved() -> Bool { 
-        return _velocity.approximatelyEqual(to: .zero) && _value.approximatelyEqual(to: _toValue)
+    public override func hasResolved() -> Bool {
+        return hasResolved(velocity: &_velocity, value: &_value)
+    }
+
+    internal func hasResolved(velocity: inout Value.SIMDType, value: inout Value.SIMDType) -> Bool {
+        return velocity.approximatelyEqual(to: .zero) && value.approximatelyEqual(to: _toValue)
     }
 
     public override func stop(resolveImmediately: Bool = false) {
@@ -124,7 +128,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    fileprivate func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
         let x0 = toValue - value
 
         let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)

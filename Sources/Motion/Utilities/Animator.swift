@@ -18,6 +18,15 @@ class Animator: NSObject, DisplayLinkObserver {
 
     internal var animationObservers: NSMapTable<Animation, AnyCancellable> = .weakToStrongObjects()
 
+    public var targetFramerate: Int {
+        #if os(macOS)
+        // TODO: Figure out a better way to query for the display's refresh rate.
+        return 60
+        #else
+        displayLink.preferredFramesPerSecond
+        #endif
+    }
+
     static let shared = Animator()
 
     override init() {
