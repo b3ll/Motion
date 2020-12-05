@@ -10,16 +10,50 @@ import QuartzCore
 
 // MARK: - CAKeyframeAnimationEmittable
 
-protocol CAKeyframeAnimationEmittable {
+/// A protocol that defines the ability to generate a `CAKeyframeAnimation` from an `Animation`.
+public protocol CAKeyframeAnimationEmittable where Self: Animation {
 
-    func keyframeAnimation(for framerate: Int?) -> CAKeyframeAnimation
-    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval
+    /**
+     Generates and returns a `CAKeyframeAnimation` based on the animation's current state targeting the animation's resolved state..
+
+     - Parameters:
+        - framerate: The framerate the `CAKeyframeAnimation` should be targeting. If nil, the default device's framerate will be used.
+
+     - Returns: A fully configured `CAKeyframeAnimation` which represents the animation from the current animation's state to its resolved state.
+
+     - Note: You will be required to change the `keyPath` of the `CAKeyFrameAnimation` in order for it to be useful.
+
+     ```
+     let animation = SpringAnimation<CGFloat>()
+     animation.value = 0.0
+     animation.toValue = 100.0
+
+     let keyframeAnimation = animation.keyframeAnimation()
+     keyFrameAnimation.keyPath = "position.y"
+     layer.add(keyFrameAnimation, forKey: "animation")
+     ```
+     */
+    func keyframeAnimation(forFramerate framerate: Int?) -> CAKeyframeAnimation
+
+    /**
+     Generates and returns the values and keyTimes for a `CAKeyframeAnimation`. This is called by default from `keyframeAnimation(forFramerate:)`.
+
+     - Parameters:
+        - dt: The target delta time. Typically you'd want 1.0 / targetFramerate`
+        - values: A preinitialized array that should be populated with the values to align with the given keyTimes.
+        - keyTimes: A preinitialized array that should be populated with the keyTimes to align with the given values.
+
+     - Returns: The total duration of the `CAKeyframeAnimation`.
+
+     - Note: Returning values and keyTimes with different lengths will result in undefined behaviour.
+     */
+    func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval
 
 }
 
 extension CAKeyframeAnimationEmittable {
 
-    func keyframeAnimation(for framerate: Int?) -> CAKeyframeAnimation {
+    public func keyframeAnimation(forFramerate framerate: Int? = nil) -> CAKeyframeAnimation {
         let dt: TimeInterval
         if let framerate = framerate {
             dt = 1.0 / TimeInterval(framerate)
@@ -30,7 +64,7 @@ extension CAKeyframeAnimationEmittable {
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
-        let duration = generate(dt: dt, values: &values, keyTimes: &keyTimes)
+        let duration = populateKeyframeAnimationData(dt: dt, values: &values, keyTimes: &keyTimes)
 
         let keyframeAnimation = CAKeyframeAnimation()
         keyframeAnimation.calculationMode = .discrete
@@ -46,7 +80,8 @@ extension CAKeyframeAnimationEmittable {
 
 extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
 
-    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
+    /// Generates and populates the `values` and `keyTimes` for a given `SpringAnimation` animating from its `value` to its `toValue` by ticking it by `dt` until it resolves.
+    public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var velocity = _velocity
         var value = _value
 
@@ -63,6 +98,9 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
             t += dt
         }
 
+        values.append(toValue.toKeyframeValue())
+        keyTimes.append(t as NSNumber)
+
         return t
     }
 
@@ -72,7 +110,8 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
 
 extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
 
-    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
+    /// Generates and populates the `values` and `keyTimes` for a given `DecayAnimation` animating from its `value` and ticking by `dt` until it resolves.
+    public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
@@ -92,6 +131,8 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
             t += dt
         }
 
+        t -= dt
+
         return t
     }
 
@@ -102,7 +143,8 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 
 extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
 
-    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
+    /// Generates and populates the `values` and `keyTimes` for a given `BasicAnimation` animating from its `value` to its `toValue` by ticking it by `dt` until it resolves.
+    public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
@@ -121,6 +163,8 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
             t += dt
         }
 
+        t -= dt
+
         return t
     }
 
@@ -128,6 +172,11 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 
 // MARK: - CAKeyframeAnimationValueConvertible
 
+/**
+ A protocol for types to supply the ability to convert themselves into `NSValue` or `NSNumber` for use with `CAKeyframeAnimation`. This is required for
+
+ - Note: This is required for using `CAKeyframeAnimationEmittable`.
+ */
 public protocol CAKeyframeAnimationValueConvertible {
 
     func toKeyframeValue() -> AnyObject
