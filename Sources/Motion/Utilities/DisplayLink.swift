@@ -33,7 +33,7 @@ public protocol DisplayLinkObserver: class {
 /**
  This class wraps CADisplayLink or CVDisplayLink (depending on platform) to provide a means to execute animations by supplying them with V-Synced display ticks.
  */
-internal class DisplayLink: NSObject {
+public class DisplayLink: NSObject {
 
     #if os(macOS)
     var displayLink: CVDisplayLink! = nil
@@ -41,13 +41,13 @@ internal class DisplayLink: NSObject {
     var displayLink: CADisplayLink! = nil
     #endif
 
-    var lastFrameTimestamp: CFTimeInterval? = nil
+    private var lastFrameTimestamp: CFTimeInterval? = nil
 
-    weak var observer: DisplayLinkObserver?
+    public weak var observer: DisplayLinkObserver?
 
-    var valid: Bool = false
+    public var valid: Bool = false
 
-    override init() {
+    public override init() {
         super.init()
         #if os(macOS)
         var error = CVDisplayLinkCreateWithActiveCGDisplays(&displayLink)
@@ -81,13 +81,13 @@ internal class DisplayLink: NSObject {
         displayLink.isPaused = true
     }
 
-    func start() {
+    public func start() {
         self.valid = true
 
         displayLink.isPaused = false
     }
 
-    func stop() {
+    public func stop() {
         #if os(macOS)
         #else
         self.lastFrameTimestamp = 0.0
@@ -140,7 +140,7 @@ internal class DisplayLink: NSObject {
 
 extension CVDisplayLink {
 
-    var isPaused: Bool {
+    public var isPaused: Bool {
         get {
             return !CVDisplayLinkIsRunning(self)
         }
