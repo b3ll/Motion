@@ -13,14 +13,13 @@ import QuartzCore
 protocol CAKeyframeAnimationEmittable {
 
     func keyframeAnimation(for framerate: Int?) -> CAKeyframeAnimation
+    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval
 
 }
 
-// MARK: SpringAnimation
+extension CAKeyframeAnimationEmittable {
 
-extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
-
-    func keyframeAnimation(for framerate: Int? = nil) -> CAKeyframeAnimation {
+    func keyframeAnimation(for framerate: Int?) -> CAKeyframeAnimation {
         let dt: TimeInterval
         if let framerate = framerate {
             dt = 1.0 / TimeInterval(framerate)
@@ -31,8 +30,25 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
-        var velocity = self._velocity
-        var value = self._value
+        let duration = generate(dt: dt, values: &values, keyTimes: &keyTimes)
+
+        let keyframeAnimation = CAKeyframeAnimation()
+        keyframeAnimation.calculationMode = .discrete
+        keyframeAnimation.values = values
+        keyframeAnimation.keyTimes = keyTimes
+        keyframeAnimation.duration = duration
+        return keyframeAnimation
+    }
+
+}
+
+// MARK: SpringAnimation
+
+extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
+
+    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
+        var velocity = _velocity
+        var value = _value
 
         var t = 0.0
         var hasResolved = false
@@ -47,12 +63,7 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
             t += dt
         }
 
-        let keyframeAnimation = CAKeyframeAnimation()
-        keyframeAnimation.calculationMode = .discrete
-        keyframeAnimation.values = values
-        keyframeAnimation.keyTimes = keyTimes
-        keyframeAnimation.duration = t
-        return keyframeAnimation
+        return t
     }
 
 }
@@ -61,19 +72,12 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
 
 extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
 
-    func keyframeAnimation(for framerate: Int? = nil) -> CAKeyframeAnimation {
-        let dt: TimeInterval
-        if let framerate = framerate {
-            dt = 1.0 / TimeInterval(framerate)
-        } else {
-            dt = 1.0 / TimeInterval(Animator.shared.targetFramerate)
-        }
-
+    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
-        var velocity = self._velocity
-        var value = self._value
+        var velocity = _velocity
+        var value = _value
 
         var t = 0.0
         var hasResolved = false
@@ -88,12 +92,7 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
             t += dt
         }
 
-        let keyframeAnimation = CAKeyframeAnimation()
-        keyframeAnimation.calculationMode = .discrete
-        keyframeAnimation.values = values
-        keyframeAnimation.keyTimes = keyTimes
-        keyframeAnimation.duration = t
-        return keyframeAnimation
+        return t
     }
 
 }
@@ -103,18 +102,11 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 
 extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAnimationValueConvertible {
 
-    func keyframeAnimation(for framerate: Int? = nil) -> CAKeyframeAnimation {
-        let dt: TimeInterval
-        if let framerate = framerate {
-            dt = 1.0 / TimeInterval(framerate)
-        } else {
-            dt = 1.0 / TimeInterval(Animator.shared.targetFramerate)
-        }
-
+    func generate(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var values = [AnyObject]()
         var keyTimes = [NSNumber]()
 
-        var value = self._value
+        var value = _value
 
         var t = 0.0
         var hasResolved = false
@@ -129,12 +121,7 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
             t += dt
         }
 
-        let keyframeAnimation = CAKeyframeAnimation()
-        keyframeAnimation.calculationMode = .discrete
-        keyframeAnimation.values = values
-        keyframeAnimation.keyTimes = keyTimes
-        keyframeAnimation.duration = t
-        return keyframeAnimation
+        return t
     }
 
 }
