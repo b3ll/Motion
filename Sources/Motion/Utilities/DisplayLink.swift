@@ -30,6 +30,9 @@ public protocol DisplayLinkObserver: class {
 
 }
 
+/**
+ This class wraps CADisplayLink or CVDisplayLink (depending on platform) to provide a means to execute animations by supplying them with V-Synced display ticks.
+ */
 internal class DisplayLink: NSObject {
 
     #if os(macOS)
@@ -51,6 +54,7 @@ internal class DisplayLink: NSObject {
         if error != kCVReturnSuccess {
             fatalError()
         }
+        // CVDisplayLink is literally zero fun. I'll probably just end up switching this to CADisplayLink (eventhough it's private on macOS, it exists).
         error = CVDisplayLinkSetOutputCallback(displayLink, { (displayLink, currentTime, outputTime, _, _, userInfo) -> CVReturn in
             if let userInfo = userInfo {
                 let slef = Unmanaged<DisplayLink>.fromOpaque(userInfo).takeUnretainedValue()

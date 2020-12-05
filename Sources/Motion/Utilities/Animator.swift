@@ -23,7 +23,7 @@ class Animator: NSObject, DisplayLinkObserver {
         // TODO: Figure out a better way to query for the display's refresh rate.
         return 60
         #else
-        displayLink.preferredFramesPerSecond
+        return displayLink.displayLink.preferredFramesPerSecond
         #endif
     }
 

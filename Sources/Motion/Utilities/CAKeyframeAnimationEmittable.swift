@@ -163,7 +163,11 @@ extension CGFloat: CAKeyframeAnimationValueConvertible {
 extension CGPoint: CAKeyframeAnimationValueConvertible {
 
     public func toKeyframeValue() -> AnyObject {
+        #if os(macOS)
         return NSValue(point: self)
+        #else
+        return NSValue(cgPoint: self)
+        #endif
     }
 
 }
@@ -171,7 +175,11 @@ extension CGPoint: CAKeyframeAnimationValueConvertible {
 extension CGSize: CAKeyframeAnimationValueConvertible {
 
     public func toKeyframeValue() -> AnyObject {
+        #if os(macOS)
         return NSValue(size: self)
+        #else
+        return NSValue(cgSize: self)
+        #endif
     }
 
 }
@@ -179,7 +187,11 @@ extension CGSize: CAKeyframeAnimationValueConvertible {
 extension CGRect: CAKeyframeAnimationValueConvertible {
 
     public func toKeyframeValue() -> AnyObject {
+        #if os(macOS)
         return NSValue(rect: self)
+        #else
+        return NSValue(cgRect: self)
+        #endif
     }
 
 }
