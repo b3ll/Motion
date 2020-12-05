@@ -13,9 +13,9 @@ import simd
 public let UIKitDecayConstant: Double = 0.998
 
 /**
- This class provides an interface to use various optimized implementations of the analytic versions of spring functions with `SupportedSIMD` and `Value` types.
+ This class provides an interface to use various optimized implementations of a decay function with `SupportedSIMD` and `Value` types.
 
- This function essentially provides the same "decaying" that UIScrollView does when you drag and let go... the scroll position scrolls and slows down to a stop (the velocity decays).
+ This function essentially provides the same "decaying" that UIScrollView does when you drag and let go... the value changes based on velocity and slows down to a stop (the velocity decays).
 
  - Note: This can be used on its own, but it's mainly used by `DecayAnimation`'s `tick` method.
  - SeeAlso: `DecayAnimation`
