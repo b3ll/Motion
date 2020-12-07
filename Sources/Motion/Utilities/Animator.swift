@@ -13,12 +13,12 @@ class Animator: NSObject, DisplayLinkObserver {
 
     private let displayLink: DisplayLink
 
-    var runningAnimationsObserver: AnyCancellable? = nil
+    private var runningAnimationsObserver: AnyCancellable? = nil
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
     internal var animationObservers: NSMapTable<Animation, AnyCancellable> = .weakToStrongObjects()
 
-    public var targetFramerate: Int {
+    internal var targetFramerate: Int {
         #if os(macOS)
         // TODO: Figure out a better way to query for the display's refresh rate.
         return 60
@@ -27,7 +27,7 @@ class Animator: NSObject, DisplayLinkObserver {
         #endif
     }
 
-    static let shared = Animator()
+    internal static let shared = Animator()
 
     override init() {
         self.displayLink = DisplayLink()
