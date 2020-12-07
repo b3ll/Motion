@@ -24,8 +24,14 @@ internal func SimulatorSlowAnimationsCoefficient() -> Float {
 }
 #endif
 
+/// A protocol describing how adopters can receive ticks from `DisplayLink`.
 public protocol DisplayLinkObserver: class {
 
+    /**
+     This method will be called every frame from an enabled `DisplayLink`.
+     - Parameters:
+        - dt: The delta time from the last tick. The initial tick will be frame delayed from when the associated `DisplayLink` starts.
+     */
     func tick(_ dt: CFTimeInterval)
 
 }
@@ -36,17 +42,20 @@ public protocol DisplayLinkObserver: class {
 public class DisplayLink: NSObject {
 
     #if os(macOS)
-    var displayLink: CVDisplayLink! = nil
+    internal var displayLink: CVDisplayLink! = nil
     #else
-    var displayLink: CADisplayLink! = nil
+    internal var displayLink: CADisplayLink! = nil
     #endif
 
     private var lastFrameTimestamp: CFTimeInterval? = nil
 
+    /// An observer conforming to `DisplayLinkObserver` that will be called every frame when enabled.
     public weak var observer: DisplayLinkObserver?
 
-    public var valid: Bool = false
+    /// Whether or not the `DisplayLink` should be running.
+    public var enabled: Bool = false
 
+    /// Default initializer.
     public override init() {
         super.init()
         #if os(macOS)
@@ -68,7 +77,10 @@ public class DisplayLink: NSObject {
         if error != kCVReturnSuccess {
             fatalError()
         }
-        // This is wrong, but I don't currently know of a nicer way to handle which display this should be animating on (if you have one display that's not at the same hz, this'll be updated with different timing).
+        /**
+         This is wrong, but I don't currently know of a nicer way to handle which display this should be animating on.
+         (if you have one display that's not at the same hz as another display, things wouldn't make sense here.
+         */
         error = CVDisplayLinkSetCurrentCGDisplay(displayLink, CGMainDisplayID())
         #else
         self.displayLink = CADisplayLink(target: self, selector: #selector(tick))
@@ -81,25 +93,27 @@ public class DisplayLink: NSObject {
         displayLink.isPaused = true
     }
 
+    /// Starts the `DisplayLink`. `DisplayLinkObserver` adoptors will begin receiving updates.
     public func start() {
-        self.valid = true
+        self.enabled = true
 
         displayLink.isPaused = false
     }
 
+    /// Stops the `DisplayLink`.
     public func stop() {
         #if os(macOS)
         #else
         self.lastFrameTimestamp = 0.0
         #endif
 
-        if !valid {
+        if !enabled {
             return
         }
 
         displayLink.isPaused = true
 
-        self.valid = false
+        self.enabled = false
     }
 
     #if os(macOS)
@@ -138,8 +152,10 @@ public class DisplayLink: NSObject {
 
 #if os(macOS)
 
+/// Mirrors functionality from `CADisplayLink`.
 extension CVDisplayLink {
 
+    /// Whether or not the `CVDisplayLink` is running.
     public var isPaused: Bool {
         get {
             return !CVDisplayLinkIsRunning(self)
