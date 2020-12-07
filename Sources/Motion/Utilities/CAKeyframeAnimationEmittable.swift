@@ -7,6 +7,9 @@
 
 import Foundation
 import QuartzCore
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - CAKeyframeAnimationEmittable
 
