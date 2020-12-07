@@ -11,6 +11,17 @@ import simd
 
 public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimationWithVelocity<Value> {
 
+    public override var velocity: Value {
+         get {
+            // We override velocity to be negative, since that's typically easier to reason about (i.e. touch velocity).
+             return Value(-_velocity)
+         }
+         set {
+            // See getter.
+             self._velocity = -newValue.simdRepresentation()
+         }
+     }
+
     internal var spring: SpringFunction<Value.SIMDType>
 
     public var damping: Value.SIMDType.SIMDType.Scalar {
