@@ -15,9 +15,9 @@ public let UIScrollViewRubberBandingConstant = 0.55
  Rubberbands a floating point value based on a given coefficient and range.
 
  - Parameters:
-   - value: The floating point value to be rubberbanded.
+   - value: The floating point value to rubberband.
    - coefficient: A multiplier to decay the value when it's being rubberbanded. Defaults to `UIScrollViewRubberBandingConstant`.
-   - range: The range over which the value won't be rubberbanded.
+   - range: The range over which the value won't rubberband.
  */
 public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coefficient: Value = Value(UIScrollViewRubberBandingConstant), range: Value) -> Value {
     // Without this, the swift type checker is super slow.
@@ -30,9 +30,9 @@ public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coeffi
  Rubberbands a floating point value based on a given coefficient and range.
 
  - Parameters:
-   - value: The floating point value to be rubberbanded.
+   - value: The floating point value to rubberband.
    - coefficient: A multiplier to decay the value when it's being rubberbanded. Defaults to `UIScrollViewRubberBandingConstant`.
-   - range: The range over which the value won't be rubberbanded.
+   - range: The range over which the value won't rubberband.
  */
 public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coefficient: Value = Value(UIScrollViewRubberBandingConstant), range: ClosedRange<Value>) -> Value {
     if range.contains(value) {
@@ -46,9 +46,9 @@ public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coeffi
  Rubberbands a `Value` based on a given coefficient and range.
 
  - Parameters:
-   - value: The floating point value to be rubberbanded.
+   - value: The floating point value to rubberband.
    - coefficient: A multiplier to decay the value when it's being rubberbanded. Defaults to `UIScrollViewRubberBandingConstant`.
-   - range: The range over which the value won't be rubberbanded.
+   - range: The range over which the value won't rubberband.
  */
 public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIScrollViewRubberBandingConstant), range: Value) -> Value {
     typealias SIMDType = Value.SIMDType
@@ -68,9 +68,9 @@ public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Va
  Rubberbands a `Value` based on a given coefficient and range.
 
  - Parameters:
-   - value: The floating point value to be rubberbanded.
+   - value: The floating point value to rubberband.
    - coefficient: A multiplier to decay the value when it's being rubberbanded. Defaults to `UIScrollViewRubberBandingConstant`.
-   - range: The range over which the value won't be rubberbanded.
+   - range: The range over which the value won't rubberband.
  */
 public func rubberband<Value: SIMDRepresentable>(_ value: Value, coefficient: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIScrollViewRubberBandingConstant), range: ClosedRange<Value>) -> Value {
     if range.contains(value) {
