@@ -105,7 +105,7 @@ extension SIMD2: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -122,7 +122,7 @@ extension SIMD3: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -138,7 +138,7 @@ extension SIMD4: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -154,7 +154,7 @@ extension SIMD8: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -170,7 +170,7 @@ extension SIMD16: EquatableEnough, Comparable where Scalar: FloatingPointInitial
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -186,7 +186,7 @@ extension SIMD32: EquatableEnough, Comparable where Scalar: FloatingPointInitial
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
@@ -202,7 +202,7 @@ extension SIMD64: EquatableEnough, Comparable where Scalar: FloatingPointInitial
 
     /// Returns whether or not all values of `lhs` (individually, sequentially) are less than all values of `rhs` (following the same ordering as `lhs`).
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (lhs .>= rhs) == SIMDMask<Self.MaskStorage>()
+        return (lhs .< rhs) == SIMDMask<Self.MaskStorage>(repeating: true)
     }
 
 }
