@@ -49,14 +49,15 @@ public final class AnimationGroup: Animation {
 
      - Parameters:
         - resolveImmediately: Whether or not all the animations should jump to their end value without animation. Defaults to `false`.
+        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` will be called for each animation upon changing its value.
      */
-    public override func stop(resolveImmediately: Bool = false) {
+    public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         if !resolveImmediately {
             super.stop()
         } else {
             self.enabled = false
 
-            animations.forEach { $0.stop(resolveImmediately: resolveImmediately) }
+            animations.forEach { $0.stop(resolveImmediately: resolveImmediately, postValueChanged: postValueChanged) }
             completion?()
         }
     }

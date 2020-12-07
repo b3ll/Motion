@@ -31,7 +31,7 @@ public class Animation: DisplayLinkObserver {
         self.enabled = true
     }
 
-    public func stop(resolveImmediately: Bool = false) {
+    public func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         self.enabled = false
     }
 
@@ -99,12 +99,15 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
         }
     }
 
-    public override func stop(resolveImmediately: Bool = false) {
+    public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         self.enabled = false
 
         if resolveImmediately {
             self._value = _toValue
-            _valueChanged?(value)
+
+            if postValueChanged {
+                _valueChanged?(value)
+            }
             completion?()
         }
     }

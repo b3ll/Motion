@@ -35,6 +35,12 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimationWithV
         self.value = initialValue
     }
 
+    public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
+        // We don't call super here, as jumping to the end requires knowing the end point, and we don't know that (yet).
+        self.enabled = false
+        completion?()
+    }
+
     // MARK: - Disabled API
 
     @available(*, unavailable, message: "Not Supported in DecayAnimation.")
@@ -57,6 +63,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimationWithV
         }
     }
 
+    // See docs in SpringAnimation.swift for why this exists.
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)

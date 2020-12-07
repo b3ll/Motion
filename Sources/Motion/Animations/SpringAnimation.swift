@@ -88,8 +88,8 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimationWith
         return velocity.approximatelyEqual(to: .zero) && value.approximatelyEqual(to: _toValue)
     }
 
-    public override func stop(resolveImmediately: Bool = false) {
-        super.stop()
+    public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
+        super.stop(resolveImmediately: resolveImmediately, postValueChanged: postValueChanged)
         self.velocity = .zero
     }
 
@@ -112,8 +112,8 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimationWith
 
     /*
      This looks hideous, yes, but it forces the compiler to generate specialized versions (where the type is hardcoded) of the spring evaluation function.
-     Normally this would be specialized, but becuase of the dynamic dispatch of -tick:, it fails to specialize.
-     This results in a performance boost of more than 2x.
+     Normally this would be specialized, but because of the dynamic dispatch of -tick:, it fails to specialize.
+     By specializing manually, we forcefully generate implementations of this method hardcoded for each SIMD type specified. Whilst this does incur a codesize penalty, this results in a performance boost of more than **+100%**.
      */
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
