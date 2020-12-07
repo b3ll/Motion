@@ -61,9 +61,11 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
     }
     internal var _value: Value.SIMDType = .zero
 
-    public func setValue(_ value: Value) {
+    public func updateValue(to value: Value, postValueChanged: Bool = false) {
         self.value = value
-        _valueChanged?(value)
+        if postValueChanged {
+            _valueChanged?(value)
+        }
     }
 
     public var toValue: Value {
@@ -118,5 +120,19 @@ extension ValueAnimation: Hashable, Equatable {
     public func hash(into hasher: inout Hasher) {
         return hasher.combine(ObjectIdentifier(self).hashValue)
     }
+
+}
+
+public class ValueAnimationWithVelocity<Value: SIMDRepresentable>: ValueAnimation<Value> {
+
+    public var velocity: Value {
+        get {
+            return Value(_velocity)
+        }
+        set {
+            self._velocity = newValue.simdRepresentation()
+        }
+    }
+    internal var _velocity: Value.SIMDType = .zero
 
 }

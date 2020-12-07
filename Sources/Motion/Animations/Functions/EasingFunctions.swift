@@ -45,10 +45,6 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
         self.bezier = bezier
     }
 
-    internal static var allFunctions: [EasingFunction] {
-        return [.linear, .easeIn, .easeOut, .easeInOut, Self(bezier: Bezier(x1: 0.42, y1: 0.0, x2: 0.58, y2: 1.0))]
-    }
-
     /**
      Solves for a SIMD value within a given range based on the easing function.
 

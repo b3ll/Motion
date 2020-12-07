@@ -15,6 +15,9 @@ let package = Package(
         .library(
             name: "Motion",
             targets: ["Motion"]),
+        .library(
+            name: "Graphing",
+            targets: ["Graphing"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -31,6 +34,11 @@ let package = Package(
         .testTarget(
             name: "MotionTests",
             dependencies: ["Motion"]),
+        .target(
+            name: "Graphing",
+            dependencies: [
+                "Motion",
+            ]),
     ],
     swiftLanguageVersions: [.v5]
 )

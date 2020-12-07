@@ -91,5 +91,5 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
         value = easingFunction.solve(range, fraction: fraction)
     }
-
+    
 }

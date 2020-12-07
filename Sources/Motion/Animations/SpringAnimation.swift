@@ -9,17 +9,7 @@ import Combine
 import QuartzCore
 import simd
 
-public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
-
-    public var velocity: Value {
-        get {
-            return Value(-_velocity)
-        }
-        set {
-            self._velocity = -newValue.simdRepresentation()
-        }
-    }
-    internal var _velocity: Value.SIMDType = .zero
+public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimationWithVelocity<Value> {
 
     internal var spring: SpringFunction<Value.SIMDType>
 
