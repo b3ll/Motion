@@ -12,13 +12,18 @@ import RealModule
 
 // MARK: - Supported Types
 
+/// A protocol that defines supported `SIMD` types that conform to `SIMDRepresentable` and `EquatableEnough`.
 public protocol SupportedSIMD: SIMD, SIMDRepresentable, EquatableEnough where Scalar: SupportedScalar {}
 
+/// A protocol that defines supported `SIMD` Scalar types that conform to `FloatingPointInitializable`, `EquatableEnough`, and are `RealModule.Real` numbers.
 public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, EquatableEnough, RealModule.Real {
+
+    // These only really exist because for some reason the Swift compiler can't infer that Float and Double methods for these exist.
     static func exp(_ x: Self) -> Self
     static func sin(_ x: Self) -> Self
     static func cos(_ x: Self) -> Self
     static func pow(_ x: Self, _ n: Int) -> Self
+
 }
 
 extension Float: SupportedScalar {}
@@ -34,18 +39,27 @@ extension SIMD64: SupportedSIMD where Scalar: SupportedScalar {}
 
 // MARK: - SIMDRepresentable
 
+/// A protocol that defines how something that can be represented / stored in a `SIMD` type as well as decoded from said `SIMD` type.
 public protocol SIMDRepresentable: Comparable {
 
+    /**
+     The `SIMD` type that `self` can be represented by.
+      - Description: i.e. `CGPoint` can be stored in `SIMD2<Double>`.
+     */
     associatedtype SIMDType: SupportedSIMD = Self
 
+    /// Initializes `self` with a `SIMDType`.
     init(_ simdRepresentation: SIMDType)
 
+    /// Returns a `SIMDType` that represents `self`.
     func simdRepresentation() -> SIMDType
 
+    /// A version of `self` that represents zero.
     static var zero: Self { get }
 
 }
 
+/// All `SIMD` types are `SIMDRepresentable` by default.
 extension SIMDRepresentable where SIMDType == Self {
 
     @inlinable public init(_ simdRepresentation: SIMDType) {
@@ -67,7 +81,7 @@ extension SIMD32: SIMDRepresentable where Scalar: SupportedScalar {}
 extension SIMD64: SIMDRepresentable where Scalar: SupportedScalar {}
 
 // These single floating point conformances technically are wasteful, but it's still a single register it gets packed in, so it's "fine".
-// Actually I think the compiler is smart and optimizes these anyways.
+// Actually, don't quote me, but I think the compiler is smart and optimizes these anyways.
 
 extension Float: SIMDRepresentable {
 
