@@ -39,7 +39,7 @@ extension SIMD64: SupportedSIMD where Scalar: SupportedScalar {}
 
 // MARK: - SIMDRepresentable
 
-/// A protocol that defines how something that can be represented / stored in a `SIMD` type as well as decoded from said `SIMD` type.
+/// A protocol that defines how something that can be represented / stored in a `SIMD` type as well as instantiated from said `SIMD` type.
 public protocol SIMDRepresentable: Comparable {
 
     /**

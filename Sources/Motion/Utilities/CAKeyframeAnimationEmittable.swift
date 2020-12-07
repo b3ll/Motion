@@ -176,7 +176,7 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 // MARK: - CAKeyframeAnimationValueConvertible
 
 /**
- A protocol for types to supply the ability to convert themselves into `NSValue` or `NSNumber` for use with `CAKeyframeAnimation`. This is required for
+ A protocol for types to supply the ability to convert themselves into `NSValue` or `NSNumber` for use with `CAKeyframeAnimation`. This is required for `CAKeyframeAnimationEmittable`.
 
  - Note: This is required for using `CAKeyframeAnimationEmittable`.
  */
