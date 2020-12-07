@@ -129,9 +129,13 @@ extension EasingFunction where Value: SupportedSIMD {
  */
 public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
 
+    /// The x value of the first point.
     public let x1: Scalar
+    /// The y value of the first point.
     public let x2: Scalar
+    /// The x value of the second point.
     public let y1: Scalar
+    /// The y value of the second point.
     public let y2: Scalar
 
     private let cx: Scalar
