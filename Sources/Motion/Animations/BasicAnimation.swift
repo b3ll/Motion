@@ -143,6 +143,14 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         _range = _fromValue..._toValue
     }
 
+    // MARK: - Disabled API
+
+    @available(*, unavailable, message: "Not Supported in BasicAnimation.")
+    public override var velocity: Value {
+        get { return .zero }
+        set { }
+    }
+
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {

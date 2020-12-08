@@ -55,8 +55,8 @@ public struct ValueAnimationShape: Shape {
 
             let velocity = { () -> CGPoint in
                 let velocity: CGFloat
-                if let velocitySupportedAnimation = animation as? ValueAnimationWithVelocity {
-                    velocity = velocitySupportedAnimation.velocity
+                if type(of: animation).supportsVelocity {
+                    velocity = animation.velocity
                 } else {
                     return position()
                 }
@@ -93,7 +93,7 @@ public struct ValueAnimationGraphView: View {
 
     public init(_ animation: ValueAnimation<CGFloat>, graphType: ValueAnimationShape.GraphType, duration: CFTimeInterval = 3.0) {
         self.animation = animation
-        if graphType == .velocity, let _ = animation as? ValueAnimationWithVelocity {
+        if graphType == .velocity, type(of: animation).supportsVelocity {
             // Only velocity is supported on these types.
             self.graphType = graphType
         } else {

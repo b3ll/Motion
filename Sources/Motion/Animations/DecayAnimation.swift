@@ -8,7 +8,7 @@
 import Foundation
 import simd
 
-public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimationWithVelocity<Value> {
+public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     public var decayConstant: Value.SIMDType.SIMDType.Scalar {
         set {
