@@ -238,7 +238,7 @@ final class MotionTests: XCTestCase {
             }
         }
 
-        tickAnimationUntilResolved(basicAnimation)
+        tickAnimationForDuration(basicAnimation, maxDuration: 1.0)
 
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }
@@ -265,6 +265,33 @@ final class MotionTests: XCTestCase {
 
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }
+
+    func testBasicAnimationResumeAfterValueChange() {
+        let basicAnimation = BasicAnimation<CGFloat>(easingFunction: .easeIn)
+        basicAnimation.fromValue = 0.0
+        basicAnimation.toValue = 10.0
+        basicAnimation.duration = 2.0
+        
+        tickAnimationForDuration(basicAnimation, maxDuration: 1.0)
+
+        let timeAccumulated = basicAnimation.accumulatedTime
+
+        basicAnimation.attemptToUpdateAccumulatedTimeToMatchValue()
+
+        let timeAccumulatedDeterminedFromValue = basicAnimation.accumulatedTime
+
+        XCTAssertTrue(timeAccumulated.approximatelyEqual(to: timeAccumulatedDeterminedFromValue))
+
+        let expectBasicAnimationCompletionCalled = XCTestExpectation(description: "Basic animation completed")
+        basicAnimation.completion = {
+            expectBasicAnimationCompletionCalled.fulfill()
+        }
+
+        tickAnimationForDuration(basicAnimation, maxDuration: 1.0)
+
+        wait(for: [expectBasicAnimationCompletionCalled], timeout: 0.0)
+    }
+
 
     // MARK: - AnimationGroup Tests
 

@@ -9,9 +9,20 @@ import Foundation
 import simd
 
 /**
- This class provides the ability to animate values based on basic curves (i.e. `EasingFunction.easeIn`, `EasingFunction.easeInOut`, etc.).
+ This class provides the ability to animate types that conform to `Value` based on basic curves (i.e. `EasingFunction.easeIn`, `EasingFunction.easeInOut`, etc.).
 
  It animates values by interpolating from the `fromValue` to the `toValue` over the supplied `duration` using the supplied `easingFunction`.
+
+ ```
+ let animation = BasicAnimation<CGFloat>(easingFunction: .easeInOut)
+ animation.fromValue = 0.0
+ animation.toValue = 100.0
+ animation.duration = 0.33
+ animation.onValueChanged { newValue in
+    // view.frame.origin.x = newValue
+ }
+ animation.start()
+ ```
  */
 public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
@@ -49,7 +60,54 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     /// The easing function the animation should use. For example: `.easeIn` starts out slow, and then speeds up, whereas `.linear` is constant speed.
     public var easingFunction: EasingFunction<Value.SIMDType> = .linear
 
-    private var accumulatedTime: CFTimeInterval = 0.0
+    internal var accumulatedTime: CFTimeInterval = 0.0
+
+    /**
+     Initializes a `BasicAnimation` with an `EasingFunction`.
+
+     - Parameters:
+        - easingFunction: The easing function the animation should use.
+     */
+    public init(easingFunction: EasingFunction<Value.SIMDType> = .linear) {
+        self.easingFunction = easingFunction
+        super.init()
+    }
+
+    override public func start() {
+        attemptToUpdateAccumulatedTimeToMatchValue()
+
+        super.start()
+    }
+
+    internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
+        if !range.contains(value) {
+            return nil
+        }
+
+        return easingFunction.solveAccumulatedTime(range, value: value)
+    }
+
+    /**
+     If the value isn't the fromValue, or the toValue, it might've been changed via `-updateValue(to:postValueChanged:)`.
+     Since starting the animation from that point doesn't make much sense (i.e. if animating from 1 to 3, and you set the value to 2.5 and the duration is 3s, it'll animate from 2.5 to 3 in 3s, which isn't expected).
+     If this is the case, we can determine whereabouts we are in the animation and continue logically from that time (i.e. 2.5 to 3, would probably only take 0.5s).
+
+     If the value is outside the range, or we can't determine what it should be, we'll just start from the beginning, since that's already an unexpected state.
+     */
+    internal func attemptToUpdateAccumulatedTimeToMatchValue() {
+        if !_value.approximatelyEqual(to: _fromValue) && !_value.approximatelyEqual(to: _toValue) {
+            // Try to find out where we are in the animation.
+            if let accumulatedTime = solveAccumulatedTime(easingFunction: &easingFunction, range: &_range, value: &_value) {
+                self.accumulatedTime = accumulatedTime * duration
+            } else {
+                // Unexpected state, reset to beginning of animation.
+                reset(postValueChanged: false)
+            }
+        } else {
+            // We're starting this animation fresh, so ensure all state is correct.
+            reset(postValueChanged: false)
+        }
+    }
 
     /**
      Stops the animation and optionally resolves it immediately (jumping to the `toValue`).
@@ -93,13 +151,13 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
             return
         }
 
+        accumulatedTime += dt
+
         let fraction = accumulatedTime / duration
 
         tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.SIMDType.Scalar(fraction), value: &_value)
 
         _valueChanged?(value)
-
-        accumulatedTime += dt
 
         if hasResolved() {
             stop()
@@ -124,7 +182,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
-        value = easingFunction.solve(range, fraction: fraction)
+        value = easingFunction.solveInterpolatedValue(range, fraction: fraction)
     }
     
 }

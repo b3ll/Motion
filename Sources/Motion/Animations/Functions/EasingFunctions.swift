@@ -54,7 +54,7 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
      - Returns: An interpolated SIMD value between the supplied range's bounds based on a fraction (from 0.0 to 1.0) of the easing function.
      */
-    @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
+    @inlinable public func solveInterpolatedValueSIMD<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
         let x = bezier.solve(x: fraction)
 
         let min = range.lowerBound
@@ -72,9 +72,24 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
      - Note: This mirrors the `solveSIMD` variant, but works for `Value` types.
      */
-    @inlinable public func solve(_ range: ClosedRange<Value>, fraction: Value.SIMDType.Scalar) -> Value {
-        let newValue = solveSIMD(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), fraction: fraction)
+    @inlinable public func solveInterpolatedValue(_ range: ClosedRange<Value>, fraction: Value.SIMDType.Scalar) -> Value {
+        let newValue = solveInterpolatedValueSIMD(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), fraction: fraction)
         return Value(newValue)
+    }
+
+    @inlinable internal func solveAccumulatedTimeSIMD<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, value: SIMDType) -> CFTimeInterval? where SIMDType == Value.SIMDType {
+        guard let usableIndex = value.indices.first(where: { i -> Bool in
+            let fractionComplete = value[i] / (range.upperBound[i] - range.lowerBound[i])
+            return !(fractionComplete.approximatelyEqual(to: 0.0) || fractionComplete.approximatelyEqual(to: 1.0))
+        }) else { return nil }
+
+        let fractionComplete = value[usableIndex] / (range.upperBound[usableIndex] - range.lowerBound[usableIndex])
+        let t = bezier.solve(y: fractionComplete)
+        return (t as! CFTimeInterval)
+    }
+
+    @inlinable internal func solveAccumulatedTime(_ range: ClosedRange<Value>, value: Value) -> CFTimeInterval? {
+        return solveAccumulatedTimeSIMD(range.lowerBound.simdRepresentation()...range.upperBound.simdRepresentation(), value: value.simdRepresentation())
     }
 
     // MARK: - Hashable
@@ -93,8 +108,12 @@ extension EasingFunction where Value: SupportedSIMD {
 
      - Note: This mirrors the `solveSIMD` variant, but works for `Value` types and acts as a fast path to skip boxing and unboxing `Value`.
      */
-    @inlinable public func solve<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
-        return solveSIMD(range, fraction: fraction)
+    @inlinable public func solveInterpolatedValue<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, fraction: SIMDType.Scalar) -> SIMDType where SIMDType == Value.SIMDType {
+        return solveInterpolatedValueSIMD(range, fraction: fraction)
+    }
+
+    @inlinable internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(_ range: ClosedRange<SIMDType>, value: SIMDType) -> CFTimeInterval? where SIMDType == Value.SIMDType {
+        return solveAccumulatedTimeSIMD(range, value: value)
     }
 
 }
@@ -171,32 +190,40 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
         self.ay = 1.0 - cy - by
     }
 
-    private func sampleCurveX(t: Scalar) -> Scalar {
+    /// Evaluates `x(t)` for the bezier curve function.
+    public func evaluateCurveX(t: Scalar) -> Scalar {
         // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
         return ((ax * t + bx) * t + cx) * t
     }
 
-    private func sampleCurveY(t: Scalar) -> Scalar {
+    /// Evaluates `y(t)` for the bezier curve function.
+    public func evaluateCurveY(t: Scalar) -> Scalar {
         return ((ay * t + by) * t + cy) * t
     }
 
-    private func sampleCurveDerivativeX(t: Scalar) -> Scalar {
+    /// Evaluates `x'(t)` for the bezier curve function.
+    private func evaluateCurveDerivativeX(t: Scalar) -> Scalar {
         return (3.0 * ax * t + 2.0 * bx) * t + cx
     }
 
-    /// Solves for the y value given an x value.
-    public func solveCurveX(x: Scalar, epsilon: Scalar) -> Scalar {
+    /// Evaluates `y'(t)` for the bezier curve function.
+    private func evaluateCurveDerivativeY(t: Scalar) -> Scalar {
+        return (3.0 * ay * t + 2.0 * by) * t + cy
+    }
+
+    /// Solves for the `t` value given an `x` value for the function `x(t)`.
+    public func solveForT(x: Scalar, epsilon: Scalar) -> Scalar {
         var x2: Scalar = 0.0
         var d2: Scalar = 0.0
         var t2 = x
 
         // First try a few iterations of Newton's method -- normally very fast.
         for _ in 0..<8 {
-            x2 = sampleCurveX(t: t2) - x
+            x2 = evaluateCurveX(t: t2) - x
             if (abs(x2) < epsilon) {
                 return t2
             }
-            d2 = sampleCurveDerivativeX(t: t2)
+            d2 = evaluateCurveDerivativeX(t: t2)
             if (abs(d2) < 1e-6) {
                 break
             }
@@ -217,7 +244,7 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
         }
 
         while t0 < t1 {
-            x2 = sampleCurveX(t: t2)
+            x2 = evaluateCurveX(t: t2)
             if abs(x2 - x) < epsilon {
                 return t2
             }
@@ -233,9 +260,65 @@ public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
         return t2
     }
 
-    /// Solves for the y value for the bezier curve for a given x value and an optional epsilon.
+    /// Solves for the `t` value given a `y` value for the function `y(t)`.
+    public func solveForT(y: Scalar, epsilon: Scalar) -> Scalar {
+        var y2: Scalar = 0.0
+        var d2: Scalar = 0.0
+        var t2 = y
+
+        // First try a few iterations of Newton's method -- normally very fast.
+        for _ in 0..<8 {
+            y2 = evaluateCurveY(t: t2) - y
+            if (abs(y2) < epsilon) {
+                return t2
+            }
+            d2 = evaluateCurveDerivativeY(t: t2)
+            if (abs(d2) < 1e-6) {
+                break
+            }
+            t2 = t2 - y2 / d2
+        }
+
+        // Fall back to the bisection method for reliability.
+        var t0: Scalar = 0.0
+        var t1: Scalar = 1.0
+        t2 = y
+
+        if t2 < t0 {
+            return t0
+        }
+
+        if t2 > t1 {
+            return t1
+        }
+
+        while t0 < t1 {
+            y2 = evaluateCurveY(t: t2)
+            if abs(y2 - y) < epsilon {
+                return t2
+            }
+            if y > y2 {
+                t0 = t2
+            } else {
+                t1 = t2
+            }
+            t2 = (t1 - t0) * 0.5 + t0
+        }
+
+        // Failure.
+        return t2
+    }
+
+    /// Solves for the `y` value of the bezier curve for a given `x` value and an optional `epsilon`.
     public func solve(x: Scalar, epsilon: Scalar = 0.0001) -> Scalar {
-        return sampleCurveY(t: solveCurveX(x: x, epsilon: epsilon))
+        // Find `t` by "bruteforcing" y values until they match.
+        return evaluateCurveY(t: solveForT(x: x, epsilon: epsilon))
+    }
+
+    /// Solves for the `x` value for the bezier curve for a given `y` value and an optional `epsilon`.
+    public func solve(y: Scalar, epsilon: Scalar = 0.0001) -> Scalar {
+        // Find t by "bruteforcing" x values until they match.
+        return evaluateCurveX(t: solveForT(y: y, epsilon: epsilon))
     }
 
 }
