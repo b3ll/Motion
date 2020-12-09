@@ -1,0 +1,21 @@
+name: Docs
+
+on: [push]
+
+jobs:
+  deploy_docs:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        run: sudo gem install jazzy; brew install sourcekitten;
+
+      - name: Build docs
+        run: ./build_docs.sh
+
+      - name: Publish Jazzy Docs
+        uses: steven0351/publish-jazzy-docs@v1
+        with:
+          personal_access_token: ${{ secrets.GH_ACCESS_TOKEN }}
+          args: '--module Motion --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --author "Adam Bell" --author_url "https://twitter.com/b3ll" --undocumented-text "No overview available." --theme apple --clean'
