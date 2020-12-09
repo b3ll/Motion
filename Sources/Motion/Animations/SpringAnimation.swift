@@ -24,7 +24,13 @@ import simd
  ```
  let springAnimation = SpringAnimation<CGRect>(initialValue: .zero)
  springAnimation.toValue = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
- springAnimation.configure(
+ springAnimation.configure(response: 0.4, dampingRatio: 0.8)
+ // Setting a velocity in the opposite direction can be nice for causing a "pop-up" effect.
+ springAnimation.velocity = CGRect(x: 0.0, y: 0.0, width: -1000.0, height: -1000.0)
+ springAnimation.onValueChanged { newValue in
+    view.frame = newValue
+ }
+ springAnimation.start()
  ```
  */
 public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
