@@ -156,6 +156,10 @@ final class MotionTests: XCTestCase {
             XCTAssert(CATransaction.disableActions())
         }
 
+        CADisableActions {
+            XCTAssert(CATransaction.disableActions())
+        }
+
         tickAnimationOnce(spring)
     }
 

@@ -20,7 +20,7 @@ public protocol CAKeyframeAnimationEmittable where Self: Animation {
      Generates and returns a `CAKeyframeAnimation` based on the animation's current state targeting the animation's resolved state..
 
      - Parameters:
-        - framerate: The framerate the `CAKeyframeAnimation` should be targeting. If nil, the default device's framerate will be used.
+        - framerate: The framerate the `CAKeyframeAnimation` should be targeting. If nil, the device's default framerate will be used.
 
      - Returns: A fully configured `CAKeyframeAnimation` which represents the animation from the current animation's state to its resolved state.
 

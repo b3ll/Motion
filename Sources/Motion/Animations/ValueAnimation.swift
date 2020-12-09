@@ -189,10 +189,9 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
 
         if disableActions {
             self._valueChanged = { (value) in
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                valueChangedCallback(value)
-                CATransaction.commit()
+                CADisableActions {
+                    valueChangedCallback(value)
+                }
             }
         } else {
             self._valueChanged = valueChangedCallback
