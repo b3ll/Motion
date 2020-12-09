@@ -9,6 +9,21 @@ import Combine
 import QuartzCore
 import simd
 
+/**
+ This class provides the ability to animate `Value` using a physically-modeled spring.
+
+ `value` will be animated towards `toValue` (optionally seeded with `velocity) and depending on how the spring is configured, may bounce around the endpoint.
+
+ Springs can be configured as underdamped, overdamped, or critically-damped, depending on the constants supplied.
+
+ Stopping a spring via `stop` allows for redirecting the spring any way you'd like (perhaps in a different direction or velocity).
+
+ ```
+ let springAnimation = SpringAnimation<CGRect>(initialValue: .zero)
+ springAnimation.toValue = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+ springAnimation.configure(
+ ```
+ */
 public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     public override var velocity: Value {
@@ -25,20 +40,19 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     internal var spring: SpringFunction<Value.SIMDType>
 
     public var damping: Value.SIMDType.SIMDType.Scalar {
-        get {
-            return spring.damping
-        }
-        set {
-            spring.damping = newValue
-        }
+        return spring.damping
     }
+
     public var stiffness: Value.SIMDType.SIMDType.Scalar {
-        get {
-            return spring.stiffness
-        }
-        set {
-            spring.stiffness = newValue
-        }
+        return spring.stiffness
+    }
+
+    public var response: Value.SIMDType.SIMDType.Scalar {
+        return spring.response
+    }
+
+    public var dampingRatio: Value.SIMDType.SIMDType.Scalar {
+        return spring.dampingRatio
     }
 
     public var clampingRange: ClosedRange<Value>? {
@@ -72,8 +86,11 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
-        self.stiffness = stiffness
-        self.damping = damping
+        configure(stiffness: stiffness, damping: damping)
+    }
+
+    public func configure(stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
+        spring.configure(stiffness: response, damping: damping)
     }
 
     public func configure(response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {

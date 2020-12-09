@@ -17,29 +17,46 @@ import simd
 */
 public struct SpringFunction<Value: SIMDRepresentable> {
 
-    /// The stiffness coefficient of the string.
-    public var stiffness: Value.SIMDType.Scalar {
-        didSet {
-            updateConstants()
-        }
-    }
+    /**
+     The stiffness coefficient of the string.
+     This is meant to be paired with the `damping`.
+
+     - Description: This may be changed using `configure(stiffness:damping:)`.
+     */
+    private(set) public var stiffness: Value.SIMDType.Scalar = 0.0
 
     /**
      The damping amount of the spring.
+     This is meant to be paired with the `stiffness`.
 
-     - Description: This is equivalent to the friction of the spring.
+     - Description: This is equivalent to the friction of the spring. This may be changed using `configure(stiffness:damping:)`.
      */
-    public var damping: Value.SIMDType.Scalar {
-        didSet {
-            updateConstants()
-        }
-    }
+    private(set) public var damping: Value.SIMDType.Scalar = 0.0
+
+    /**
+     The response time of the spring (in seconds). This is used to change how long (approximately) it will take for the spring to reach its destination.
+     This is meant to be paired with the `dampingRatio`. Changing this will override the `stiffness` and `damping` values.
+
+     - Description: This may be changed using `configure(response:dampingRatio:)`.
+     */
+    private(set) public var response: Value.SIMDType.Scalar = 0.0
+
+    /**
+     The damping ratio of the spring ranging from `0.0` to `1.0`. This describes how much the spring should oscillate around its destination point.
+
+     The supported values are as follows:
+        - `0.0`: An infinitely oscillating spring.
+        - `1.0`: A critically damped spring.
+        - `0.0 < value > 1.0`: An underdamped spring.
+
+     This is meant to be paired with the `dampingRatio`. Changing this will override the `stiffness` and `damping` values.
+
+     - Description: This may be changed using `configure(response:dampingRatio:)`.
+     */
+    private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
 
     /// The undamped angular frequency of the spring.
     private(set) public var w0: Value.SIMDType.Scalar = 0.0
-
-    /// The damping ratio of the spring.
-    private(set) public var dampingRatio: Value.SIMDType.Scalar = 0.0
 
     /// A cached constant representing the decaying amount of the harmonic frequency derived from `w0 * sqrt(1.0 - dampingRatio^2)`.
     private(set) public var wD: Value.SIMDType.Scalar = 0.0
@@ -60,20 +77,64 @@ public struct SpringFunction<Value: SIMDRepresentable> {
     }
 
     /**
-     Convenience function to configure the stiffness and damping based on easier to work with constants.
+     Initializes a spring function.
 
      - Parameters:
         - response: How long (approximately) it should take the spring to reach its destination (in seconds).
         - dampingRatio: How much the spring should bounce around its destination specified as a ratio from 0.0 (bounce forever) to 1.0 (don't bounce at all).
+        The supported values are as follows:
+          - `0.0`: An infinitely oscillating spring.
+          - `1.0`: A critically damped spring.
+          - `0.0 < value > 1.0`: An underdamped spring.
+     */
+    public init(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+        self.response = response
+        self.dampingRatio = dampingRatio
 
+        configure(response: response, dampingRatio: dampingRatio)
+    }
+
+    /**
+     Convenience function to configure the `stiffness` and `damping` based on easier to work with constants.
+
+     - Parameters:
+        - response: How long (approximately) it should take the spring to reach its destination (in seconds).
+        - dampingRatio: How much the spring should bounce around its destination specified as a ratio from 0.0 (bounce forever) to 1.0 (don't bounce at all).
+        The supported values are as follows:
+          - `0.0`: An infinitely oscillating spring.
+          - `1.0`: A critically damped spring.
+          - `0.0 <-> 1.0`: An underdamped spring.
+
+     - Note: Configuring this spring via this method will override the values for `stiffness` and `damping`.
      - Description: For more info check out the WWDC talk on this: https://developer.apple.com/videos/play/wwdc2018/803/
      */
-    public mutating func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+    public mutating func configure(response response_: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
+        let response: Value.SIMDType.Scalar
+        if response_.approximatelyEqual(to: 0.0) {
+            // Having a zero response is unsupported, so we'll just supply an arbitrarily small value.
+            response = 0.0001
+        } else {
+            response = response_
+        }
         let stiffness = Value.SIMDType.Scalar.pow(2.0 * .pi / response, 2.0)
         let damping = 4.0 * .pi * dampingRatio / response
 
         self.stiffness = stiffness
         self.damping = damping
+        updateConstants()
+    }
+
+    /**
+     Convenience function to configure the `stiffness` and `damping` all at once.
+
+     - Parameters:
+        - stiffness: The stiffness coefficient of the string.
+        - damping: The damping amount of the spring (friction).
+     */
+    public mutating func configure(stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
+        self.stiffness = stiffness
+        self.damping = damping
+        updateConstants()
     }
 
     private mutating func updateConstants() {

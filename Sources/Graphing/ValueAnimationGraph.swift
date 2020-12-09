@@ -139,8 +139,7 @@ struct ValueAnimationGraphView_Previews: PreviewProvider {
 
     static let criticallyDamped = { () -> SpringAnimation<CGFloat> in
         let springAnimation = SpringAnimation<CGFloat>()
-        springAnimation.damping = 10.0
-        springAnimation.stiffness = 2.0
+        springAnimation.configure(stiffness: 2.0, damping: 10.0)
         springAnimation.toValue = 1.0
         return springAnimation
     }()

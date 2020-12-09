@@ -38,7 +38,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
      - Parameters:
         - decayConstant: The rate at which the velocity decays over time. Defaults to `UIKitDecayConstant`.
      */
-    init(decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIKitDecayConstant)) {
+    public init(decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIKitDecayConstant)) {
         self.decayConstant = decayConstant
         // Explicitly update constants.
         updateConstants()
