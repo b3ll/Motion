@@ -1,5 +1,8 @@
 # Motion
 
+![Tests](https://github.com/b3ll/Motion/workflows/Tests/badge.svg)
+![Docs](https://github.com/b3ll/Motion/workflows/Docs/badge.svg)
+
 ```swift
 let springAnimation = SpringAnimation<CGRect>()
 springAnimation.configure(response: 0.30, damping: 0.99)
