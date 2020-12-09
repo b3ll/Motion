@@ -11,9 +11,6 @@ jobs:
       - name: Setup
         run: sudo gem install jazzy; brew install sourcekitten;
 
-      - name: Build docs
-        run: ./build_docs.sh
-
       - name: Publish Jazzy Docs
         uses: steven0351/publish-jazzy-docs@v1
         with:
