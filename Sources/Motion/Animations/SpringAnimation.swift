@@ -90,7 +90,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     }
 
     public func configure(stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
-        spring.configure(stiffness: response, damping: damping)
+        spring.configure(stiffness: stiffness, damping: damping)
     }
 
     public func configure(response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
@@ -130,7 +130,8 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     /*
      This looks hideous, yes, but it forces the compiler to generate specialized versions (where the type is hardcoded) of the spring evaluation function.
      Normally this would be specialized, but because of the dynamic dispatch of -tick:, it fails to specialize.
-     By specializing manually, we forcefully generate implementations of this method hardcoded for each SIMD type specified. Whilst this does incur a codesize penalty, this results in a performance boost of more than **+100%**.
+     By specializing manually, we forcefully generate implementations of this method hardcoded for each SIMD type specified.
+     Whilst this does incur a codesize penalty, this results in a performance boost of more than **+100%**.
      */
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
