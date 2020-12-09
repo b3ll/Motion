@@ -113,7 +113,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
      Stops the animation and optionally resolves it immediately (jumping to the `toValue`).
 
      - Parameters:
-        - resolveImmediately: Whether or not the animations should jump to the `toValue` without animation. Defaults to `false`.
+        - resolveImmediately: Whether or not the animation should jump to the `toValue` without animation. Defaults to `false`.
         - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` upon changing `value` to toValue`.
      */
     public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {

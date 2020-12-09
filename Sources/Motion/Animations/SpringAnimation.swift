@@ -12,9 +12,12 @@ import simd
 /**
  This class provides the ability to animate `Value` using a physically-modeled spring.
 
- `value` will be animated towards `toValue` (optionally seeded with `velocity) and depending on how the spring is configured, may bounce around the endpoint.
+ `value` will be animated towards `toValue` (optionally seeded with `velocity`) and depending on how the spring is configured, may bounce around the endpoint.
 
- Springs can be configured as underdamped, overdamped, or critically-damped, depending on the constants supplied.
+ Springs can be configured as underdamped, overdamped, or critically-damped, depending on the constants supplied for `stiffness` and `damping`.
+
+ They can also be configured by specifying the `response` time and `dampingRatio`. These are recommended and easier to work with than `stiffness` and `damping`.
+ For more information on these, check out the WWDC talk on fluid animations: https://developer.apple.com/videos/play/wwdc2018/803/
 
  Stopping a spring via `stop` allows for redirecting the spring any way you'd like (perhaps in a different direction or velocity).
 
@@ -26,6 +29,7 @@ import simd
  */
 public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
+    /// The velocity of the animation. Setting this before calling `start` will cause the spring animation to be seeded with that velocity, and then the velocity will decay over time.
     public override var velocity: Value {
          get {
             // We override velocity to be negative, since that's typically easier to reason about (i.e. touch velocity).
@@ -39,22 +43,60 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     internal var spring: SpringFunction<Value.SIMDType>
 
-    public var damping: Value.SIMDType.SIMDType.Scalar {
-        return spring.damping
-    }
+    /**
+     The stiffness coefficient of the string.
+     This is meant to be paired with the `damping`.
 
+     - Description: This may be changed using `configure(stiffness:damping:)`.
+     */
     public var stiffness: Value.SIMDType.SIMDType.Scalar {
         return spring.stiffness
     }
 
+    /**
+     The damping amount of the spring.
+     This is meant to be paired with the `stiffness`.
+
+     - Description: This is equivalent to the friction of the spring. This may be changed using `configure(stiffness:damping:)`.
+     */
+    public var damping: Value.SIMDType.SIMDType.Scalar {
+        return spring.damping
+    }
+
+    /**
+     The response time of the spring (in seconds). This is used to change how long (approximately) it will take for the spring to reach its destination.
+     This is meant to be paired with the `dampingRatio`. Changing this will override the `stiffness` and `damping` values.
+
+     - Description: This may be changed using `configure(response:dampingRatio:)`.
+     */
     public var response: Value.SIMDType.SIMDType.Scalar {
         return spring.response
     }
 
+    /**
+     The damping ratio of the spring ranging from `0.0` to `1.0`. This describes how much the spring should oscillate around its destination point.
+
+     The supported values are as follows:
+        - `0.0`: An infinitely oscillating spring.
+        - `1.0`: A critically damped spring.
+        - `0.0 < value > 1.0`: An underdamped spring.
+
+     This is meant to be paired with the `dampingRatio`. Changing this will override the `stiffness` and `damping` values.
+
+     - Description: This may be changed using `configure(response:dampingRatio:)`.
+     */
     public var dampingRatio: Value.SIMDType.SIMDType.Scalar {
         return spring.dampingRatio
     }
 
+    /**
+     An optional range to clamp `value` to be within the specified upper and lower bound.
+
+     If `value` ever exceeds the lower or upper bound, it will be capped to those values.
+
+     - Description: This is useful for animations where you don't want the value to overshoot (i.e. changing the alpha on a view).
+     Setting this to `0.0...1.0` will force the animation to never set `value` lower than `0.0` or higher than `1.0`.
+     */
     public var clampingRange: ClosedRange<Value>? {
         get {
             if let clampingRange = _clampingRange {
@@ -73,30 +115,78 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     }
     internal var _clampingRange: ClosedRange<Value.SIMDType>? = nil
 
+    /**
+     Initializes a `SpringAnimation` with an optional initial value.
+
+     - Parameters:
+        - initialValue: The value to start animating from.
+     */
     public init(initialValue: Value = .zero) {
         self.spring = SpringFunction()
         super.init()
         self.value = initialValue
     }
 
-    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
-        self.init(initialValue: initialValue)
-        configure(response: response, dampingRatio: dampingRatio)
-    }
+    /**
+     A convenience initializer to create a `SpringAnimation` with `stiffness` and `damping` constants.
 
+     - Parameters:
+        - stiffness: How stiff the spring should be.
+        - damping: How much friction should be exerted on the spring.
+     */
     public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
         configure(stiffness: stiffness, damping: damping)
     }
 
+    /**
+     A convenience initializer to create a `SpringAnimation` with a given `response` and `dampingRatio`.
+
+     - Parameters:
+        - response: How long (approximately) it should take the spring to reach its destination (in seconds).
+        - dampingRatio: How much the spring should bounce around its destination specified as a ratio from 0.0 (bounce forever) to 1.0 (don't bounce at all).
+        The supported values are as follows:
+          - `0.0`: An infinitely oscillating spring.
+          - `1.0`: A critically damped spring.
+          - `0.0 < value > 1.0`: An underdamped spring.
+
+     - Note: For more information on how these values work, check out the WWDC talk on fluid animations: https://developer.apple.com/videos/play/wwdc2018/803/.
+     */
+    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
+        self.init(initialValue: initialValue)
+        configure(response: response, dampingRatio: dampingRatio)
+    }
+
+    /**
+     Convenience function to configure the `stiffness` and `damping` all at once.
+
+     - Parameters:
+        - stiffness: The stiffness coefficient of the string.
+        - damping: The damping amount of the spring (friction).
+     */
     public func configure(stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
         spring.configure(stiffness: stiffness, damping: damping)
     }
 
+    /**
+     Convenience function to configure the `stiffness` and `damping` based on easier to work with constants.
+
+     - Parameters:
+        - response: How long (approximately) it should take the spring to reach its destination (in seconds).
+        - dampingRatio: How much the spring should bounce around its destination specified as a ratio from 0.0 (bounce forever) to 1.0 (don't bounce at all).
+        The supported values are as follows:
+          - `0.0`: An infinitely oscillating spring.
+          - `1.0`: A critically damped spring.
+          - `0.0 <-> 1.0`: An underdamped spring.
+
+     - Note: Configuring this spring via this method will override the values for `stiffness` and `damping`.
+     - Description: For more info check out the WWDC talk on this: https://developer.apple.com/videos/play/wwdc2018/803/
+     */
     public func configure(response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
         spring.configure(response: response, dampingRatio: dampingRatio)
     }
 
+    /// Returns whether or not the spring animation has resolved. It is considered resolved when the `toValue` is reached, and `velocity` is zero.
     public override func hasResolved() -> Bool {
         return hasResolved(velocity: &_velocity, value: &_value)
     }
@@ -105,6 +195,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         return velocity.approximatelyEqual(to: .zero) && value.approximatelyEqual(to: _toValue)
     }
 
+    /**
+     Stops the animation and optionally resolves it immediately (jumping to the `toValue`).
+
+     - Parameters:
+        - resolveImmediately: Whether or not the animation should jump to the `toValue` without animation. Defaults to `false`.
+        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` upon changing `value` to toValue`.
+     */
     public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         super.stop(resolveImmediately: resolveImmediately, postValueChanged: postValueChanged)
         self.velocity = .zero

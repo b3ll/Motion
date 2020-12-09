@@ -8,8 +8,25 @@
 import Foundation
 import simd
 
+/**
+ This class provides the ability to animate types that conform to `Value` based on decay functions.
+
+ The starting from `value`, the value will increase or decrease (depending on the `velocity` supplied) and will slow to a stop.
+ This essentially provides the same "decaying" that `UIScrollView` does when you drag and let go. The animation is seeded with velocity, and that velocity decays over time.
+
+ ```
+ let decayAnimation = DecayAnimation<CGPoint>()
+ decayAnimation.velocity = CGPoint(x: 2000.0, y: -2000.0)
+ decayAnimation.onValueChanged { newValue in
+    // Simulates scrolling a view.
+    someView.bounds.origin = newValue
+ }
+ decayAnimation.start()
+ ```
+*/
 public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
+    /// The decay constant. This defaults to `UIScrollViewDecayConstant`.
     public var decayConstant: Value.SIMDType.SIMDType.Scalar {
         set {
             decay.decayConstant = newValue
@@ -21,6 +38,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     internal var decay: DecayFunction<Value.SIMDType>
 
+    /// Returns whether or not the animation has resolved. It is considered resolved when its velocity reaches zero.
     public override func hasResolved() -> Bool {
         return hasResolved(velocity: &_velocity)
     }
@@ -29,12 +47,29 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         return velocity < Value.SIMDType(repeating: 0.5)
     }
 
-    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.SIMDType.Scalar = Value.SIMDType.SIMDType.Scalar(UIKitDecayConstant)) {
+    /**
+     Initializes a `DecayAnimation` with an initial value and decay constant.
+
+     - Parameters:
+        - initialValue: The initial value to be set for `value`.
+        - decayConstnat: The decay constant. Defaults to `UIScrollViewDecayConstant`.
+     */
+    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.SIMDType.Scalar = Value.SIMDType.SIMDType.Scalar(UIScrollViewDecayConstant)) {
         self.decay = DecayFunction(decayConstant: decayConstant)
         super.init()
         self.value = initialValue
     }
 
+    /**
+     Stops the animation and optionally resolves it immediately.
+
+     - Parameters:
+        - resolveImmediately: Whether or not the animation should jump to its projected value without animation. Defaults to `false`.
+        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` upon changing `value` to the end value.
+
+     - Note: `resolveImmediately` and `postValueChanged` currently are ignored.
+     They will be implemented at a later date when the logic for projecting decaying functions is worked out.
+     */
     public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         // We don't call super here, as jumping to the end requires knowing the end point, and we don't know that (yet).
         self.enabled = false
@@ -43,7 +78,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     // MARK: - Disabled API
 
-    @available(*, unavailable, message: "Not Supported in DecayAnimation.")
+    @available(*, unavailable, message: "Not supported in DecayAnimation.")
     public override var toValue: Value {
         get { return .zero }
         set { }
