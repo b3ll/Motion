@@ -6,6 +6,19 @@ final class SpringAnimationTests: XCTestCase {
 
     // MARK: - SpringAnimation Tests
 
+    func testSpringStartStop() {
+        let spring = SpringAnimation(initialValue: CGRect.zero)
+        spring.value = .zero
+        spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+        spring.start()
+
+        XCTAssertTrue(spring.enabled)
+
+        spring.stop()
+
+        XCTAssertFalse(spring.enabled)
+    }
+
     func testSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
         spring.value = .zero
@@ -144,6 +157,22 @@ final class SpringAnimationTests: XCTestCase {
         tickAnimationUntilResolved(spring)
 
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
+    }
+
+    // MARK: - CAKeyframeAnimationEmittable Tests
+
+    func testCreateCAKeyframeAnimationFromSpringAnimation() {
+        let spring = SpringAnimation(initialValue: CGRect.zero)
+        spring.value = .zero
+        spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+        spring.configure(response: 1.0, dampingRatio: 1.0)
+
+        let keyframeAnimation = spring.keyframeAnimation()
+
+        XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
+        XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
+        XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
+        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.766))
     }
 
     override class func tearDown() {

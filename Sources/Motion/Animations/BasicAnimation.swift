@@ -161,7 +161,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         accumulatedTime += dt
 
-        let fraction = accumulatedTime / duration
+        let fraction = min(max(0.0, accumulatedTime / duration), 1.0)
 
         tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.SIMDType.Scalar(fraction), value: &_value)
 

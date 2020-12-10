@@ -6,6 +6,20 @@ final class DecayAnimationTests: XCTestCase {
 
     // MARK: - DecayAnimation Tests
 
+    func testDecayStartStop() {
+        let decay = DecayAnimation<CGFloat>()
+        decay.value = .zero
+        decay.velocity = 2000.0
+
+        decay.start()
+
+        XCTAssertTrue(decay.enabled)
+
+        decay.stop()
+
+        XCTAssertFalse(decay.enabled)
+    }
+
     func testDecayAnimation() {
         let decay = DecayAnimation<CGFloat>()
         decay.value = .zero
@@ -24,6 +38,21 @@ final class DecayAnimationTests: XCTestCase {
         tickAnimationUntilResolved(decay)
 
         wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
+    }
+
+    // MARK: - CAKeyframeAnimationEmittable Tests
+
+    func testCreateCAKeyframeAnimationFromDecayAnimation() {
+        let decay = DecayAnimation<CGFloat>()
+        decay.value = .zero
+        decay.velocity = 2000.0
+
+        let keyframeAnimation = decay.keyframeAnimation()
+
+        XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
+        XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
+        XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
+        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 4.133))
     }
 
     override class func tearDown() {

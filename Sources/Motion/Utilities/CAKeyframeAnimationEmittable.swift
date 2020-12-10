@@ -115,9 +115,6 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 
     /// Generates and populates the `values` and `keyTimes` for a given `DecayAnimation` animating from its `value` and ticking by `dt` until it resolves.
     public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
-        var values = [AnyObject]()
-        var keyTimes = [NSNumber]()
-
         var velocity = _velocity
         var value = _value
 
@@ -148,9 +145,6 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
 
     /// Generates and populates the `values` and `keyTimes` for a given `BasicAnimation` animating from its `value` to its `toValue` by ticking it by `dt` until it resolves.
     public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
-        var values = [AnyObject]()
-        var keyTimes = [NSNumber]()
-
         var value = _value
 
         var t = 0.0

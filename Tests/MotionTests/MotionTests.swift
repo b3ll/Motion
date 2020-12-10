@@ -52,6 +52,50 @@ final class MotionTests: XCTestCase {
         XCTAssert(SIMD64(repeating: nonEqualValue1) < SIMD64(repeating: nonEqualValue2))
     }
 
+    // MARK: - SIMDRepresentable Tests
+
+    func testSIMDRepresentableScalarTypes() {
+        let a: Float = 10.0
+        let simdA = a.simdRepresentation()
+        XCTAssertTrue(a.approximatelyEqual(to: simdA[0]))
+        XCTAssertTrue(simdA[1].approximatelyEqual(to: 0.0))
+
+        let b: Double = 20.0
+        let simdB = b.simdRepresentation()
+        XCTAssertTrue(b.approximatelyEqual(to: simdB[0]))
+        XCTAssertTrue(simdB[1].approximatelyEqual(to: 0.0))
+
+        let c: CGFloat = 30.0
+        let simdC = c.simdRepresentation()
+        XCTAssertTrue(c.approximatelyEqual(to: CGFloat(simdC[0])))
+        XCTAssertTrue(simdC[1].approximatelyEqual(to: 0.0))
+    }
+
+    func testSIMDRepresentableCoreGraphicsTypes() {
+        let point = CGPoint(x: 10.0, y: 20.0)
+        let simdPoint = point.simdRepresentation()
+
+        XCTAssertTrue(point.x.approximatelyEqual(to: CGFloat(simdPoint[0])))
+        XCTAssertTrue(point.y.approximatelyEqual(to: CGFloat(simdPoint[1])))
+        XCTAssertEqual(point, CGPoint(simdPoint))
+
+        let size = CGSize(width: 30.0, height: 40.0)
+        let simdSize = size.simdRepresentation()
+
+        XCTAssertTrue(size.width.approximatelyEqual(to: CGFloat(simdSize[0])))
+        XCTAssertTrue(size.height.approximatelyEqual(to: CGFloat(simdSize[1])))
+        XCTAssertEqual(size, CGSize(simdSize))
+
+        let rect = CGRect(origin: point, size: size)
+        let simdRect = rect.simdRepresentation()
+
+        XCTAssertTrue(rect.origin.x.approximatelyEqual(to: CGFloat(simdRect[0])))
+        XCTAssertTrue(rect.origin.y.approximatelyEqual(to: CGFloat(simdRect[1])))
+        XCTAssertTrue(rect.size.width.approximatelyEqual(to: CGFloat(simdRect[2])))
+        XCTAssertTrue(rect.size.height.approximatelyEqual(to: CGFloat(simdRect[3])))
+        XCTAssertEqual(rect, CGRect(simdRect))
+    }
+
     // MARK: - ValueAnimation Tests
 
     /// TODO
