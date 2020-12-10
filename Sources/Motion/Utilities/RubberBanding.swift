@@ -20,8 +20,7 @@ public let UIScrollViewRubberBandingConstant = 0.55
    - range: The range over which the value won't rubberband.
  */
 public func rubberband<Value: FloatingPointInitializable>(_ value: Value, coefficient: Value = Value(UIScrollViewRubberBandingConstant), range: Value) -> Value {
-
-    if value <= range && value >= 0.0 {
+    if (0...range).contains(value) {
         return value
     }
 
