@@ -28,7 +28,7 @@ public protocol CAKeyframeAnimationEmittable where Self: Animation {
 
      ```
      let animation = SpringAnimation<CGFloat>()
-     animation.value = 0.0
+     animation.updateValue(to: 0.0)
      animation.toValue = 100.0
 
      let keyframeAnimation = animation.keyframeAnimation()

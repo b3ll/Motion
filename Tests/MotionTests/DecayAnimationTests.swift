@@ -8,7 +8,7 @@ final class DecayAnimationTests: XCTestCase {
 
     func testDecayStartStop() {
         let decay = DecayAnimation<CGFloat>()
-        decay.value = .zero
+        decay.updateValue(to: .zero)
         decay.velocity = 2000.0
 
         decay.start()
@@ -22,8 +22,7 @@ final class DecayAnimationTests: XCTestCase {
 
     func testDecayAnimation() {
         let decay = DecayAnimation<CGFloat>()
-        decay.value = .zero
-   
+
         let expectCompletionCalled = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         let expectDecayVelocityZero = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
         decay.completion = { [unowned decay] in
@@ -44,7 +43,6 @@ final class DecayAnimationTests: XCTestCase {
 
     func testCreateCAKeyframeAnimationFromDecayAnimation() {
         let decay = DecayAnimation<CGFloat>()
-        decay.value = .zero
         decay.velocity = 2000.0
 
         let keyframeAnimation = decay.keyframeAnimation()

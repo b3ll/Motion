@@ -8,7 +8,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testSpringStartStop() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
         spring.start()
 
@@ -21,7 +20,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
@@ -41,7 +39,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testCriticallyDampedSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
         spring.configure(response: 1.0, dampingRatio: 1.0)
 
@@ -62,7 +59,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testOverDampedSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero, stiffness: 2.0, damping: 10.0)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
         let expectCompletionCalled = XCTestExpectation(description: "Spring finished animating to \(spring.toValue)")
@@ -110,7 +106,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testSpringActionsDisabled() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
 
         spring.onValueChanged(disableActions: true) { newValue in
@@ -163,7 +158,6 @@ final class SpringAnimationTests: XCTestCase {
 
     func testCreateCAKeyframeAnimationFromSpringAnimation() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
-        spring.value = .zero
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
         spring.configure(response: 1.0, dampingRatio: 1.0)
 

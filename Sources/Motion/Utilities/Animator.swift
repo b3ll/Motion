@@ -8,6 +8,9 @@
 import Combine
 import Foundation
 import QuartzCore
+#if canImport(UIKit)
+import UIKit
+#endif
 
 class Animator: NSObject, DisplayLinkObserver {
 
@@ -23,6 +26,10 @@ class Animator: NSObject, DisplayLinkObserver {
         // TODO: Figure out a better way to query for the display's refresh rate.
         return 60
         #else
+        let preferredFramesPerSecond = displayLink.displayLink.preferredFramesPerSecond
+        if preferredFramesPerSecond == 0 {
+            return UIScreen.main.maximumFramesPerSecond
+        }
         return displayLink.displayLink.preferredFramesPerSecond
         #endif
     }

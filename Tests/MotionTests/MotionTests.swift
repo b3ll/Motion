@@ -121,7 +121,6 @@ final class MotionTests: XCTestCase {
         let expectSpringAnimationCompletionCalled = XCTestExpectation(description: "Spring animation completed")
 
         let spring = SpringAnimation(initialValue: CGFloat(0.0))
-        spring.value = .zero
         spring.toValue = 320.0
         spring.onValueChanged { newValue in
             expectSpringAnimationValueChangedCalled.fulfill()
