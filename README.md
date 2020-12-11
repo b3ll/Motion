@@ -15,14 +15,15 @@ Motion is an animation engine for gesturally-driven user interfaces, animations,
 - [SIMD](#simd)
 - [Performance](#performance)
   - [CAKeyframeAnimationEmittable](#cakeyframeanimationemittable)
+  - [Curve Graphing](#curve-graphing)
 - [Installation](#installation)
   - [Requirements](#requirements)
   - [Swift Package Manager](#swift-package-manager)
-  - [CocoaPods](#cocoapods)
   - [xcframework](#xcframework)
-  - [Carthage](#carthage)
   - [Xcode Subproject](#xcode-subproject)
+- [Other Recommendations](#other-recommendations)
 - [License](#license)
+- [Thanks](#thanks)
 - [Contact Info](#contact-info)
 
 # Usage
@@ -155,7 +156,7 @@ For more information on SIMD, check out the [docs](https://developer.apple.com/d
 
 # Performance
 
-Motion is pretty dang fast, leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~150ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
+Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~150ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
 
 Is it as fast as it could be? Faster than some C++ or C implementation? No idea.
 That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck.
@@ -208,6 +209,10 @@ CADisableActions {
 }
 ```
 
+## Curve Graphing
+
+Some initial work has been done to generate graphs to visualize a lot of these animations, and you'll find that in the Graphing package. It's still heavily a work in progress, but it is pretty neat for visualizing spring / decay functions.
+
 # Installation
 
 ## Requirements
@@ -225,29 +230,29 @@ Add the following to your `Package.swift` (or add it via Xcode's GUI):
 .package(url: "https://github.com/b3ll/Motion", from: "0.0.1")
 ```
 
-## CocoaPods
-
-Add the following to your `Podfile`:
-
-`pod 'Motion'`
-
 ## xcframework
 
 A built xcframework is available for each tagged release.
 
-## Carthage
-
-Add the following to your `Cartfile`:
-
-`"b3ll/Motion"`
-
 ## Xcode Subproject
 
-Still working on this... Pull Requests welcome!
+Still working on this... (same with Carthage and Cocoapods). Pull Requests welcome!
+
+# Other Recommendations
+
+This library pairs very nicely with [Decomposed](https://github.com/b3ll/Decomposed) if you wish to animate `CATransform3D` or access specific parts of it for your animations without worrying about the complex matrix math involved (i.e. `transform.translation.x`).
 
 # License
 
 Motion is licensed under the [BSD 2-clause license](https://github.com/b3ll/Motion/blob/master/LICENSE).
+
+# Thanks
+
+This project was definitely inspired by the wonderful people I've had the experience of working with over the years as well as my appreciation of thoughtfully created and highly-crafted interfaces. In addition, the work done by @timdonnelly for [Advance](https://github.com/timdonnelly/Advance) was a large inspiration for getting me started on this. I ended up writing this project as a means to further extend and just learn super in-depth all the mathematics and technical optimizations required to make a high-performance animation / interaction library. The more and more I iterated on it, the more I realized I was sharing the same mindset as I presume he did when writing Advance... brains are weird.
+
+This project has had me really pushing the boundaries of my knowledge in terms of programming, Swift, animation, gestures, etc. and I'm really happy to be sharing it with everyone so that they may be empowered to use it too.
+
+If you have any questions, or want to learn more, feel free to ask me anything!
 
 # Contact Info
 
