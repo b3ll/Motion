@@ -13,6 +13,7 @@ Documentation is here: https://b3ll.github.io/Motion
     - [Decay Animation](#decay-animation)
     - [Basic Animation](#basic-animation)
 - [Interruptibility](#interruptibility)
+- [SIMD](#simd)
 - [Performance](#performance)
   - [CAKeyframeAnimationEmittable](#cakeyframeanimationemittable)
 
@@ -123,9 +124,25 @@ func didPan(_ gestureRecognizer: UIPanGestureRecognizer) {
 
 **Note**: This example is in the example project.
 
+# SIMD
+
+SIMD powers a lot of how Motion works and avoids having to use more "expensive" objects like `NSValue` or `NSNumber` to animate. SIMD grants the ability to pack multiple values into a single SIMD register and then perform math on all those values simultaneously (Single Instruction Multiple Data). This means you can do neat things like animate a `CGRect` to another `CGRect` in a single super fast operation (rather than 4 separate operations: `x`, `y,`, `width`, `height`). It's not always the silver bullet, but on average, it's at least on par, and often faster than the naive implementation.
+
+Motion exposes a protocol called `SIMDRepresentable` that allows for easy boxing and unboxing of values:
+
+```swift
+let point = CGPoint(x: 10.0, y: 10.0)
+let simdPoint: SIMD2<CGFloat.NativeType> = point.simdRepresentation()
+let pointBoxedAgain = CGPoint(simdPoint)
+```
+
+These conversions are relatively inexpensive, and Motion has been heavily optimized to avoid copying or boxing/unboxing them whenever it can.
+
+For more information on SIMD, check out the [docs](https://developer.apple.com/documentation/accelerate/simd).
+
 # Performance
 
-Motion is pretty dang fast, leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in ~150ms (that's 320,000 springs!!).
+Motion is pretty dang fast, leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~150ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
 
 Is it as fast as it could be? Faster than some C++ or C implementation? No idea.
 That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck.
