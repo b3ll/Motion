@@ -9,6 +9,8 @@ import Motion
 import MotionBenchmark
 import UIKit
 
+public let MotionBlue = UIColor(red: 0.47, green: 0.80, blue: 0.99, alpha: 1.00)
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

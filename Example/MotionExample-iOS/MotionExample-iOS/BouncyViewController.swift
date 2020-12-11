@@ -1,5 +1,5 @@
 //
-//  BouncyView.swift
+//  ViewController.swift
 //  MotionExample-iOS
 //
 //  Created by Adam Bell on 8/25/20.
@@ -8,7 +8,7 @@
 import Motion
 import UIKit
 
-class BouncyView: UIView {
+fileprivate class BouncyView_: UIView {
 
     lazy var spring: SpringAnimation<CGFloat> = {
         let animation = SpringAnimation<CGFloat>(initialValue: 1.0)
@@ -46,6 +46,41 @@ class BouncyView: UIView {
         spring.toValue = 1.0
         spring.velocity = 0.0
         spring.start()
+    }
+
+}
+
+class BouncyViewController: UIViewController {
+
+    fileprivate var bouncyView: BouncyView_!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.bouncyView = BouncyView_(frame: .zero)
+        bouncyView.backgroundColor = MotionBlue
+        view.addSubview(bouncyView)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        bouncyView.bounds = CGRect(x: 0.0, y: 0.0, width: 88.0, height: 88.0)
+        bouncyView.layer.position = CGPoint(x: view.bounds.size.width / 2.0, y: view.bounds.size.height / 2.0)
+    }
+
+}
+
+import SwiftUI
+
+public struct BouncyView: UIViewControllerRepresentable {
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
+        return BouncyViewController(nibName: nil, bundle: nil)
+    }
+
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+
     }
 
 }

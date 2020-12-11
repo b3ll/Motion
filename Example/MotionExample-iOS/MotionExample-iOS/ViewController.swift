@@ -2,29 +2,48 @@
 //  ViewController.swift
 //  MotionExample-iOS
 //
-//  Created by Adam Bell on 8/25/20.
+//  Created by Adam Bell on 12/11/20.
 //
 
+import Foundation
 import UIKit
+import SwiftUI
 
-class ViewController: UIViewController {
+struct RootView: View {
 
-    var bouncyView: BouncyView!
+    var body: some View {
+        NavigationView {
+            List {
+                NavigationLink(destination: BouncyView().navigationTitle("Bouncy Demo")) {
+                    Text("Bouncy Demo")
+                }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        self.bouncyView = BouncyView(frame: .zero)
-        bouncyView.backgroundColor = UIColor(red: 0.47, green: 0.80, blue: 0.99, alpha: 1.00)
-        view.addSubview(bouncyView)
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        bouncyView.bounds = CGRect(x: 0.0, y: 0.0, width: 88.0, height: 88.0)
-        bouncyView.layer.position = CGPoint(x: view.bounds.size.width / 2.0, y: view.bounds.size.height / 2.0)
+                NavigationLink(destination: DraggableView().navigationTitle("Dragging Demo")) {
+                    Text("Dragging Demo")
+                }
+            }
+            .navigationBarTitle("Motion Demos", displayMode: .large)
+        }
     }
 
 }
 
+class ViewController: UIHostingController<RootView> {
+
+    init() {
+        super.init(rootView: RootView())
+    }
+    
+    @objc required dynamic convenience init?(coder aDecoder: NSCoder) {
+        self.init()
+    }
+    
+}
+
+struct RootView_Previews: PreviewProvider {
+
+    static var previews: some View {
+        RootView()
+    }
+
+}

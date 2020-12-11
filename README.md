@@ -124,7 +124,7 @@ func didPan(_ gestureRecognizer: UIPanGestureRecognizer) {
             springAnimation.stop()
         case .changed:
             view.center = gestureRecognizer.location(in: self)
-            springAnimation.value = view.center
+            springAnimation.updateValue(to: view.center)
         case .ended:
             springAnimation.toValue = self.center
             springAnimation.velocity = gestureRecognizer.velocity(in: self)
