@@ -5,10 +5,9 @@
 
 Motion is an animation engine for gesturally-driven user interfaces, animations, and interactions on iOS, macOS, and tvOS, and is powered by SIMD and written fully in Swift. Motion allows for easily creating physically-modeled, interruptible animations (i.e. springs, decays, etc.) that work hand-in-hand with gesture recognizers to make the most fluid and delightful interactions possible.
 
-Documentation is here: https://b3ll.github.io/Motion
-
 - [Motion](#motion)
 - [Usage](#usage)
+  - [Animations](#animations)
     - [Spring Animation](#spring-animation)
     - [Decay Animation](#decay-animation)
     - [Basic Animation](#basic-animation)
@@ -16,8 +15,21 @@ Documentation is here: https://b3ll.github.io/Motion
 - [SIMD](#simd)
 - [Performance](#performance)
   - [CAKeyframeAnimationEmittable](#cakeyframeanimationemittable)
+- [Installation](#installation)
+  - [Requirements](#requirements)
+  - [Swift Package Manager](#swift-package-manager)
+  - [CocoaPods](#cocoapods)
+  - [xcframework](#xcframework)
+  - [Carthage](#carthage)
+  - [Xcode Subproject](#xcode-subproject)
+- [License](#license)
+- [Contact Info](#contact-info)
 
 # Usage
+
+API Documentation is [here](https://b3ll.github.io/Motion)
+
+## Animations
 
 Creating animations in Motion is relatively simple. Simply allocate the animation type that you want with the type that conforms to `SIMDRepresentable`, configure it, and call `start` to start it. For each frame the animation executes, its `onValueChanged` block will be called, and you'll be given the opportunity to assign that newly animated value to something.
 
@@ -111,6 +123,7 @@ func didPan(_ gestureRecognizer: UIPanGestureRecognizer) {
             springAnimation.stop()
         case .changed:
             view.center = gestureRecognizer.location(in: self)
+            springAnimation.value = view.center
         case .ended:
             springAnimation.toValue = self.center
             springAnimation.velocity = gestureRecognizer.velocity(in: self)
@@ -194,3 +207,48 @@ CADisableActions {
     layer.frame = frame
 }
 ```
+
+# Installation
+
+## Requirements
+
+- iOS 13+, macOS 10.15+
+- Swift 5.0 or higher
+
+Currently Motion supports Swift Package Manager, CocoaPods, Carthage, being used as an xcframework, and being used manually as an Xcode subproject. Pull requests for other dependency systems / build systems are welcome!
+
+## Swift Package Manager
+
+Add the following to your `Package.swift` (or add it via Xcode's GUI):
+
+```swift
+.package(url: "https://github.com/b3ll/Motion", from: "0.0.1")
+```
+
+## CocoaPods
+
+Add the following to your `Podfile`:
+
+`pod 'Motion'`
+
+## xcframework
+
+A built xcframework is available for each tagged release.
+
+## Carthage
+
+Add the following to your `Cartfile`:
+
+`"b3ll/Motion"`
+
+## Xcode Subproject
+
+Still working on this... Pull Requests welcome!
+
+# License
+
+Motion is licensed under the [BSD 2-clause license](https://github.com/b3ll/Motion/blob/master/LICENSE).
+
+# Contact Info
+
+Feel free to follow me on twitter: [@b3ll](https://www.twitter.com/b3ll)!
