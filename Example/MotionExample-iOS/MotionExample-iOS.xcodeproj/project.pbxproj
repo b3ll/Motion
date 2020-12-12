@@ -10,7 +10,7 @@
 		66180795258539760089108F /* ScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66180794258539760089108F /* ScrollViewController.swift */; };
 		6618079825853A140089108F /* ScrollViewContents.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6618079725853A140089108F /* ScrollViewContents.txt */; };
 		66B1B7CD25840A2800BFA4CF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1B7CC25840A2800BFA4CF /* ViewController.swift */; };
-		66C3FAEC25852E36007BBAAD /* CustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3FAEB25852E36007BBAAD /* CustomScrollView.swift */; };
+		66C3FAEC25852E36007BBAAD /* CustomCustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3FAEB25852E36007BBAAD /* CustomCustomScrollView.swift */; };
 		66D251DE256D01210074F335 /* MotionBenchmark in Frameworks */ = {isa = PBXBuildFile; productRef = 66D251DD256D01210074F335 /* MotionBenchmark */; };
 		66D6541924F631E800206BB7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541824F631E800206BB7 /* AppDelegate.swift */; };
 		66D6541B24F631E800206BB7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6541A24F631E800206BB7 /* SceneDelegate.swift */; };
@@ -27,7 +27,7 @@
 		66180794258539760089108F /* ScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollViewController.swift; sourceTree = "<group>"; };
 		6618079725853A140089108F /* ScrollViewContents.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScrollViewContents.txt; sourceTree = "<group>"; };
 		66B1B7CC25840A2800BFA4CF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		66C3FAEB25852E36007BBAAD /* CustomScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollView.swift; sourceTree = "<group>"; };
+		66C3FAEB25852E36007BBAAD /* CustomCustomScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCustomScrollView.swift; sourceTree = "<group>"; };
 		66D6541524F631E800206BB7 /* MotionExample-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MotionExample-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D6541824F631E800206BB7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		66D6541A24F631E800206BB7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -80,7 +80,7 @@
 				66D6541C24F631E800206BB7 /* BouncyViewController.swift */,
 				66EF8CC62583FF21002E4DBA /* DraggableViewController.swift */,
 				66180794258539760089108F /* ScrollViewController.swift */,
-				66C3FAEB25852E36007BBAAD /* CustomScrollView.swift */,
+				66C3FAEB25852E36007BBAAD /* CustomCustomScrollView.swift */,
 				6618079725853A140089108F /* ScrollViewContents.txt */,
 				66D6541E24F631E800206BB7 /* Main.storyboard */,
 				66D6542124F631EA00206BB7 /* Assets.xcassets */,
@@ -182,7 +182,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66B1B7CD25840A2800BFA4CF /* ViewController.swift in Sources */,
-				66C3FAEC25852E36007BBAAD /* CustomScrollView.swift in Sources */,
+				66C3FAEC25852E36007BBAAD /* CustomCustomScrollView.swift in Sources */,
 				66180795258539760089108F /* ScrollViewController.swift in Sources */,
 				66D6541D24F631E800206BB7 /* BouncyViewController.swift in Sources */,
 				66D6541924F631E800206BB7 /* AppDelegate.swift in Sources */,

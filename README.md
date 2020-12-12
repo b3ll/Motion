@@ -158,7 +158,7 @@ For more information on SIMD, check out the [docs](https://developer.apple.com/d
 
 # Performance
 
-Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~150ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
+Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~130ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
 
 Is it as fast as it could be? Faster than some C++ or C implementation? No idea.
 That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck.

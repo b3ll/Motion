@@ -1,5 +1,5 @@
 //
-//  CustomScrollView.swift
+//  CustomCustomScrollView.swift
 //  MotionExample-iOS
 //
 //  Created by Adam Bell on 12/12/20.
@@ -62,17 +62,20 @@ public class CustomCustomScrollView: UIView {
                 translation.y = 0.0
             }
 
-            let newBoundsOriginX = bounds.origin.x - translation.x
-            let minBoundsOriginX: CGFloat = 0.0
-            let maxBoundsOriginX = contentSize.width - bounds.size.width
-            let constrainedBoundsOriginX = max(minBoundsOriginX, min(newBoundsOriginX, maxBoundsOriginX))
-            bounds.origin.x = constrainedBoundsOriginX + (newBoundsOriginX - constrainedBoundsOriginX) / 2
+//            let newBoundsOriginX = bounds.origin.x - translation.x
+//            let minBoundsOriginX: CGFloat = 0.0
+//            let maxBoundsOriginX = contentSize.width - bounds.size.width
+//            let constrainedBoundsOriginX = max(minBoundsOriginX, min(newBoundsOriginX, maxBoundsOriginX))
+//            bounds.origin.x = constrainedBoundsOriginX + (newBoundsOriginX - constrainedBoundsOriginX) / 2
+//
+//            let newBoundsOriginY = bounds.origin.y - translation.y
+//            let minBoundsOriginY: CGFloat = 0.0
+//            let maxBoundsOriginY = contentSize.height - bounds.size.height
+//            let constrainedBoundsOriginY = max(minBoundsOriginY, min(newBoundsOriginY, maxBoundsOriginY))
+//            bounds.origin.y = constrainedBoundsOriginY + (newBoundsOriginY - constrainedBoundsOriginY) / 2
 
-            let newBoundsOriginY = bounds.origin.y - translation.y
-            let minBoundsOriginY: CGFloat = 0.0
-            let maxBoundsOriginY = contentSize.height - bounds.size.height
-            let constrainedBoundsOriginY = max(minBoundsOriginY, min(newBoundsOriginY, maxBoundsOriginY))
-            bounds.origin.y = constrainedBoundsOriginY + (newBoundsOriginY - constrainedBoundsOriginY) / 2
+            bounds.origin.x = rubberband(bounds.origin.x - translation.x, range: contentSize.width)
+            bounds.origin.y = rubberband(bounds.origin.y - translation.y, range: contentSize.height)
 
             bounceAnimation.updateValue(to: bounds.origin)
 
@@ -111,7 +114,7 @@ public class CustomCustomScrollView: UIView {
                 if outsideBoundsMinimum {
                     target = CGPoint(x: max(bounds.origin.x, 0.0), y: max(bounds.origin.y, 0.0))
                 } else /* if outsideBoundsMaximum* */ {
-                    target = CGPoint(x: max(bounds.origin.x, contentSize.width - bounds.size.width), y: max(bounds.origin.y, contentSize.height - bounds.size.height))
+                    target = CGPoint(x: min(bounds.origin.x, contentSize.width - bounds.size.width), y: min(bounds.origin.y, contentSize.height - bounds.size.height))
                 }
 
                 bounceAnimation.configure(stiffness: 193.41, damping: 26.70)
