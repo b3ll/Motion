@@ -39,6 +39,25 @@ final class DecayAnimationTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
     }
 
+    func testDecayAnimationWithNegativeVelocity() {
+        let decay = DecayAnimation<CGFloat>()
+
+        let expectCompletionCalled = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
+        let expectDecayVelocityZero = XCTestExpectation(description: "Decay animated from \(decay.value) to ")
+        decay.completion = { [unowned decay] in
+            expectCompletionCalled.fulfill()
+
+            if abs(decay.velocity) <= 0.5 {
+                expectDecayVelocityZero.fulfill()
+            }
+        }
+        decay.velocity = -2000.0
+
+        tickAnimationUntilResolved(decay)
+
+        wait(for: [expectCompletionCalled, expectDecayVelocityZero], timeout: 0.0)
+    }
+
     // MARK: - CAKeyframeAnimationEmittable Tests
 
     func testCreateCAKeyframeAnimationFromDecayAnimation() {

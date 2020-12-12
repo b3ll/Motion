@@ -92,6 +92,26 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
 
 // MARK: - SIMD Extensions
 
+/**
+ Exposes a variant of `abs` that supports all SIMD types.
+
+ - Parameters:
+    - x: The SIMD type to take the absolute value of.
+
+ - Returns: `abs(x)`
+ */
+@inlinable public func mabs<SIMDType: SupportedSIMD>(_ x: SIMDType) -> SIMDType {
+    let elementsLessThanZero = x .< SIMDType.zero
+    if !any(elementsLessThanZero) {
+        return x
+    }
+
+    let inverse = x * -1.0
+    var copy = x
+    copy.replace(with: inverse, where: elementsLessThanZero)
+    return copy
+}
+
 // Note: These are probably not the most optimal, especially in the bigger SIMD types. I haven't yet figured out how to do an equality within a given tolerance across all values simultaneously, so for now it's just a `reduce`.
 
 extension SIMD2: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {

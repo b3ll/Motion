@@ -44,7 +44,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     internal func hasResolved(velocity: inout Value.SIMDType) -> Bool {
-        return velocity < Value.SIMDType(repeating: 0.5)
+        return mabs(velocity) < Value.SIMDType(repeating: 0.5)
     }
 
     /**
