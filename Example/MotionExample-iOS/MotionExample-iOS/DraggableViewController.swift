@@ -56,7 +56,7 @@ class DraggableViewController: UIViewController {
 
 import SwiftUI
 
-struct DraggableView: UIViewControllerRepresentable {
+struct DraggableDemo: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> some UIViewController {
         return DraggableViewController(nibName: nil, bundle: nil)

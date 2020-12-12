@@ -14,12 +14,14 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: BouncyView().navigationTitle("Bouncy Demo")) {
+                NavigationLink(destination: BouncyDemo().navigationTitle("Bouncy Demo")) {
                     Text("Bouncy Demo")
                 }
-
-                NavigationLink(destination: DraggableView().navigationTitle("Dragging Demo")) {
+                NavigationLink(destination: DraggableDemo().navigationTitle("Dragging Demo")) {
                     Text("Dragging Demo")
+                }
+                NavigationLink(destination: ScrollViewDemo().navigationTitle("ScrollView Demo")) {
+                    Text("ScrollView Demo")
                 }
             }
             .navigationBarTitle("Motion Demos", displayMode: .large)

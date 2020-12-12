@@ -138,7 +138,7 @@ func didPan(_ gestureRecognizer: UIPanGestureRecognizer) {
 }
 ```
 
-**Note**: This example is in the example project.
+**Note**: You can try this out in the example project (under the Dragging Demo).
 
 # SIMD
 
@@ -239,6 +239,10 @@ A built xcframework is available for each tagged release.
 ## Xcode Subproject
 
 Still working on this... (same with Carthage and Cocoapods). Pull Requests welcome!
+
+# Example Project
+
+There's an example project available to try animations out and see how they work. Simply open the `MotionExample-iOS.xcodeproj` from within the `Example` directory.
 
 # Other Recommendations
 

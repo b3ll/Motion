@@ -8,7 +8,7 @@
 import Motion
 import UIKit
 
-fileprivate class BouncyView_: UIView {
+fileprivate class BouncyView: UIView {
 
     lazy var spring: SpringAnimation<CGFloat> = {
         let animation = SpringAnimation<CGFloat>(initialValue: 1.0)
@@ -52,12 +52,12 @@ fileprivate class BouncyView_: UIView {
 
 class BouncyViewController: UIViewController {
 
-    fileprivate var bouncyView: BouncyView_!
+    fileprivate var bouncyView: BouncyView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.bouncyView = BouncyView_(frame: .zero)
+        self.bouncyView = BouncyView(frame: .zero)
         bouncyView.backgroundColor = MotionBlue
         view.addSubview(bouncyView)
     }
@@ -73,7 +73,7 @@ class BouncyViewController: UIViewController {
 
 import SwiftUI
 
-public struct BouncyView: UIViewControllerRepresentable {
+public struct BouncyDemo: UIViewControllerRepresentable {
 
     public func makeUIViewController(context: Context) -> some UIViewController {
         return BouncyViewController(nibName: nil, bundle: nil)
