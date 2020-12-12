@@ -23,6 +23,8 @@ import simd
  }
  animation.start()
  ```
+ 
+ - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  */
 public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 

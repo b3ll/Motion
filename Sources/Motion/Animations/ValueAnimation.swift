@@ -14,7 +14,7 @@ import QuartzCore
 
  An animation is something that can be ticked from `DisplayLinkObserver` and must resolve at some point.
 
- - Note: This class is **not** thread safe. It is meant to be used on the main thread only.
+ - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `ValueAnimation`
  */
 public class Animation: DisplayLinkObserver {
@@ -89,7 +89,7 @@ public class Animation: DisplayLinkObserver {
  When resolved, this class will optionally call the `completionBlock`.
 
  - Note: The base implementation of this class is not meant to be used on its own, rather subclasses provided are to be used.
- This class is **not** thread safe. It is meant to be used on the main thread only.
+ - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `BasicAnimation`, `DecayAnimation`, `SpringAnimation`.
  */
 public class ValueAnimation<Value: SIMDRepresentable>: Animation {

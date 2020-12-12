@@ -11,16 +11,21 @@ Motion is an animation engine for gesturally-driven user interfaces, animations,
     - [Spring Animation](#spring-animation)
     - [Decay Animation](#decay-animation)
     - [Basic Animation](#basic-animation)
+- [Motion vs. Core Animation](#motion-vs-core-animation)
 - [Interruptibility](#interruptibility)
 - [SIMD](#simd)
 - [Performance](#performance)
+- [Additions](#additions)
+  - [Rubberbanding](#rubberbanding)
   - [CAKeyframeAnimationEmittable](#cakeyframeanimationemittable)
+  - [Action Disabling](#action-disabling)
   - [Curve Graphing](#curve-graphing)
 - [Installation](#installation)
   - [Requirements](#requirements)
   - [Swift Package Manager](#swift-package-manager)
   - [xcframework](#xcframework)
   - [Xcode Subproject](#xcode-subproject)
+- [Example Project](#example-project)
 - [Other Recommendations](#other-recommendations)
 - [License](#license)
 - [Thanks](#thanks)
@@ -103,11 +108,26 @@ basicAnimation.completion = {
 basicAnimation.start()
 ```
 
+**Note**: All of these animations are to run and be interfaced with on the **main thread only**. There is no support for threading of any kind.
+
+# Motion vs. Core Animation
+
+Motion is not designed to be a general-purpose replacement for Core Animation. Core Animation animations are run in a special way, in another process, outside of your app and are designed to be smooth even when the main thread is being heavily used. Motion on the other head is all run in-process (like a game engine), and using it liberally without considering heavy stack traces, will result in poor performance and dropped frames. Motion itself is not slow (in fact it's really [fast](#performance)!), but calling methods to change view / layer properties or change layout at 60+ fps can be really taxing if not done carefully.
+
+**tl;dr**: Treat Motion animations as you would a `UIScrollView` (since scrolling animations behave the same way). If you have too much going on in your `UIScrollView` it'll lag when it scrolls; the same applies to Motion.
+
+Some key tips:
+
+- Measure text / layout asychronously, and then commit those changes back to the main thread whenever possible.
+- Layout a view controller fully before presenting (rather than during presenting) using `setNeedsDisplay()` and `layoutIfNeeded()`.
+- Avoid expensive operations during gestures / handing off from gestures.
+- If you can't optimize things any further, using [`CAKeyframeAnimationEmittable`](#cakeyframeanimationemittable) will help, and that's outlined later in this guide.
+
 # Interruptibility
 
-Interruptibility is when you have the ability to interrupt an animation in flight so you can stop, change, or restart it. Normally, with `UIView` block-based animations, or Core Animation based animations, this is really difficult to do (need to cancel the animation, figure out its current state on screen, apply that, etc.). `UIViewPropertyAnimator` works okay for this, but it relies heavily on "scrubbing" animations, which when working with physically-based animations (i.e. springs), that doesn't really make a lot of sense, since the physics are what generate the animation dynamically (vs. some predefined easing curve you can scrub).
+Motion is designed out of the box to make interruptible animations much easier. Interruptibility is when you have the ability to interrupt an animation in flight so you can stop, change, or restart it. Normally, with `UIView` block-based animations, or Core Animation based animations, this is really difficult to do (need to cancel the animation, figure out its current state on screen, apply that, etc.). `UIViewPropertyAnimator` works okay for this, but it relies heavily on "scrubbing" animations, which when working with physically-based animations (i.e. springs), that doesn't really make a lot of sense, since the physics are what generate the animation dynamically (vs. some predefined easing curve you can scrub).
 
-Motion supports interruptible animations out of the box, which makes gesturally-driven interactions trivial.
+Motion makes things like this easy, so you have to worry less about syncing up animation state with gestures, and focus more about the interactions themselves.
 
 Here's an example of how a drag to a spring animation and then catching and redirecting that animation could look like:
 
@@ -158,7 +178,7 @@ For more information on SIMD, check out the [docs](https://developer.apple.com/d
 
 # Performance
 
-Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~130ms** (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.08ms**.
+Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~100ms** on an iPhone 12 Pro (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.06ms**.
 
 Is it as fast as it could be? Faster than some C++ or C implementation? No idea.
 That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck.
@@ -167,18 +187,19 @@ In short: SIMD go brrrrrrrrrrrrrrrrrrrrrrr
 
 If you'd like benchmark Motion on your own device, simply run the following from within the `Benchmark` folder:
 
-```bash
+```sh
 swift run -c release MotionBenchmarkRunner --time-unit ms
 ```
 
-That being said, these animations are run on the **main thread only**. There is no support for threading of any kind. In addition, becuase these animations are run on the main thread (and not out of process, like Core Animation) if your layout or view drawing is too slow, you **will** drop frames. This is expected and that's because the animations here behave like `UIScrollView` animations (if you have too much going on in your `UIScrollView` it'll lag when it scrolls).
+If you'd like to run the benchmark on device, just launch the `MotionEample-iOS` app in `Release` mode with the `--benchmark` launch argument.
 
-Some key tips:
+# Additions
 
-- Measure text / layout asychronously whenever possible.
-- Layout a view controller fully before presenting (rather than during presenting) using `setNeedsDisplay()` and `layoutIfNeeded()`.
-- Avoid expensive operations during gestures / handing off from gestures.
-- If you can't optimize things any further, using `CAKeyframeAnimation` will help, and that's outlined in the next section.
+Motion features some great additions to aid in creating interactions in general.
+
+## Rubberbanding
+
+Rubberbanding is the act of making values appear to be on a rubberband (they stretch and slip based on interaction). `UIScrollView` does this when you're pulling past the `contentSize` and by using the rubberband functions in Motion you can re-create this interaction for yourself. See the "ScrollView Demo" inside the example app for more info.
 
 ## CAKeyframeAnimationEmittable
 
@@ -209,6 +230,35 @@ layer.removeAnimation(forKey: "MyAnimation")
 CADisableActions {
     layer.frame = frame
 }
+```
+
+## Action Disabling
+
+`CATransaction` is a really useful API but can easily break things if you forget to pair up `CATransaction.begin()` and `CATransaction.commit()` calls.
+
+`CADisableActions()` can be very helpful to reduce errors created when working with `CATransaction` to disable implicit animations:
+
+```swift
+CADisableActions {
+    layer.opacity = 0.5
+}
+
+// This is the same as calling:
+
+CATransaction.begin()
+CATransaction.setDisableActions(true)
+layer.opacity = 0.5
+CATransaction.commit()
+```
+
+In addition, you can also disable implicit animations in every single `onValueChanged` invocation:
+
+```swift
+let springAnimation = SpringAnimation<CGFloat>(initialValue: 0.5)
+springAnimation.onValueChanged(disableActions: true) { newValue in
+    layer.opacity = newValue
+}
+springAnimation.start()
 ```
 
 ## Curve Graphing
