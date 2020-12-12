@@ -71,6 +71,8 @@ springAnimation.completion = { [weak self] in
 springAnimation.start()
 ```
 
+**Note**: Some of you may be wondering if it's a mistake that the `stiffness`, `damping`, `response`, or `dampingRatio` setters are private, however this is intentional. It's incredibly easy to mixup `damping` and `dampingRatio`, and using one over the other will lead to dramatically different results. In addition, you should only be configuring either `stiffness` and `damping` **or** `response` and `dampingRatio` as they're both two separate ways of configuring spring constants.
+
 ### Decay Animation
 
 ```swift

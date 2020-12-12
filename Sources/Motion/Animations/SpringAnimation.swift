@@ -49,6 +49,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     internal var spring: SpringFunction<Value.SIMDType>
 
+    /*
+     You may be wondering why -stiffness and -damping, etc. are only getters and can only be set by -configure(...)
+
+     The issue is damping and dampingRatio are extremely easy to mixup (eventhough they are the correct terms) and I'd like to
+     keep parity with how `CASpringAnimation`'s API is.
+     */
+
     /**
      The stiffness coefficient of the string.
      This is meant to be paired with the `damping`.
