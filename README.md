@@ -112,7 +112,7 @@ basicAnimation.start()
 
 # Motion vs. Core Animation
 
-Motion is not designed to be a general-purpose replacement for Core Animation. Core Animation animations are run in a special way, in another process, outside of your app and are designed to be smooth even when the main thread is being heavily used. Motion on the other head is all run in-process (like a game engine), and using it liberally without considering heavy stack traces, will result in poor performance and dropped frames. Motion itself is not slow (in fact it's really [fast](#performance)!), but calling methods to change view / layer properties or change layout at 60+ fps can be really taxing if not done carefully.
+Motion is not designed to be a general-purpose replacement for Core Animation. Core Animation animations are run in a special way, in another process, outside of your app and are designed to be smooth even when the main thread is being heavily used. Motion on the other head is all run in-process (like a game engine), and using it liberally without considering heavy stack traces, will result in poor performance and dropped frames. Motion itself is not slow (in fact it's really [fast](#performance)!), but calling methods to change view / layer properties or change layout at 60 FPS (or more) can be really taxing if not done carefully.
 
 **tl;dr**: Treat Motion animations as you would a `UIScrollView` (since scrolling animations behave the same way). If you have too much going on in your `UIScrollView` it'll lag when it scrolls; the same applies to Motion.
 
@@ -178,12 +178,12 @@ For more information on SIMD, check out the [docs](https://developer.apple.com/d
 
 # Performance
 
-Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~100ms** on an iPhone 12 Pro (that's 320,000 springs!!). For smaller types like `CGFloat`, it can do the same thing in **~0.06ms**.
+Motion is pretty dang fast (especially on Apple Silicon!), leveraging some manual Swift optimization / specialization as well as SIMD it's capable of executing 5000 `SpringAnimation<SIMD64<Double>>` in **~130ms** on an iPhone 12 Pro (that's 320,000 springs at 0.4 microseconds per spring!!). For smaller types like `CGFloat`, it can do the same thing in **~1ms**.
 
-Is it as fast as it could be? Faster than some C++ or C implementation? No idea.
-That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck.
+Is it as fast as it could be? Faster than some hand-optimized C++ or C implementation? Probably not.
+That being said, it's definitely fast enough for interactions on devices and rarely (if ever) will be the bottleneck. I'm also still no SIMD expert, so if anyone has some tips, I'm sure it can go faster!
 
-In short: SIMD go brrrrrrrrrrrrrrrrrrrrrrr
+**tl;dr**: SIMD go brrrrrrrrrrrrrrrrrrrrrrr
 
 If you'd like benchmark Motion on your own device, simply run the following from within the `Benchmark` folder:
 
