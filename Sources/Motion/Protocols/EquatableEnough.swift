@@ -101,14 +101,13 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
  - Returns: `abs(x)`
  */
 @inlinable public func mabs<SIMDType: SupportedSIMD>(_ x: SIMDType) -> SIMDType {
-    let elementsLessThanZero = x .< SIMDType.zero
+    let elementsLessThanZero = x .< SIMDType.Scalar.zero
     if !any(elementsLessThanZero) {
         return x
     }
 
     let inverse = x * -1.0
-    var copy = x
-    copy.replace(with: inverse, where: elementsLessThanZero)
+    let copy = x.replacing(with: inverse, where: elementsLessThanZero)
     return copy
 }
 

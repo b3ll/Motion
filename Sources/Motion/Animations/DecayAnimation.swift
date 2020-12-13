@@ -46,7 +46,9 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     internal func hasResolved(velocity: inout Value.SIMDType) -> Bool {
-        return mabs(velocity) < Value.SIMDType(repeating: 0.5)
+        // The original implementation of this had mabs(velocity) .< Value.SIMDType(repeating: 0.5)
+        // However we really only need to check the min and max and it's significantly faster.
+        return abs(velocity.max()) < 0.5 && abs(velocity.min()) < 0.5
     }
 
     /**
@@ -93,7 +95,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         _valueChanged?(value)
 
-        if hasResolved() {
+        if hasResolved(velocity: &_velocity) {
             stop()
 
             completion?()

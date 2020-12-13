@@ -169,7 +169,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         _valueChanged?(value)
 
-        if hasResolved() {
+        if hasResolved(value: &_value) {
             stop()
 
             completion?()

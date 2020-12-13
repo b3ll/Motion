@@ -229,7 +229,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
         _valueChanged?(value)
 
-        if hasResolved() {
+        if hasResolved(velocity: &_velocity, value: &_value) {
             stop()
 
             self.value = toValue
