@@ -11,45 +11,51 @@ import Motion
 import QuartzCore
 
 func createAndAnimateSpringAnimations<Value: SIMDRepresentable>(to toValue: Value, count: Int, state: inout BenchmarkState) {
-    let springAnimations = (0..<count).map { (_) -> SpringAnimation<Value> in
-        let springAnimation = SpringAnimation<Value>(response: 0.5, dampingRatio: 0.987)
-        springAnimation.toValue = toValue
-        return springAnimation
-    }
+    autoreleasepool {
+        let springAnimations = (0..<count).map { (_) -> SpringAnimation<Value> in
+            let springAnimation = SpringAnimation<Value>(response: 0.5, dampingRatio: 0.987)
+            springAnimation.toValue = toValue
+            return springAnimation
+        }
 
-    try! state.measure {
-        springAnimations.forEach { springAnimation in
-            let _ = springAnimation.tick(1.0 / 60.0)
+        try! state.measure {
+            springAnimations.forEach { springAnimation in
+                let _ = springAnimation.tick(1.0 / 60.0)
+            }
         }
     }
 }
 
 func createAndAnimateBasicAnimations<Value: SIMDRepresentable>(to toValue: Value, count: Int, state: inout BenchmarkState) {
-    let basicAnimations = (0..<count).map { (_) -> BasicAnimation<Value> in
-        let basicAnimation = BasicAnimation<Value>(easingFunction: .easeInOut)
-        basicAnimation.duration = 2.0
-        basicAnimation.toValue = toValue
-        return basicAnimation
-    }
+    autoreleasepool {
+        let basicAnimations = (0..<count).map { (_) -> BasicAnimation<Value> in
+            let basicAnimation = BasicAnimation<Value>(easingFunction: .easeInOut)
+            basicAnimation.duration = 2.0
+            basicAnimation.toValue = toValue
+            return basicAnimation
+        }
 
-    try! state.measure {
-        basicAnimations.forEach { basicAnimation in
-            let _ = basicAnimation.tick(1.0 / 60.0)
+        try! state.measure {
+            basicAnimations.forEach { basicAnimation in
+                let _ = basicAnimation.tick(1.0 / 60.0)
+            }
         }
     }
 }
 
 
 func createAndAnimateDecayAnimations<Value: SIMDRepresentable>(velocity: Value, count: Int, state: inout BenchmarkState) {
-    let decayAnimations = (0..<count).map { (_) -> DecayAnimation<Value> in
-        let decayAnimation = DecayAnimation<Value>()
-        decayAnimation.velocity = velocity
-        return decayAnimation
-    }
+    autoreleasepool {
+        let decayAnimations = (0..<count).map { (_) -> DecayAnimation<Value> in
+            let decayAnimation = DecayAnimation<Value>()
+            decayAnimation.velocity = velocity
+            return decayAnimation
+        }
 
-    try! state.measure {
-        decayAnimations.forEach { decayAnimation in
-            let _ = decayAnimation.tick(1.0 / 60.0)
+        try! state.measure {
+            decayAnimations.forEach { decayAnimation in
+                let _ = decayAnimation.tick(1.0 / 60.0)
+            }
         }
     }
 }
@@ -57,7 +63,7 @@ func createAndAnimateDecayAnimations<Value: SIMDRepresentable>(velocity: Value, 
 let AnimationCount = 5000
 let ToValue = 320.0
 
-// Measure execution of 5000 springs serially for each supported SIMD type.
+// Measure execution of 5000 animations of each type serially for each supported SIMD type.
 // SIMD go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 public func RunBenchmark() {
     let springAnimationSuite = BenchmarkSuite(name: "SIMD SpringAnimations", settings: TimeUnit(.ms)) { suite in
