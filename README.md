@@ -1,11 +1,10 @@
-# Motion
+![Motion](https://github.com/b3ll/Motion/blob/main/Resources/Motion-Logo-Rendered-Optimized.gif?raw=true)
 
 ![Tests](https://github.com/b3ll/Motion/workflows/Tests/badge.svg)
 ![Docs](https://github.com/b3ll/Motion/workflows/Docs/badge.svg)
 
 Motion is an animation engine for gesturally-driven user interfaces, animations, and interactions on iOS, macOS, and tvOS, and is powered by SIMD and written fully in Swift. Motion allows for easily creating physically-modeled, interruptible animations (i.e. springs, decays, etc.) that work hand-in-hand with gesture recognizers to make the most fluid and delightful interactions possible.
 
-- [Motion](#motion)
 - [Usage](#usage)
   - [Animations](#animations)
     - [Spring Animation](#spring-animation)
