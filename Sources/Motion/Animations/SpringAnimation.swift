@@ -241,7 +241,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     /*
      This looks hideous, yes, but it forces the compiler to generate specialized versions (where the type is hardcoded) of the spring evaluation function.
-     Normally this would be specialized, but because of the dynamic dispatch of -tick:, it fails to specialize.
+     Normally this would be specialized, but because of the dynamic dispatch of -tick:, it fails to specialize. There may be a workaround for this, but as of right now I haven't found a solution.
      By specializing manually, we forcefully generate implementations of this method hardcoded for each SIMD type specified.
      Whilst this does incur a codesize penalty, this results in a performance boost of more than **+100%**.
      */
