@@ -5,6 +5,8 @@
 //  Created by Adam Bell on 12/6/20.
 //
 
+#if canImport(SwiftUI)
+
 import Motion
 import SwiftUI
 
@@ -78,3 +80,5 @@ struct EasingFunctionGraphView_Previews: PreviewProvider {
     }
 
 }
+
+#endif

@@ -5,6 +5,8 @@
 //  Created by Adam Bell on 12/6/20.
 //
 
+#if canImport(SwiftUI)
+
 import Motion
 import SwiftUI
 
@@ -151,7 +153,7 @@ struct ValueAnimationGraphView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        if #available(iOS 14.0, macOS 11.0, *) {
+        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, *) {
             Group {
                 LazyVGrid(columns: [GridItem(.fixed(320)), GridItem(.fixed(320)), GridItem(.fixed(320))], alignment: .center, spacing: 2.0) {
                     ForEach((1...10), id: \.self) { dampingConstant in
@@ -185,3 +187,5 @@ struct ValueAnimationGraphView_Previews: PreviewProvider {
     }
 
 }
+
+#endif
