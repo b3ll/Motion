@@ -278,7 +278,7 @@ Currently Motion supports Swift Package Manager, CocoaPods, Carthage, being used
 Add the following to your `Package.swift` (or add it via Xcode's GUI):
 
 ```swift
-.package(url: "https://github.com/b3ll/Motion", from: "0.0.1")
+.package(url: "https://github.com/b3ll/Motion", from: "0.0.3")
 ```
 
 ## xcframework
