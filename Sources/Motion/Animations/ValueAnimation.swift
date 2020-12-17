@@ -167,7 +167,7 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
     internal var _valueChanged: ValueChangedCallback? = nil
 
     /**
-     Call this to register an `ValueChangedCallback` block that will be called anytime `value` changes from `tick` or if explicitly specified via `postValueChanged`.
+     Call this to register a `ValueChangedCallback` block that will be called anytime `value` changes from `tick` or if explicitly specified via `postValueChanged`.
      When called, it will give the new value that `value` has animated to (since the last invocation).
      If you're animating `CALayer` objects from the block, you may supply `true` for `disableActions` to automatically have this wrapped in a `CATransaction` that disables implicit animations for the layer.
 

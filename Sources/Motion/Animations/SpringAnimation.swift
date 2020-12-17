@@ -131,6 +131,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     internal var _clampingRange: ClosedRange<Value.SIMDType>? = nil
 
     /**
+     When true, the animation will complete once `value` reaches `toValue` (regardless of velocity, overshoot, or rebounding). Defaults to `false`.
+
+     - Note: This is particularly useful for dismissal animations (i.e. when you're throwing something offscreen, and want the completion to happen faster than waiting for the value to finish bouncing offscreen)
+     */
+    public var resolvesUponReachingToValue: Bool = false
+
+    /**
      Initializes a `SpringAnimation` with an optional initial value.
 
      - Parameters:
@@ -203,11 +210,22 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     /// Returns whether or not the spring animation has resolved. It is considered resolved when the `toValue` is reached, and `velocity` is zero.
     public override func hasResolved() -> Bool {
-        return hasResolved(velocity: &_velocity, value: &_value)
+        let resolvedState = hasResolved(value: &_value, velocity: &_velocity)
+        return resolvedState.valueResolved && resolvedState.velocityResolved
     }
 
-    internal func hasResolved(velocity: inout Value.SIMDType, value: inout Value.SIMDType) -> Bool {
-        return velocity.approximatelyEqual(to: .zero) && value.approximatelyEqual(to: _toValue)
+    internal func hasResolved(value: inout Value.SIMDType, velocity: inout Value.SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+        let valueResolved = value.approximatelyEqual(to: _toValue)
+        if !valueResolved {
+            return (false, false)
+        }
+
+        if resolvesUponReachingToValue {
+            return (valueResolved, true)
+        }
+
+        let velocityResolved = velocity.approximatelyEqual(to: .zero)
+        return (valueResolved, velocityResolved)
     }
 
     /**
@@ -229,7 +247,9 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
         _valueChanged?(value)
 
-        if hasResolved(velocity: &_velocity, value: &_value) {
+        let resolvedState = hasResolved(value: &_value, velocity: &_velocity)
+
+        if resolvedState.valueResolved && resolvedState.velocityResolved {
             stop()
 
             self.value = toValue
