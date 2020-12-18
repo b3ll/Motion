@@ -81,6 +81,20 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         super.start()
     }
 
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
         if !range.contains(value) {
             return nil
@@ -134,11 +148,25 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     /// Returns whether or not this animation has resolved.
     public override func hasResolved() -> Bool {
-        return hasResolved(value: &_value)
+        return hasResolved(value: &_value, toValue: &_toValue)
     }
 
-    internal func hasResolved(value: inout Value.SIMDType) -> Bool {
-        return value.approximatelyEqual(to: _toValue)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, toValue: inout SIMDType) -> Bool {
+        return value.approximatelyEqual(to: toValue)
     }
 
     fileprivate func updateRange() {
@@ -169,7 +197,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         _valueChanged?(value)
 
-        if hasResolved(value: &_value) {
+        if hasResolved(value: &_value, toValue: &_toValue) {
             stop()
 
             completion?()

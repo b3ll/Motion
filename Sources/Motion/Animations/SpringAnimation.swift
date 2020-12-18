@@ -210,12 +210,26 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     /// Returns whether or not the spring animation has resolved. It is considered resolved when the `toValue` is reached, and `velocity` is zero.
     public override func hasResolved() -> Bool {
-        let resolvedState = hasResolved(value: &_value, velocity: &_velocity)
+        let resolvedState = hasResolved(value: &_value, toValue: &_toValue, velocity: &_velocity)
         return resolvedState.valueResolved && resolvedState.velocityResolved
     }
 
-    internal func hasResolved(value: inout Value.SIMDType, velocity: inout Value.SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
-        let valueResolved = value.approximatelyEqual(to: _toValue)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+        let valueResolved = value.approximatelyEqual(to: toValue)
         if !valueResolved {
             return (false, false)
         }
@@ -247,7 +261,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
         _valueChanged?(value)
 
-        let resolvedState = hasResolved(value: &_value, velocity: &_velocity)
+        let resolvedState = hasResolved(value: &_value, toValue: &_toValue, velocity: &_velocity)
 
         if resolvedState.valueResolved && resolvedState.velocityResolved {
             stop()
@@ -290,5 +304,5 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             value.clamp(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound)
         }
     }
-    
+
 }

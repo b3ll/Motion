@@ -45,7 +45,21 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         return hasResolved(velocity: &_velocity)
     }
 
-    internal func hasResolved(velocity: inout Value.SIMDType) -> Bool {
+    @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD3<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD4<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD8<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD16<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
+    @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
+    internal func hasResolved<SIMDType: SupportedSIMD>(velocity: inout SIMDType) -> Bool {
         // The original implementation of this had mabs(velocity) .< Value.SIMDType(repeating: 0.5)
         // However we really only need to check the min and max and it's significantly faster.
         return abs(velocity.max()) < 0.5 && abs(velocity.min()) < 0.5
