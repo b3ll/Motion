@@ -162,24 +162,25 @@ final class MotionTests: XCTestCase {
         let insideValue: CGFloat = 50.0
         let outsideValueNegative: CGFloat = -10.0
         let outsideValuePositive: CGFloat = 110.0
-        let range: ClosedRange<CGFloat> = 0.0...100.0
+        let boundsSize: CGFloat = 100.0
+        let contentSize: CGFloat = 200.0
 
-        let nonRubberbandedValue = rubberband(insideValue, range: range)
+        let nonRubberbandedValue = rubberband(insideValue, boundsSize: boundsSize, contentSize: contentSize)
 
         // Is the value within the clamped range.
         XCTAssertTrue(nonRubberbandedValue.approximatelyEqual(to: insideValue))
 
         // Does it handle values less than the range.
-        let rubberbandedValueNegative = rubberband(outsideValueNegative, range: range)
+        let rubberbandedValueNegative = rubberband(outsideValueNegative, boundsSize: boundsSize, contentSize: contentSize)
         XCTAssertTrue(rubberbandedValueNegative.approximatelyEqual(to: -5.213))
 
         // Does it handle values more than the range.
-        let rubberbandedValuePositive = rubberband(outsideValuePositive, range: range)
-        XCTAssertTrue(rubberbandedValuePositive.approximatelyEqual(to: 105.213))
+        let rubberbandedValuePositive = rubberband(outsideValuePositive, boundsSize: boundsSize, contentSize: contentSize)
+        XCTAssertTrue(rubberbandedValuePositive.approximatelyEqual(to: 105.213 /* value + boundsSize ~= 205.213 */))
 
         // Does it handle both positive and negative values correctly?
-        let deltaNegative = abs(rubberbandedValueNegative - range.lowerBound)
-        let deltaPositive = abs(rubberbandedValuePositive - range.upperBound)
+        let deltaNegative = abs(rubberbandedValueNegative)
+        let deltaPositive = abs(rubberbandedValuePositive - boundsSize)
         XCTAssertTrue(deltaNegative.approximatelyEqual(to: deltaPositive))
     }
 

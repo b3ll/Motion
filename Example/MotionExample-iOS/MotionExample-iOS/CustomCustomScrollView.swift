@@ -62,8 +62,8 @@ public class CustomCustomScrollView: UIView {
                 translation.y = 0.0
             }
 
-            bounds.origin.x = rubberband(bounds.origin.x - translation.x, range: contentSize.width)
-            bounds.origin.y = rubberband(bounds.origin.y - translation.y, range: contentSize.height)
+            bounds.origin.x = rubberband(bounds.origin.x - translation.x, boundsSize: bounds.size.width, contentSize: contentSize.width)
+            bounds.origin.y = rubberband(bounds.origin.y - translation.y, boundsSize: bounds.size.height, contentSize: contentSize.height)
 
             bounceAnimation.updateValue(to: bounds.origin)
 
