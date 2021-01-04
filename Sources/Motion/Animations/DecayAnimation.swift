@@ -111,8 +111,6 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         if hasResolved(velocity: &_velocity) {
             stop()
-
-            completion?()
         }
     }
 
