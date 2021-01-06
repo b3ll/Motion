@@ -246,8 +246,8 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
      Stops the animation and optionally resolves it immediately (jumping to the `toValue`).
 
      - Parameters:
-        - resolveImmediately: Whether or not the animation should jump to the `toValue` without animation. Defaults to `false`.
-        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` upon changing `value` to toValue`.
+        - resolveImmediately: Whether or not the animation should jump to the `toValue` without animation and invoke the completion. Defaults to `false`.
+        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` is called upon changing `value` to `toValue`.
      */
     public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         super.stop(resolveImmediately: resolveImmediately, postValueChanged: postValueChanged)

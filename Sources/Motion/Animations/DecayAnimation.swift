@@ -82,8 +82,8 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
      Stops the animation and optionally resolves it immediately.
 
      - Parameters:
-        - resolveImmediately: Whether or not the animation should jump to its projected value without animation. Defaults to `false`.
-        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` upon changing `value` to the end value.
+        - resolveImmediately: Whether or not the animation should jump to zero `velocity` and invoke the completion. Defaults to `false`.
+        - postValueChanged: If `true` is supplied for `resolveImmediately`, this controls whether not `valueChanged` is called upon changing `value` to the end value.
 
      - Note: `resolveImmediately` and `postValueChanged` currently are ignored.
      They will be implemented at a later date when the logic for projecting decaying functions is worked out.
@@ -91,7 +91,11 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     public override func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         // We don't call super here, as jumping to the end requires knowing the end point, and we don't know that (yet).
         self.enabled = false
-        completion?()
+        self.velocity = .zero
+
+        if resolveImmediately {
+            completion?()
+        }
     }
 
     // MARK: - Disabled API

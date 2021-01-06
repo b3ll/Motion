@@ -76,7 +76,8 @@ final class BasicAnimationTests: XCTestCase {
             expectCompletionCalled.fulfill()
         }
 
-        tickAnimationUntilResolved(basicAnimation)
+        tickAnimationForDuration(basicAnimation, maxDuration: 0.1)
+        basicAnimation.stop(resolveImmediately: true, postValueChanged: true)
 
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }

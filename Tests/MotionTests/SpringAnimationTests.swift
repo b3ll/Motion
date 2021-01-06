@@ -149,7 +149,8 @@ final class SpringAnimationTests: XCTestCase {
             expectCompletionCalled.fulfill()
         }
 
-        tickAnimationUntilResolved(spring)
+        tickAnimationForDuration(spring, maxDuration: 0.1)
+        spring.stop(resolveImmediately: true, postValueChanged: true)
 
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }
