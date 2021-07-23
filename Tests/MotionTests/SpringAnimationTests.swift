@@ -37,6 +37,56 @@ final class SpringAnimationTests: XCTestCase {
         wait(for: [expectCompletionCalled, expectToValueReached], timeout: 0.0)
     }
 
+    func testSpringWithCustomEpsilon() {
+        let spring1 = SpringAnimation(initialValue: CGRect.zero)
+        spring1.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+
+        var spring1FrameCount = 0
+        spring1.onValueChanged { _ in
+            spring1FrameCount += 1
+        }
+
+        let expectCompletionCalled1 = XCTestExpectation(description: "Spring finished animating to \(spring1.toValue)")
+        let expectToValueReached1 = XCTestExpectation(description: "Spring animated from \(spring1.value) to \(spring1.toValue)")
+        spring1.completion = { [unowned spring1] in
+            expectCompletionCalled1.fulfill()
+
+            if spring1.value == spring1.toValue {
+                expectToValueReached1.fulfill()
+            }
+        }
+
+        tickAnimationUntilResolved(spring1)
+
+        wait(for: [expectCompletionCalled1, expectToValueReached1], timeout: 0.0)
+
+        let spring2 = SpringAnimation(initialValue: CGRect.zero)
+        spring2.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
+        spring2.resolvingEpsilon = 0.1
+
+        var spring2FrameCount = 0
+        spring2.onValueChanged { _ in
+            spring2FrameCount += 1
+        }
+
+        let expectCompletionCalled2 = XCTestExpectation(description: "Spring finished animating to \(spring2.toValue)")
+        let expectToValueReached2 = XCTestExpectation(description: "Spring animated from \(spring2.value) to \(spring2.toValue)")
+        spring2.completion = { [unowned spring1] in
+            expectCompletionCalled2.fulfill()
+
+            if spring1.value == spring1.toValue {
+                expectToValueReached2.fulfill()
+            }
+        }
+
+        tickAnimationUntilResolved(spring2)
+
+        wait(for: [expectCompletionCalled2, expectToValueReached2], timeout: 0.0)
+
+        XCTAssertTrue(spring2FrameCount < spring1FrameCount)
+    }
+
+
     func testCriticallyDampedSpring() {
         let spring = SpringAnimation(initialValue: CGRect.zero)
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
@@ -167,7 +217,7 @@ final class SpringAnimationTests: XCTestCase {
         XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
         XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
         XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
-        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.766))
+        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.383))
     }
 
     override class func tearDown() {

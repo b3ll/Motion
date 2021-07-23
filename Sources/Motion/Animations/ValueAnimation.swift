@@ -160,6 +160,9 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
         return true
     }
 
+    /// The default tolerance level for an animation to be considered finished.
+    public var resolvingEpsilon: Value.SIMDType.EpsilonType = 0.01
+
     /**
      This is meant to be set only by the -onValueChanged: function vs. being set directly. It should be used inside of -tick: only.
      Unfortunately Swift doesn't really have the ability to define a property as only visible to subclasses but nowhere else.
