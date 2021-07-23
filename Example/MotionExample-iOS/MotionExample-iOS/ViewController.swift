@@ -32,12 +32,8 @@ struct RootView: View {
 
 class ViewController: UIHostingController<RootView> {
 
-    init() {
+    @objc required dynamic init?(coder aDecoder: NSCoder) {
         super.init(rootView: RootView())
-    }
-    
-    @objc required dynamic convenience init?(coder aDecoder: NSCoder) {
-        self.init()
     }
     
 }

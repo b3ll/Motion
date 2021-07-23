@@ -161,7 +161,8 @@ public struct SpringFunction<Value: SIMDRepresentable> {
 
      - Returns: The new value of the spring as it advances towards zero.
      */
-    @inlinable public func solveSIMD<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
+    @inlinable public func solveSIMD(dt: Value.SIMDType.Scalar, x0: Value.SIMDType, velocity: inout Value.SIMDType) -> Value.SIMDType {
+        typealias SIMDType = Value.SIMDType
         let x: SIMDType
         if dampingRatio < 1.0 {
             let decayEnvelope = SIMDType.Scalar.exp(-dampingRatio * w0 * dt)
@@ -239,7 +240,7 @@ extension SpringFunction where Value: SupportedSIMD {
 
      - Note: This mirrors the `SupportedSIMD` version above, but acts as a fast path to call the `solveSIMD` method directly instead of boxing and unboxing the same value.
      */
-    @inlinable public func solve<SIMDType: SupportedSIMD>(dt: SIMDType.Scalar, x0: SIMDType, velocity: inout SIMDType) -> SIMDType where SIMDType == Value.SIMDType {
+    @inlinable public func solve(dt: Value.SIMDType.Scalar, x0: Value.SIMDType, velocity: inout Value.SIMDType) -> Value.SIMDType {
         return solveSIMD(dt: dt, x0: x0, velocity: &velocity)
     }
 

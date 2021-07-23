@@ -25,7 +25,7 @@ internal func SimulatorSlowAnimationsCoefficient() -> Float {
 #endif
 
 /// A protocol describing how adopters can receive ticks from `DisplayLink`.
-public protocol DisplayLinkObserver: class {
+public protocol DisplayLinkObserver: AnyObject {
 
     /**
      This method will be called every frame from an enabled `DisplayLink`.
