@@ -111,7 +111,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
      If the value is outside the range, or we can't determine what it should be, we'll just start from the beginning, since that's already an unexpected state.
      */
     internal func attemptToUpdateAccumulatedTimeToMatchValue() {
-        if !_value.approximatelyEqual(to: _fromValue) && !_value.approximatelyEqual(to: _toValue) {
+        if !_value.approximatelyEqual(to: _fromValue, epsilon: resolvingEpsilon) && !_value.approximatelyEqual(to: _toValue, epsilon: resolvingEpsilon) {
             // Try to find out where we are in the animation.
             if let accumulatedTime = solveAccumulatedTime(easingFunction: &easingFunction, range: &_range, value: &_value) {
                 self.accumulatedTime = accumulatedTime * duration
@@ -148,7 +148,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     /// Returns whether or not this animation has resolved.
     public override func hasResolved() -> Bool {
-        return hasResolved(value: &_value, toValue: &_toValue)
+        return hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue)
     }
 
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
@@ -165,8 +165,8 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, toValue: inout SIMDType) -> Bool {
-        return value.approximatelyEqual(to: toValue)
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType) -> Bool {
+        return value.approximatelyEqual(to: toValue, epsilon: epsilon)
     }
 
     fileprivate func updateRange() {
@@ -197,7 +197,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         _valueChanged?(value)
 
-        if hasResolved(value: &_value, toValue: &_toValue) {
+        if hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue) {
             stop()
 
             completion?()

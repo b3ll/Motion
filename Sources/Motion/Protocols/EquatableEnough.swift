@@ -34,11 +34,13 @@ extension CGFloat: FloatingPointInitializable, EquatableEnough {}
 /// A protocol that describes something that is approximately equal to something else within a given tolerance (e.g. a floating point value that is equal to another floating point value within a given epsilon).
 public protocol EquatableEnough: Comparable {
 
+    associatedtype EpsilonType: EquatableEnough, FloatingPointInitializable
+
     /**
      Declares whether or not something else is equal to `self` within a given tolerance.
      (e.g. a floating point value that is equal to another floating point value within a given epsilon)
      */
-    func approximatelyEqual(to: Self) -> Bool
+    func approximatelyEqual(to: Self, epsilon: EpsilonType) -> Bool
 
 }
 
@@ -84,8 +86,8 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
      Declares whether or not something else is equal to `self` within a given tolerance.
      (e.g. a floating point value that is equal to another floating point value within a given epsilon)
      */
-    @inlinable func approximatelyEqual(to other: Self) -> Bool {
-        return abs(self - other) < .epsilon
+    @inlinable func approximatelyEqual(to other: Self, epsilon: Self = .epsilon) -> Bool {
+        return abs(self - other) < epsilon
     }
 
 }
@@ -120,9 +122,9 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
 extension SIMD2: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD2` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -137,9 +139,9 @@ extension SIMD2: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 extension SIMD3: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD3` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -153,9 +155,9 @@ extension SIMD3: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 extension SIMD4: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD4` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -169,9 +171,9 @@ extension SIMD4: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 extension SIMD8: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD8` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -185,9 +187,9 @@ extension SIMD8: EquatableEnough, Comparable where Scalar: FloatingPointInitiali
 extension SIMD16: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD16` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -201,9 +203,9 @@ extension SIMD16: EquatableEnough, Comparable where Scalar: FloatingPointInitial
 extension SIMD32: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD32` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 
@@ -217,9 +219,9 @@ extension SIMD32: EquatableEnough, Comparable where Scalar: FloatingPointInitial
 extension SIMD64: EquatableEnough, Comparable where Scalar: FloatingPointInitializable & EquatableEnough {
 
     /// Declares whether or not another `SIMD64` is equal to `self` within a given tolerance (epsilon).
-    @inlinable public func approximatelyEqual(to other: Self) -> Bool {
+    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         return self.indices.reduce(true) {
-            return $0 && self[$1].approximatelyEqual(to: other[$1])
+            return $0 && self[$1].approximatelyEqual(to: other[$1], epsilon: epsilon)
         }
     }
 

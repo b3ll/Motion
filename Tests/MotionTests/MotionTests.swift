@@ -50,6 +50,21 @@ final class MotionTests: XCTestCase {
         XCTAssert(SIMD16(repeating: nonEqualValue1) < SIMD16(repeating: nonEqualValue2))
         XCTAssert(SIMD32(repeating: nonEqualValue1) < SIMD32(repeating: nonEqualValue2))
         XCTAssert(SIMD64(repeating: nonEqualValue1) < SIMD64(repeating: nonEqualValue2))
+
+        // Equal within Custom Epsilon
+        let nonEqualValue3 = 0.001
+        let nonEqualValue4 = 0.002
+        let epsilon = 0.01
+
+        XCTAssertTrue(nonEqualValue3.approximatelyEqual(to: nonEqualValue4, epsilon: epsilon))
+
+        XCTAssertTrue(SIMD2(repeating: nonEqualValue3).approximatelyEqual(to: SIMD2(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD3(repeating: nonEqualValue3).approximatelyEqual(to: SIMD3(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD4(repeating: nonEqualValue3).approximatelyEqual(to: SIMD4(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD8(repeating: nonEqualValue3).approximatelyEqual(to: SIMD8(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD16(repeating: nonEqualValue3).approximatelyEqual(to: SIMD16(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD32(repeating: nonEqualValue3).approximatelyEqual(to: SIMD32(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD64(repeating: nonEqualValue3).approximatelyEqual(to: SIMD64(repeating: nonEqualValue4), epsilon: epsilon))
     }
 
     // MARK: - SIMDRepresentable Tests
