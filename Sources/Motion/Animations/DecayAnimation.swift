@@ -45,6 +45,15 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         return hasResolved(velocity: &_velocity)
     }
 
+    #if DEBUG
+    internal func hasResolved<SIMDType: SupportedSIMD>(velocity: inout SIMDType) -> Bool {
+        /* Must Be Mirrored Below */
+
+        // The original implementation of this had mabs(velocity) .< Value.SIMDType(repeating: 0.5)
+        // However we really only need to check the min and max and it's significantly faster.
+        return abs(velocity.max()) < 0.5 && abs(velocity.min()) < 0.5
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -60,10 +69,13 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func hasResolved<SIMDType: SupportedSIMD>(velocity: inout SIMDType) -> Bool {
+        /* Must Be Mirrored Above */
+
         // The original implementation of this had mabs(velocity) .< Value.SIMDType(repeating: 0.5)
         // However we really only need to check the min and max and it's significantly faster.
         return abs(velocity.max()) < 0.5 && abs(velocity.min()) < 0.5
     }
+    #endif
 
     /**
      Initializes a `DecayAnimation` with an initial value and decay constant.
@@ -121,6 +133,13 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     // See docs in SpringAnimation.swift for why this exists.
+    #if DEBUG
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, decay: inout DecayFunction<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
+        /* Must Be Mirrored Below */
+        
+        value = decay.solve(dt: dt, x0: value, velocity: &velocity)
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -136,7 +155,10 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, decay: inout DecayFunction<SIMDType>, value: inout SIMDType, velocity: inout SIMDType) {
+        /* Must Be Mirrored Above */
+
         value = decay.solve(dt: dt, x0: value, velocity: &velocity)
     }
+    #endif
 
 }

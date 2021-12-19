@@ -81,6 +81,17 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         super.start()
     }
 
+    #if DEBUG
+    internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
+        /* Must Be Mirrored Below */
+        
+        if !range.contains(value) {
+            return nil
+        }
+
+        return easingFunction.solveAccumulatedTime(range, value: value)
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -96,12 +107,15 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
+        /* Must Be Mirrored Above */
+
         if !range.contains(value) {
             return nil
         }
 
         return easingFunction.solveAccumulatedTime(range, value: value)
     }
+    #endif
 
     /**
      If the value isn't the fromValue, or the toValue, it might've been changed via `-updateValue(to:postValueChanged:)`.
@@ -151,6 +165,13 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         return hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue)
     }
 
+    #if DEBUG
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType) -> Bool {
+        /* Must Be Mirrored Below */
+
+        return value.approximatelyEqual(to: toValue, epsilon: epsilon)
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -166,8 +187,11 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType) -> Bool {
+        /* Must Be Mirrored Above */
+
         return value.approximatelyEqual(to: toValue, epsilon: epsilon)
     }
+    #endif
 
     fileprivate func updateRange() {
         _range = _fromValue..._toValue
@@ -205,6 +229,13 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     // See docs in SpringAnimation.swift for why this `@_specialize` stuff exists.
+    #if DEBUG
+    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+        /* Must Be Mirrored Below */
+
+        value = easingFunction.solveInterpolatedValue(range, fraction: fraction)
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -220,7 +251,10 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+        /* Must Be Mirrored Above */
+
         value = easingFunction.solveInterpolatedValue(range, fraction: fraction)
     }
+    #endif
     
 }
