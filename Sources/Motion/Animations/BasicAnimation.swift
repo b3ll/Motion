@@ -26,7 +26,7 @@ import simd
  
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  */
-public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
+public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
 
     /// The starting point of the animation. Defaults to `.zero`.
     public var fromValue: Value {
@@ -193,7 +193,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         let fraction = min(max(0.0, accumulatedTime / duration), 1.0)
 
-        tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.SIMDType.Scalar(fraction), value: &_value)
+        tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.Scalar(fraction), value: &_value)
 
         _valueChanged?(value)
 
@@ -219,7 +219,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.SIMDType.Scalar, value: inout SIMDType) {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: inout EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
         value = easingFunction.solveInterpolatedValue(range, fraction: fraction)
     }
     

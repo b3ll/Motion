@@ -26,10 +26,10 @@ import simd
 
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
 */
-public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
+public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
 
     /// The decay constant. This defaults to `UIScrollViewDecayConstant`.
-    public var decayConstant: Value.SIMDType.SIMDType.Scalar {
+    public var decayConstant: Value.SIMDType.Scalar {
         set {
             decay.decayConstant = newValue
         }
@@ -72,7 +72,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         - initialValue: The initial value to be set for `value`.
         - decayConstnat: The decay constant. Defaults to `UIScrollViewDecayConstant`.
      */
-    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.SIMDType.Scalar = Value.SIMDType.SIMDType.Scalar(UIScrollViewDecayConstant)) {
+    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIScrollViewDecayConstant)) {
         self.decay = DecayFunction(decayConstant: decayConstant)
         super.init()
         self.value = initialValue
@@ -109,7 +109,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), decay: &decay, value: &_value, velocity: &_velocity)
+        tickOptimized(Value.SIMDType.Scalar(dt), decay: &decay, value: &_value, velocity: &_velocity)
 
         _valueChanged?(value)
 

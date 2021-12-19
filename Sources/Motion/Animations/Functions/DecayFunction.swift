@@ -20,7 +20,7 @@ public let UIScrollViewDecayConstant: Double = 0.998
  - Note: This can be used on its own, but it's mainly used by `DecayAnimation`'s `tick` method.
  - SeeAlso: `DecayAnimation`
 */
-public struct DecayFunction<Value: SIMDRepresentable> {
+public struct DecayFunction<Value: SIMDRepresentable> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
 
     /// The rate at which the velocity decays over time. Defaults to `UIKitDecayConstant`.
     public var decayConstant: Value.SIMDType.Scalar {
