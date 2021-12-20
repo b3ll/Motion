@@ -91,8 +91,9 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
         var t = 0.0
         var hasResolved = false
         while !hasResolved {
-            tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), spring: &spring, value: &value, toValue: &_toValue, velocity: &velocity, clampingRange: &_clampingRange)
+            tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &value, toValue: &_toValue, velocity: &velocity, clampingRange: &_clampingRange)
             let resolvedState = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &velocity)
+
             if resolvesUponReachingToValue {
                 hasResolved = resolvedState.valueResolved
             } else {
@@ -126,7 +127,7 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
         var t = 0.0
         var hasResolved = false
         while !hasResolved {
-            tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), decay: &decay, value: &value, velocity: &velocity)
+            tickOptimized(Value.SIMDType.Scalar(dt), decay: &decay, value: &value, velocity: &velocity)
             hasResolved = self.hasResolved(velocity: &velocity)
 
             let nsValue = Value(value).toKeyframeValue()
@@ -155,7 +156,7 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
         var t = 0.0
         var hasResolved = false
         while !hasResolved {
-            tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.SIMDType.Scalar(t / duration), value: &value)
+            tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.Scalar(t / duration), value: &value)
             hasResolved = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue)
 
             let nsValue = Value(value).toKeyframeValue()

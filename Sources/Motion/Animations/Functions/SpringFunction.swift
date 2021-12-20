@@ -15,7 +15,7 @@ import simd
  - Note: This can be used on its own, but it's mainly used by `SpringAnimation`'s `tick` method.
  - SeeAlso: `SpringAnimation`
 */
-public struct SpringFunction<Value: SIMDRepresentable> {
+public struct SpringFunction<Value: SIMDRepresentable> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
 
     /**
      The stiffness coefficient of the string.

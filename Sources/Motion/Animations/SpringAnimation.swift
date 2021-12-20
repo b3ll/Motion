@@ -35,7 +35,7 @@ import simd
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  ```
  */
-public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
+public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
 
     /// The velocity of the animation. Setting this before calling `start` will cause the spring animation to be seeded with that velocity, and then the velocity will decay over time.
     public override var velocity: Value {
@@ -64,7 +64,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Description: This may be changed using `configure(stiffness:damping:)`.
      */
-    public var stiffness: Value.SIMDType.SIMDType.Scalar {
+    public var stiffness: Value.SIMDType.Scalar {
         return spring.stiffness
     }
 
@@ -74,7 +74,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Description: This is equivalent to the friction of the spring. This may be changed using `configure(stiffness:damping:)`.
      */
-    public var damping: Value.SIMDType.SIMDType.Scalar {
+    public var damping: Value.SIMDType.Scalar {
         return spring.damping
     }
 
@@ -84,7 +84,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Description: This may be changed using `configure(response:dampingRatio:)`.
      */
-    public var response: Value.SIMDType.SIMDType.Scalar {
+    public var response: Value.SIMDType.Scalar {
         return spring.response
     }
 
@@ -100,7 +100,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Description: This may be changed using `configure(response:dampingRatio:)`.
      */
-    public var dampingRatio: Value.SIMDType.SIMDType.Scalar {
+    public var dampingRatio: Value.SIMDType.Scalar {
         return spring.dampingRatio
     }
 
@@ -156,7 +156,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         - stiffness: How stiff the spring should be.
         - damping: How much friction should be exerted on the spring.
      */
-    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
+    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
         configure(stiffness: stiffness, damping: damping)
     }
@@ -174,7 +174,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Note: For more information on how these values work, check out the WWDC talk on fluid animations: https://developer.apple.com/videos/play/wwdc2018/803/.
      */
-    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
+    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
         self.init(initialValue: initialValue)
         configure(response: response, dampingRatio: dampingRatio)
     }
@@ -186,7 +186,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         - stiffness: The stiffness coefficient of the string.
         - damping: The damping amount of the spring (friction).
      */
-    public func configure(stiffness: Value.SIMDType.SIMDType.Scalar, damping: Value.SIMDType.SIMDType.Scalar) {
+    public func configure(stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
         spring.configure(stiffness: stiffness, damping: damping)
     }
 
@@ -204,7 +204,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
      - Note: Configuring this spring via this method will override the values for `stiffness` and `damping`.
      - Description: For more info check out the WWDC talk on this: https://developer.apple.com/videos/play/wwdc2018/803/
      */
-    public func configure(response: Value.SIMDType.SIMDType.Scalar, dampingRatio: Value.SIMDType.SIMDType.Scalar) {
+    public func configure(response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
         spring.configure(response: response, dampingRatio: dampingRatio)
     }
 
@@ -214,6 +214,23 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         return resolvedState.valueResolved && resolvedState.velocityResolved
     }
 
+    #if DEBUG
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+        /* Must Be Mirrored Below */
+
+        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        if !valueResolved {
+            return (false, false)
+        }
+
+        if resolvesUponReachingToValue {
+            return (valueResolved, true)
+        }
+
+        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
+        return (valueResolved, velocityResolved)
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -229,6 +246,8 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+        /* Must Be Mirrored Above */
+        
         let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
         if !valueResolved {
             return (false, false)
@@ -241,6 +260,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
         return (valueResolved, velocityResolved)
     }
+    #endif
 
     /**
      Stops the animation and optionally resolves it immediately (jumping to the `toValue`).
@@ -257,7 +277,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     // MARK: - DisplayLinkObserver
 
     public override func tick(_ dt: CFTimeInterval) {
-        tickOptimized(Value.SIMDType.SIMDType.Scalar(dt), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
+        tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
         _valueChanged?(value)
 
@@ -278,7 +298,23 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
      Normally this would be specialized, but because of the dynamic dispatch of -tick:, it fails to specialize. There may be a workaround for this, but as of right now I haven't found a solution.
      By specializing manually, we forcefully generate implementations of this method hardcoded for each SIMD type specified.
      Whilst this does incur a codesize penalty, this results in a performance boost of more than **+100%**.
+     Note that this optimization only happens on Release builds as building constantly for Debug is fairly slow.
      */
+    #if DEBUG
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+        /* Must Be Mirrored Below */
+
+        let x0 = toValue - value
+
+        let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
+
+        value = toValue - x
+
+        if let clampingRange = clampingRange {
+            value.clamp(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound)
+        }
+    }
+    #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD2<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD3<Float>)
@@ -293,7 +329,9 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+        /* Must Be Mirrored Above */
+
         let x0 = toValue - value
 
         let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
@@ -304,5 +342,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             value.clamp(lowerBound: clampingRange.lowerBound, upperBound: clampingRange.upperBound)
         }
     }
+
+    #endif
 
 }

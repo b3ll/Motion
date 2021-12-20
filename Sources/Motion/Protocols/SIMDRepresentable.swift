@@ -40,7 +40,7 @@ extension SIMD64: SupportedSIMD where Scalar: SupportedScalar {}
 // MARK: - SIMDRepresentable
 
 /// A protocol that defines how something that can be represented / stored in a `SIMD` type as well as instantiated from said `SIMD` type.
-public protocol SIMDRepresentable: Comparable {
+public protocol SIMDRepresentable: Comparable where Self.SIMDType == Self.SIMDType.SIMDType {
 
     /**
      The `SIMD` type that `self` can be represented by.
@@ -60,7 +60,7 @@ public protocol SIMDRepresentable: Comparable {
 }
 
 /// All `SIMD` types are `SIMDRepresentable` by default.
-extension SIMDRepresentable where SIMDType == Self {
+extension SIMDRepresentable where SIMDType == Self, SIMDType.Scalar == SIMDType.SIMDType.Scalar {
 
     @inlinable public init(_ simdRepresentation: SIMDType) {
         self = simdRepresentation
