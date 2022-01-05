@@ -11,7 +11,7 @@
         }
       },
       {
-        "package": "swift-benchmark",
+        "package": "Benchmark",
         "repositoryURL": "https://github.com/google/swift-benchmark",
         "state": {
           "branch": null,
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/apple/swift-numerics",
         "state": {
           "branch": null,
-          "revision": "6b24333510e9044cf4716a07bed65eeed6bc6393",
-          "version": "0.0.8"
+          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
+          "version": "0.1.0"
         }
       }
     ]

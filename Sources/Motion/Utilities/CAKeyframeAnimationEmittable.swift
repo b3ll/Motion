@@ -61,7 +61,7 @@ extension CAKeyframeAnimationEmittable {
         if let framerate = framerate {
             dt = 1.0 / TimeInterval(framerate)
         } else {
-            dt = 1.0 / TimeInterval(Animator.shared.targetFramerate)
+            dt = 1.0 / TimeInterval(Animator.shared.preferredFramesPerSecond)
         }
 
         var values = [AnyObject]()

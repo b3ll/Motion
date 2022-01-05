@@ -208,12 +208,12 @@ final class MotionTests: XCTestCase {
 }
 
 internal func tickAnimationOnce(_ animation: Animation, dt: CFTimeInterval = 0.016) {
-    animation.tick(dt)
+    animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
 }
 
 internal func tickAnimationUntilResolved(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
-        animation.tick(dt)
+        animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
         if animation.hasResolved() {
             break
         }
@@ -222,6 +222,6 @@ internal func tickAnimationUntilResolved(_ animation: Animation, dt: CFTimeInter
 
 internal func tickAnimationForDuration(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
-        animation.tick(dt)
+        animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
     }
 }

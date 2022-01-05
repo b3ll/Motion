@@ -20,7 +20,7 @@ func createAndAnimateSpringAnimations<Value: SIMDRepresentable>(to toValue: Valu
 
         try! state.measure {
             springAnimations.forEach { springAnimation in
-                let _ = springAnimation.tick(1.0 / 60.0)
+                let _ = springAnimation.tick(frame: .init(1.0 / 60.0))
             }
         }
     }
@@ -37,7 +37,7 @@ func createAndAnimateBasicAnimations<Value: SIMDRepresentable>(to toValue: Value
 
         try! state.measure {
             basicAnimations.forEach { basicAnimation in
-                let _ = basicAnimation.tick(1.0 / 60.0)
+                let _ = basicAnimation.tick(frame: .init(1.0 / 60.0))
             }
         }
     }
@@ -54,7 +54,7 @@ func createAndAnimateDecayAnimations<Value: SIMDRepresentable>(velocity: Value, 
 
         try! state.measure {
             decayAnimations.forEach { decayAnimation in
-                let _ = decayAnimation.tick(1.0 / 60.0)
+                let _ = decayAnimation.tick(frame: .init(1.0 / 60.0))
             }
         }
     }
