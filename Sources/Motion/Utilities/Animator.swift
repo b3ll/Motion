@@ -54,7 +54,7 @@ class Animator: NSObject, AnimationDriverObserver {
         animationObservers.removeObject(forKey: animation)
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
     func tick(frame: AnimationFrame) {
         for animation in (runningAnimations.copy() as! NSHashTable<AnyObject>).objectEnumerator() {

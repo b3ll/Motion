@@ -274,7 +274,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
         self.velocity = .zero
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
         tickOptimized(Value.SIMDType.Scalar(frame.duration), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)

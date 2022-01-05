@@ -12,7 +12,7 @@ import QuartzCore
 /**
  This class acts as the base class for all animations within `Motion`. It doesn't do much, other than serve as a base class for all animations to inherit from and implement.
 
- An animation is something that can be ticked from `AnimationTimerObserver` and must resolve at some point.
+ An animation is something that can be ticked from `AnimationDriverObserver` and must resolve at some point.
 
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `ValueAnimation`
@@ -65,9 +65,9 @@ public class Animation: AnimationDriverObserver {
         fatalError("Subclasses must override this")
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
-    /// Called by `AnimationTimerObserver` to advance the animation by the specified time interval `dt` (correlating with the framerate of the display).
+    /// Called by `AnimationDriverObserver` to advance the animation by the specified time interval `dt` (correlating with the framerate of the display).
     public func tick(frame: AnimationFrame) {
         fatalError("Subclasses must override this")
     }

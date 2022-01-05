@@ -118,7 +118,7 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         set { }
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
         tickOptimized(Value.SIMDType.Scalar(frame.duration), decay: &decay, value: &_value, velocity: &_velocity)

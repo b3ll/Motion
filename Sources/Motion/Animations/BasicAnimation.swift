@@ -205,7 +205,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         set { }
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
         if duration.approximatelyEqual(to: 0.0) {

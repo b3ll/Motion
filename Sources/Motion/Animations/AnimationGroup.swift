@@ -62,7 +62,7 @@ public final class AnimationGroup: Animation {
         }
     }
 
-    // MARK: - AnimationTimerObserver
+    // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
         if frame.duration > 1.0 {
