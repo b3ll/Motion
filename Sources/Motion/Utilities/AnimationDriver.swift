@@ -85,14 +85,10 @@ final class CoreVideoDriver: AnimationDriver {
             successLink = CVDisplayLinkSetOutputCallback(displaylink, { (displaylink, currentTime, outputTime, _, _, context) -> CVReturn in
                 if let context = context {
                     let timer = Unmanaged<CoreVideoDriver>.fromOpaque(context)
-                    let frame: AnimationFrame = .init(
+                    timer.takeUnretainedValue().makeFrameAvailible(.init(
                         timestamp: currentTime.pointee.timeInterval,
                         targetTimestamp: outputTime.pointee.timeInterval
-                    )
-                    
-                    DispatchQueue.main.sync {
-                        timer.takeUnretainedValue().makeFrameAvailible(frame)
-                    }
+                    ))
                 }
                 return kCVReturnSuccess
             }, Unmanaged.passUnretained(self).toOpaque())
