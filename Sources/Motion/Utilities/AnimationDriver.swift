@@ -84,12 +84,14 @@ final class CoreVideoDriver: AnimationDriver {
         if let displaylink = displayLinkRef {
             successLink = CVDisplayLinkSetOutputCallback(displaylink, { (displaylink, currentTime, outputTime, _, _, context) -> CVReturn in
                 if let context = context {
-                    let timer = Unmanaged<CoreVideoTimer>.fromOpaque(context)
+                    let timer = Unmanaged<CoreVideoDriver>.fromOpaque(context)
+                    let frame: AnimationFrame = .init(
+                        timestamp: currentTime.pointee.timeInterval,
+                        targetTimestamp: outputTime.pointee.timeInterval
+                    )
+                    
                     DispatchQueue.main.sync {
-                        timer.takeUnretainedValue().makeFrameAvailible(.init(
-                            timestamp: currentTime.pointee.timeInterval,
-                            targetTimestamp: outputTime.pointee.timeInterval)
-                        )
+                        timer.takeUnretainedValue().makeFrameAvailible(frame)
                     }
                 }
                 return kCVReturnSuccess
@@ -120,9 +122,7 @@ final class CoreVideoDriver: AnimationDriver {
         isPaused = true
     }
 
-    var preferredFramesPerSecond: Int {
-        60
-    }
+    let preferredFramesPerSecond: Int = 60
     
     var observer: AnimationDriverObserver?
 
@@ -144,7 +144,7 @@ final class CoreVideoDriver: AnimationDriver {
     }
     
     func makeFrameAvailible(_ frame: AnimationFrame) {
-        // Called on display link thread.        
+        // Called on display link thread.
         availibleFrameLock.lock()
         if var availibleFrame = availibleFrame {
             // If there's already an availible frame that hasn't been processed yet then extend
@@ -186,7 +186,7 @@ extension CVTimeStamp {
     fileprivate var timeInterval: TimeInterval {
         return TimeInterval(videoTime) / TimeInterval(self.videoTimeScale)
     }
-    
+
 }
 
 #endif
