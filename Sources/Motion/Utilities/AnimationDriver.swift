@@ -74,8 +74,7 @@ typealias SystemAnimationDriver = CoreVideoDriver
 final class CoreVideoDriver: AnimationDriver {
 
     private var displaylink: CVDisplayLink!
-    private var availibleFrame: AnimationFrame?
-    private let availibleFrameLock = NSLock()
+    private var nextFrame: Synchronized<AnimationFrame?> = Synchronized(data: nil)
 
     init?() {
         var displayLinkRef: CVDisplayLink? = nil
@@ -85,7 +84,7 @@ final class CoreVideoDriver: AnimationDriver {
             successLink = CVDisplayLinkSetOutputCallback(displaylink, { (displaylink, currentTime, outputTime, _, _, context) -> CVReturn in
                 if let context = context {
                     let timer = Unmanaged<CoreVideoDriver>.fromOpaque(context)
-                    timer.takeUnretainedValue().makeFrameAvailible(.init(
+                    timer.takeUnretainedValue().addFrame(.init(
                         timestamp: currentTime.pointee.timeInterval,
                         targetTimestamp: outputTime.pointee.timeInterval
                     ))
@@ -133,45 +132,37 @@ final class CoreVideoDriver: AnimationDriver {
                     CVDisplayLinkStart(displaylink)
                 } else {
                     CVDisplayLinkStop(displaylink)
-                    availibleFrame = nil
+                    nextFrame.value = nil
                 }
             }
         }
     }
     
-    func makeFrameAvailible(_ frame: AnimationFrame) {
-        // Called on display link thread.
-        availibleFrameLock.lock()
-        if var availibleFrame = availibleFrame {
-            // If there's already an availible frame that hasn't been processed yet then extend
-            // it's targetTimestamp
-            availibleFrame.targetTimestamp = frame.targetTimestamp
-            self.availibleFrame = availibleFrame
-        } else {
-            // If there isn't an existing availible frame then set availible frame and schedule
-            // tick on main.
-            availibleFrame = frame
-            DispatchQueue.main.async { [weak self] in
-                self?.tick()
+    func addFrame(_ frame: AnimationFrame) {
+        nextFrame.with { existing in
+            if existing != nil {
+                existing!.targetTimestamp = frame.targetTimestamp
+            } else {
+                existing = frame
+                DispatchQueue.main.async { [weak self] in
+                    self?.tick()
+                }
             }
         }
-        availibleFrameLock.unlock()
     }
     
-    func takeAvailibleFrame() -> AnimationFrame? {
-        // locking since display link may be sending in new frames.
-        availibleFrameLock.lock()
-        let f = availibleFrame
-        availibleFrame = nil
-        availibleFrameLock.unlock()
-        return f
+    func takeFrame() -> AnimationFrame? {
+        nextFrame.with { frame -> AnimationFrame? in
+            let result = frame
+            frame = nil
+            return result
+        }
     }
     
     func tick() {
-        guard let frame = takeAvailibleFrame() else {
+        guard let frame = takeFrame() else {
             return
         }
-        
         observer?.tick(frame: frame)
     }
     
