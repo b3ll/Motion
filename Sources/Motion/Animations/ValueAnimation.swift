@@ -5,7 +5,6 @@
 //  Created by Adam Bell on 8/19/20.
 //
 
-import Combine
 import Foundation
 import QuartzCore
 
@@ -23,7 +22,13 @@ public class Animation: AnimationDriverObserver {
     Whether or not this animation is running.
     - Note: Calling `start` or `stop` enables (or disables) this value. Animations will only run when this is `true` and `hasResolved` is false.
     */
-    @Published public var enabled: Bool = false
+    public var enabled: Bool = false {
+        didSet {
+            enabledDidChange(enabled)
+        }
+    }
+    
+    public var enabledDidChange: (Bool) -> Void = { _ in }
 
     /**
      A completion block to be called when the animation completes successfully.
