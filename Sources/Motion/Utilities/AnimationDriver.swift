@@ -34,12 +34,14 @@ final class CoreAnimationDriver: AnimationDriver {
         displayLink.invalidate()
     }
 
-    var isPaused: Bool {
-        get {
-            displayLink.isPaused
-        }
-        set {
-            displayLink.isPaused = newValue
+
+    var isPaused: Bool = true {
+        didSet {
+            guard oldValue != isPaused else {
+                return
+            }
+            
+            displayLink.isPaused = isPaused
         }
     }
     
@@ -73,7 +75,7 @@ typealias SystemAnimationDriver = CoreVideoDriver
 final class CoreVideoDriver: AnimationDriver {
 
     private var displaylink: CVDisplayLink!
-    private var nextFrame: Synchronized<AnimationFrame?> = Synchronized(data: nil)
+    private var nextFrame: Synchronized<AnimationFrame?> = .init(data: nil)
 
     init?() {
         var displayLinkRef: CVDisplayLink? = nil
@@ -120,19 +122,17 @@ final class CoreVideoDriver: AnimationDriver {
     
     var observer: AnimationDriverObserver?
 
-    var isPaused: Bool {
-        get {
-            !CVDisplayLinkIsRunning(displaylink)
-        }
-        
-        set {
-            if newValue != isPaused {
-                if !newValue {
-                    CVDisplayLinkStart(displaylink)
-                } else {
-                    CVDisplayLinkStop(displaylink)
-                    nextFrame.value = nil
-                }
+    var isPaused: Bool = false {
+        didSet {
+            guard oldValue != isPaused else {
+                return
+            }
+            
+            if isPaused {
+                CVDisplayLinkStop(displaylink)
+            } else {
+                nextFrame.value = nil
+                CVDisplayLinkStart(displaylink)
             }
         }
     }
