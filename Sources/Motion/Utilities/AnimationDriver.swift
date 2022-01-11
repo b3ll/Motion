@@ -128,12 +128,20 @@ final class CoreVideoDriver: AnimationDriver {
                 return
             }
             
+            let code: CVReturn
+            
             if isPaused {
-                CVDisplayLinkStop(displaylink)
+                code = CVDisplayLinkStop(displaylink)
+                
+                NSLog("Display link stopped")
             } else {
                 nextFrame.value = nil
-                CVDisplayLinkStart(displaylink)
+                code = CVDisplayLinkStart(displaylink)
+                
+                NSLog("Display link started")
             }
+            
+            assert(code == kCVReturnSuccess, "Failed to start/stop display link with error code \(code)")
         }
     }
     
