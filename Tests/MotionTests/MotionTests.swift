@@ -159,13 +159,15 @@ final class MotionTests: XCTestCase {
     // MARK: - Animator Tests
 
     func testAnimatorAddRemoveAnimation() {
-        let observedAnimationCount = Animator.shared.animationObservers.count
+        let observedAnimationCount = Animator.shared.runningAnimations.count
 
         var spring: SpringAnimation<CGFloat>? = SpringAnimation(initialValue: 0.0)
-        XCTAssert(Animator.shared.animationObservers.count == observedAnimationCount + 1)
+        spring?.enabled = true
+        XCTAssert(Animator.shared.runningAnimations.count == observedAnimationCount + 1)
 
+        spring?.enabled = false
         spring = nil
-        XCTAssert(Animator.shared.animationObservers.count == observedAnimationCount)
+        XCTAssert(Animator.shared.runningAnimations.count == observedAnimationCount)
 
         // Suppresses "Variable 'spring' was written to, but never read"
         _ = spring
@@ -201,7 +203,6 @@ final class MotionTests: XCTestCase {
 
     override class func tearDown() {
         // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
-        XCTAssert(Animator.shared.animationObservers.count == 0)
         XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
     }
 

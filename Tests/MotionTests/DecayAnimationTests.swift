@@ -94,7 +94,6 @@ final class DecayAnimationTests: XCTestCase {
 
     override class func tearDown() {
         // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
-        XCTAssert(Animator.shared.animationObservers.count == 0)
         XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
     }
 
