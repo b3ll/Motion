@@ -31,7 +31,7 @@ class Animator: NSObject, AnimationDriverObserver {
     // MARK: - Animations
 
     internal func observe(_ animation: Animation) {
-       animation.enabledDidChange = { [weak self, weak animation] (enabled) in
+        animation.enabledDidChange = { [weak self, weak animation] (enabled) in
             guard let self = self, let animation = animation else { return }
             
             if enabled {
@@ -40,7 +40,7 @@ class Animator: NSObject, AnimationDriverObserver {
                 self.runningAnimations.remove(animation)
             }
 
-           self.animationDriver.isPaused = self.runningAnimations.count == 0
+            self.animationDriver.isPaused = self.runningAnimations.count == 0
         }
     }
 

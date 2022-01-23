@@ -23,6 +23,9 @@ struct RootView: View {
                 NavigationLink(destination: ScrollViewDemo().navigationTitle("ScrollView Demo")) {
                     Text("ScrollView Demo")
                 }
+                NavigationLink(destination: DisplayLinkDemo().navigationTitle("DisplayLink Demo")) {
+                    Text("DisplayLink Demo")
+                }
             }
             .navigationBarTitle("Motion Demos", displayMode: .large)
         }
