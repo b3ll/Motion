@@ -12,12 +12,12 @@ import QuartzCore
 /**
  This class acts as the base class for all animations within `Motion`. It doesn't do much, other than serve as a base class for all animations to inherit from and implement.
 
- An animation is something that can be ticked from `DisplayLinkObserver` and must resolve at some point.
+ An animation is something that can be ticked from `AnimationDriverObserver` and must resolve at some point.
 
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `ValueAnimation`
  */
-public class Animation: DisplayLinkObserver {
+public class Animation: AnimationDriverObserver {
 
     /**
     Whether or not this animation is running.
@@ -65,10 +65,10 @@ public class Animation: DisplayLinkObserver {
         fatalError("Subclasses must override this")
     }
 
-    // MARK: - DisplayLinkObserver
+    // MARK: - AnimationDriverObserver
 
-    /// Called by `DisplayLinkObserver` to advance the animation by the specified time interval `dt` (correlating with the framerate of the display).
-    public func tick(_ dt: CFTimeInterval) {
+    /// Called by `AnimationDriverObserver` to advance the animation by the specified time interval `dt` (correlating with the framerate of the display).
+    public func tick(frame: AnimationFrame) {
         fatalError("Subclasses must override this")
     }
 
@@ -234,4 +234,34 @@ extension ValueAnimation: Hashable, Equatable {
         return hasher.combine(ObjectIdentifier(self).hashValue)
     }
 
+}
+
+/// Timestamps for the current animation frame.
+public struct AnimationFrame : Equatable {
+    
+    /// The timestamp that the frame started.
+    public let timestamp: CFTimeInterval
+    
+    /// The timestamp that represents when the next frame displays.
+    public var targetTimestamp: CFTimeInterval
+    
+    /// The current duration between last frame and target frame.
+    public var duration: CFTimeInterval {
+#if targetEnvironment(simulator)
+        return (targetTimestamp - timestamp) / Double(SimulatorSlowAnimationsCoefficient())
+#else
+        return targetTimestamp - timestamp
+#endif
+    }
+
+    public init(_ dt: CFTimeInterval) {
+        self.timestamp = 0
+        self.targetTimestamp = dt
+    }
+    
+    public init(timestamp: CFTimeInterval = CACurrentMediaTime(), targetTimestamp: CFTimeInterval? = nil) {
+        self.timestamp = timestamp
+        self.targetTimestamp = targetTimestamp ?? timestamp + (1 / 60)
+    }
+    
 }

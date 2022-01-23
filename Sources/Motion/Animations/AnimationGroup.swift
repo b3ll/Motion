@@ -62,14 +62,14 @@ public final class AnimationGroup: Animation {
         }
     }
 
-    // MARK: - DisplayLinkObserver
+    // MARK: - AnimationDriverObserver
 
-    public override func tick(_ dt: CFTimeInterval) {
-        if dt > 1.0 {
+    public override func tick(frame: AnimationFrame) {
+        if frame.duration > 1.0 {
             return
         }
 
-        animations.forEach { $0.tick(dt) }
+        animations.forEach { $0.tick(frame: frame) }
 
         if !hasResolved() {
             stop()

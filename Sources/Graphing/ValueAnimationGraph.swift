@@ -73,7 +73,7 @@ public struct ValueAnimationShape: Shape {
                 point = velocity()
             }
 
-            animation.tick(dt)
+            animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
 
             return point
         }

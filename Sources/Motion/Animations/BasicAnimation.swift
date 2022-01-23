@@ -205,15 +205,15 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         set { }
     }
 
-    // MARK: - DisplayLinkObserver
+    // MARK: - AnimationDriverObserver
 
-    public override func tick(_ dt: CFTimeInterval) {
+    public override func tick(frame: AnimationFrame) {
         if duration.approximatelyEqual(to: 0.0) {
             stop(resolveImmediately: true, postValueChanged: true)
             return
         }
 
-        accumulatedTime += dt
+        accumulatedTime += frame.duration
 
         let fraction = min(max(0.0, accumulatedTime / duration), 1.0)
 

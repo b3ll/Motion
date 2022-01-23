@@ -127,23 +127,23 @@ final class SpringAnimationTests: XCTestCase {
     }
 
     func testSpringEvaluation() {
-        let t = 0.50
+        let f = AnimationFrame(timestamp: 0, targetTimestamp: 0.5)
 
         let underDampedSpring = SpringAnimation<CGFloat>(response: 1.0, dampingRatio: 0.80)
         underDampedSpring.toValue = 10.0
-        underDampedSpring.tick(t)
+        underDampedSpring.tick(frame: f)
 
         XCTAssert(underDampedSpring.value.approximatelyEqual(to: 9.223))
 
         let criticallyDampedSpring = SpringAnimation<CGFloat>(response: 1.0, dampingRatio: 1.0)
         criticallyDampedSpring.toValue = 10.0
-        criticallyDampedSpring.tick(t)
+        criticallyDampedSpring.tick(frame: f)
 
         XCTAssert(criticallyDampedSpring.value.approximatelyEqual(to: 8.210))
 
         let overDampedSpring = SpringAnimation<CGFloat>(stiffness: 2.0, damping: 10.0)
         overDampedSpring.toValue = 10.0
-        overDampedSpring.tick(t)
+        overDampedSpring.tick(frame: f)
     }
 
     func testSpringVelocitySetting() {
