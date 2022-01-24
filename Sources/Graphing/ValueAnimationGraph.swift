@@ -10,6 +10,7 @@
 import Motion
 import SwiftUI
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 public struct ValueAnimationShape: Shape {
 
     public enum GraphType {
@@ -85,6 +86,7 @@ public struct ValueAnimationShape: Shape {
 
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 public struct ValueAnimationGraphView: View {
 
     public let animation: ValueAnimation<CGFloat>
@@ -130,6 +132,7 @@ public struct ValueAnimationGraphView: View {
 
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 struct ValueAnimationGraphView_Previews: PreviewProvider {
 
     static func springAnimation(response: Double, damping: Double) -> SpringAnimation<CGFloat> {
@@ -153,25 +156,8 @@ struct ValueAnimationGraphView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        if #available(iOS 14.0, macOS 11.0, tvOS 14.0, *) {
-            Group {
-                LazyVGrid(columns: [GridItem(.fixed(320)), GridItem(.fixed(320)), GridItem(.fixed(320))], alignment: .center, spacing: 2.0) {
-                    ForEach((1...10), id: \.self) { dampingConstant in
-                        ValueAnimationGraphView(springAnimation(response: 1.0, damping: Double(dampingConstant) / 10.0), graphType: .position)
-                            .previewLayout(.sizeThatFits)
-                    }
-
-                    // Critically Damped
-                    ValueAnimationGraphView(criticallyDamped, graphType: .position, duration: 30.0)
-                }
-
-                // Decay Animation
-                ValueAnimationGraphView(decayAnimation, graphType: .velocity, duration: 2.0)
-            }
-            .background(Color.black)
-            .previewLayout(.sizeThatFits)
-        } else {
-            Group {
+        Group {
+            LazyVGrid(columns: [GridItem(.fixed(320)), GridItem(.fixed(320)), GridItem(.fixed(320))], alignment: .center, spacing: 2.0) {
                 ForEach((1...10), id: \.self) { dampingConstant in
                     ValueAnimationGraphView(springAnimation(response: 1.0, damping: Double(dampingConstant) / 10.0), graphType: .position)
                         .previewLayout(.sizeThatFits)
@@ -184,6 +170,8 @@ struct ValueAnimationGraphView_Previews: PreviewProvider {
             // Decay Animation
             ValueAnimationGraphView(decayAnimation, graphType: .velocity, duration: 2.0)
         }
+        .background(Color.black)
+        .previewLayout(.sizeThatFits)
     }
 
 }

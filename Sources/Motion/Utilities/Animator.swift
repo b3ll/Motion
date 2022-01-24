@@ -5,7 +5,6 @@
 //  Created by Adam Bell on 7/30/20.
 //
 
-import Combine
 import Foundation
 import QuartzCore
 #if canImport(UIKit)
@@ -15,9 +14,7 @@ import UIKit
 class Animator: NSObject, AnimationDriverObserver {
 
     private var animationDriver: AnimationDriver
-    private var runningAnimationsObserver: AnyCancellable? = nil
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
-    internal var animationObservers: NSMapTable<Animation, AnyCancellable> = .weakToStrongObjects()
 
     var preferredFramesPerSecond: Int {
         animationDriver.preferredFramesPerSecond
@@ -34,7 +31,7 @@ class Animator: NSObject, AnimationDriverObserver {
     // MARK: - Animations
 
     internal func observe(_ animation: Animation) {
-       let obs = animation.$enabled.sink { [weak self, weak animation] (enabled) in
+       animation.enabledDidChange = { [weak self, weak animation] (enabled) in
             guard let self = self, let animation = animation else { return }
             
             if enabled {
@@ -45,13 +42,11 @@ class Animator: NSObject, AnimationDriverObserver {
 
            self.animationDriver.isPaused = self.runningAnimations.count == 0
         }
-
-        animationObservers.setObject(obs, forKey: animation)
     }
 
     internal func unobserve(_ animation: Animation) {
         runningAnimations.remove(animation)
-        animationObservers.removeObject(forKey: animation)
+        animation.enabledDidChange = { _ in }
     }
 
     // MARK: - AnimationDriverObserver

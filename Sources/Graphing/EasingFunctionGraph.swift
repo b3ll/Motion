@@ -10,6 +10,7 @@
 import Motion
 import SwiftUI
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 public struct EasingFunctionShape: Shape {
 
     public let easingFunction: EasingFunction<CGFloat>
@@ -47,6 +48,7 @@ public extension EasingFunction {
 
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 public struct EasingFunctionGraphView: View {
 
     public let easingFunction: EasingFunction<CGFloat>
@@ -67,7 +69,7 @@ public struct EasingFunctionGraphView: View {
 
 }
 
-
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
 struct EasingFunctionGraphView_Previews: PreviewProvider {
 
     static var previews: some View {
