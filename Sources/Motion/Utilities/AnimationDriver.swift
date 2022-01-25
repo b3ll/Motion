@@ -128,16 +128,10 @@ final class CoreVideoDriver: AnimationDriver {
 
             if isPaused {
                 guard CVDisplayLinkIsRunning(displaylink) else { return }
-
                 code = CVDisplayLinkStop(displaylink)
-                
-                NSLog("Display link stopped")
             } else {
                 guard !CVDisplayLinkIsRunning(displaylink) else { return }
-                
                 code = CVDisplayLinkStart(displaylink)
-                
-                NSLog("Display link started")
             }
 
             assert(code == kCVReturnSuccess, "Failed to start/stop display link with error code \(code)")
