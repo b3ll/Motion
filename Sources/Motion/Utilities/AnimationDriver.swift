@@ -67,7 +67,7 @@ final class CoreAnimationDriver: AnimationDriver {
 
 #endif
 
-#if canImport(Cocoa)
+#if os(macOS)
 import Cocoa
 
 typealias SystemAnimationDriver = CoreVideoDriver
