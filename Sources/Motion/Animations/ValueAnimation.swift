@@ -16,25 +16,25 @@ import QuartzCore
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `ValueAnimation`
  */
-public class Animation: AnimationDriverObserver {
+open class Animation: AnimationDriverObserver {
 
     /**
     Whether or not this animation is running.
     - Note: Calling `start` or `stop` enables (or disables) this value. Animations will only run when this is `true` and `hasResolved` is false.
     */
-    public var enabled: Bool = false {
+    open var enabled: Bool = false {
         didSet {
             enabledDidChange(enabled)
         }
     }
     
-    public var enabledDidChange: (Bool) -> Void = { _ in }
+    open var enabledDidChange: (Bool) -> Void = { _ in }
 
     /**
      A completion block to be called when the animation completes successfully.
      - Note: Be careful to not introduce any retain cycles by referencing self inside of here. `unowned` or `weak` instances of self are viable.
      */
-    public var completion: (() -> Void)? = nil
+    open var completion: (() -> Void)? = nil
 
     /// Default initializer. Animations must be strongly held to continue to animate.
     public init() {
@@ -46,7 +46,7 @@ public class Animation: AnimationDriverObserver {
     }
 
     /// Starts the animation if `hasResolved` is false.
-    public func start() {
+    open func start() {
         if hasResolved() {
             return
         }
@@ -61,19 +61,19 @@ public class Animation: AnimationDriverObserver {
      - resolveImmediately: Whether or not the animation should jump to its end state.
      - postValueChanged: Whether or not value changes will be posted.
      */
-    public func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
+    open func stop(resolveImmediately: Bool = false, postValueChanged: Bool = false) {
         self.enabled = false
     }
 
     /// Determines whether or not the animation should be considered resolved, or at rest.
-    public func hasResolved() -> Bool {
+    open func hasResolved() -> Bool {
         fatalError("Subclasses must override this")
     }
 
     // MARK: - AnimationDriverObserver
 
     /// Called by `AnimationDriverObserver` to advance the animation by the specified time interval `dt` (correlating with the framerate of the display).
-    public func tick(frame: AnimationFrame) {
+    open func tick(frame: AnimationFrame) {
         fatalError("Subclasses must override this")
     }
 
