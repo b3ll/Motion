@@ -11,7 +11,7 @@ protocol AnimationDriver {
     var observer: AnimationDriverObserver? { get set }
 }
 
-protocol AnimationDriverObserver {
+protocol AnimationDriverObserver: AnyObject {
     func tick(frame: AnimationFrame)
 }
 
@@ -54,7 +54,7 @@ final class CoreAnimationDriver: AnimationDriver {
         }
     }
     
-    var observer: AnimationDriverObserver?
+    weak var observer: AnimationDriverObserver?
     
     @objc func tick() {
         observer?.tick(frame: AnimationFrame(
@@ -120,7 +120,7 @@ final class CoreVideoDriver: AnimationDriver {
 
     let preferredFramesPerSecond: Int = 60
     
-    var observer: AnimationDriverObserver?
+    weak var observer: AnimationDriverObserver?
 
     var isPaused: Bool = false {
         didSet {
