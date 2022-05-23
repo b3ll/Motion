@@ -1,0 +1,131 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Animations/ValueAnimation.swift",
+      "line": 31,
+      "symbol": "Animation.enabledDidChange",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Animations/ValueAnimation.swift",
+      "line": 110,
+      "symbol": "ValueAnimation.value",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Animations/ValueAnimation.swift",
+      "line": 262,
+      "symbol": "AnimationFrame.init(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Animations/ValueAnimation.swift",
+      "line": 267,
+      "symbol": "AnimationFrame.init(timestamp:targetTimestamp:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/EquatableEnough.swift",
+      "line": 23,
+      "symbol": "FloatingPointInitializable.init(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/EquatableEnough.swift",
+      "line": 24,
+      "symbol": "FloatingPointInitializable.init(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/EquatableEnough.swift",
+      "line": 37,
+      "symbol": "EquatableEnough.EpsilonType",
+      "symbol_kind": "source.lang.swift.decl.associatedtype",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/SIMDRepresentable.swift",
+      "line": 22,
+      "symbol": "SupportedScalar.exp(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/SIMDRepresentable.swift",
+      "line": 23,
+      "symbol": "SupportedScalar.sin(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/SIMDRepresentable.swift",
+      "line": 24,
+      "symbol": "SupportedScalar.cos(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Protocols/SIMDRepresentable.swift",
+      "line": 25,
+      "symbol": "SupportedScalar.pow(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 186,
+      "symbol": "CAKeyframeAnimationValueConvertible.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 192,
+      "symbol": "Float.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 200,
+      "symbol": "Double.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 210,
+      "symbol": "CGFloat.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 218,
+      "symbol": "CGPoint.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 230,
+      "symbol": "CGSize.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/Motion/Motion/Sources/Motion/Utilities/CAKeyframeAnimationEmittable.swift",
+      "line": 242,
+      "symbol": "CGRect.toKeyframeValue()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/runner/work/Motion/Motion"
+}
