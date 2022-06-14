@@ -1,4 +1,5 @@
-![Motion](https://github.com/b3ll/Motion/blob/main/Resources/Motion-Logo-Rendered-Optimized.gif?raw=true)
+![Motion-Logo-Dark](https://github.com/b3ll/Motion/blob/main/Resources/MotionLogo-Dark-Cropped.gif?raw=true#gh-dark-mode-only)
+![Motion-Logo-Light](https://github.com/b3ll/Motion/blob/main/Resources/MotionLogo-Light-Cropped.gif?raw=true#gh-light-mode-only)
 
 ![Tests](https://github.com/b3ll/Motion/workflows/Tests/badge.svg)
 ![Docs](https://github.com/b3ll/Motion/workflows/Docs/badge.svg)
