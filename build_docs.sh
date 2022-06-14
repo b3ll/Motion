@@ -1,5 +1,4 @@
 #!/bin/bash
 
-# Parse swift docs.
-
-jazzy --module Motion --swift-build-tool spm --build-tool-arguments -Xswiftc,-swift-version,-Xswiftc,5 --author "Adam Bell" --author_url "https://twitter.com/b3ll" --undocumented-text "No overview available." --theme apple --clean
+swift package --allow-writing-to-directory docs generate-documentation --target Motion --disable-indexing --transform-for-static-hosting --hosting-base-path Motion --output-path docs
+swift package --disable-sandbox preview-documentation --target Motion

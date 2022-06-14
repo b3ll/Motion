@@ -32,7 +32,7 @@ Motion is an animation engine for gesturally-driven user interfaces, animations,
 
 # Usage
 
-API Documentation is [here](https://b3ll.github.io/Motion)
+API Documentation is [here](https://b3ll.github.io/Motion/documentation/motion/)
 
 ## Animations
 
