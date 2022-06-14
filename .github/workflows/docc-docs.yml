@@ -1,0 +1,27 @@
+name: Docs
+
+on: [push]
+
+jobs:
+  deploy_docs:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build Docs
+        uses: sersoft-gmbh/swifty-docs-action@v2
+        with:
+          output: docs
+          targets: Motion
+          use-xcodebuild: true
+          disable-indexing: true
+          transform-for-static-hosting: true
+          hosting-base-path: Motion
+        
+      - name: Deploy to GitHub Pages
+        uses: Cecilapp/GitHub-Pages-deploy@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        with:
+          email: adam@adambell.me
+          build_dir: docs
