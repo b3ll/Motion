@@ -34,7 +34,7 @@ import simd
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  ```
  */
-public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
+public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     /// The velocity of the animation. Setting this before calling `start` will cause the spring animation to be seeded with that velocity, and then the velocity will decay over time.
     public override var velocity: Value {

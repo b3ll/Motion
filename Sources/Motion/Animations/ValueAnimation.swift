@@ -97,7 +97,7 @@ open class Animation: AnimationDriverObserver {
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `BasicAnimation`, `DecayAnimation`, `SpringAnimation`.
  */
-public class ValueAnimation<Value: SIMDRepresentable>: Animation where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
+public class ValueAnimation<Value: SIMDRepresentable>: Animation {
 
     /**
      A block to be called when `value` changes.

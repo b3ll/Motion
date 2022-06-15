@@ -13,7 +13,7 @@ import Foundation
  - Note: This can be used on its own, but it's mainly used by `BasicAnimation`'s `tick` method.
  - SeeAlso: `BasicAnimation`
  */
-public struct EasingFunction<Value: SIMDRepresentable>: Hashable where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
+public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
 
     /// An easing function with a linear bezier curve.
     public static var linear: Self {

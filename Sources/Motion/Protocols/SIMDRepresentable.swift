@@ -16,7 +16,7 @@ import RealModule
 public protocol SupportedSIMD: SIMD, SIMDRepresentable, EquatableEnough where Scalar: SupportedScalar {}
 
 /// A protocol that defines supported `SIMD` Scalar types that conform to `FloatingPointInitializable`, `EquatableEnough`, and are `RealModule.Real` numbers.
-public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, EquatableEnough, RealModule.Real {
+public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, EquatableEnough, RealModule.Real, Decodable, Encodable {
 
     // These only really exist because for some reason the Swift compiler can't infer that Float and Double methods for these exist.
     static func exp(_ x: Self) -> Self
@@ -60,7 +60,7 @@ public protocol SIMDRepresentable: Comparable where Self.SIMDType == Self.SIMDTy
 }
 
 /// All `SIMD` types are `SIMDRepresentable` by default.
-extension SIMDRepresentable where SIMDType == Self, SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+extension SIMDRepresentable where SIMDType == Self {
 
     @inlinable public init(_ simdRepresentation: SIMDType) {
         self = simdRepresentation

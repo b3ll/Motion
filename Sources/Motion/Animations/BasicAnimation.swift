@@ -26,7 +26,7 @@ import simd
  
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  */
-public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> where Value.SIMDType.Scalar == Value.SIMDType.SIMDType.Scalar {
+public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Value> {
 
     /// The starting point of the animation. Defaults to `.zero`.
     public var fromValue: Value {
