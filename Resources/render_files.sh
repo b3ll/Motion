@@ -1,14 +1,14 @@
 #!/bin/bash
 
-rm MotionLogo-Light-Cropped.mov
+rm MotionLogo-Light.gif
 rm MotionLogo-Light-Cropped.gif
-rm MotionLogo-Dark-Cropped.mov
+rm MotionLogo-Dark.gif
 rm MotionLogo-Dark-Cropped.gif
 
-ffmpeg -i MotionLogo-Light.mov -filter:v "crop=in_w-360:in_h-800" -c:a copy MotionLogo-Light-Cropped.mov
+gifski --fps 50 --extra --width 1920 --height 1080 -o MotionLogo-Light.gif MotionLogo-Light.mov
 
-gifski --fps 29 -o MotionLogo-Light-Cropped.gif MotionLogo-Light-Cropped.mov
+gifsicle --crop 180,400+1560x280 --output MotionLogo-Light-Cropped.gif MotionLogo-Light.gif
 
-ffmpeg -i MotionLogo-Dark.mov -filter:v "crop=in_w-360:in_h-800" -c:a copy MotionLogo-Dark-Cropped.mov
+gifski --fps 50 --extra --width 1920 --height 1080 -o MotionLogo-Dark.gif MotionLogo-Dark.mov 
 
-gifski --fps 29 -o MotionLogo-Dark-Cropped.gif MotionLogo-Dark-Cropped.mov 
+gifsicle --crop 180,400+1560x280 --output MotionLogo-Dark-Cropped.gif MotionLogo-Dark.gif
