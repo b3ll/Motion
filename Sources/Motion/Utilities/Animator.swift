@@ -12,21 +12,25 @@ import UIKit
 #endif
 
 class Animator: NSObject, AnimationDriverObserver {
-
-    private var animationDriver: AnimationDriver
+    private var animationDriver: AnimationDriver? {
+        get {
+            if let _animationDriverStore = _animationDriverStore {
+                return _animationDriverStore
+            }
+            _animationDriverStore = SystemAnimationDriver()
+            _animationDriverStore?.observer = self
+            return _animationDriverStore
+        }
+        set { _animationDriverStore = newValue }
+    }
+    private var _animationDriverStore: AnimationDriver?
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
     var preferredFramesPerSecond: Int {
-        animationDriver.preferredFramesPerSecond
+        animationDriver?.preferredFramesPerSecond ?? 60
     }
 
     internal static let shared = Animator()
-
-    override init() {
-        animationDriver = SystemAnimationDriver()!
-        super.init()
-        animationDriver.observer = self
-    }
 
     // MARK: - Animations
 
@@ -40,7 +44,7 @@ class Animator: NSObject, AnimationDriverObserver {
                 self.runningAnimations.remove(animation)
             }
 
-           self.animationDriver.isPaused = self.runningAnimations.count == 0
+           self.animationDriver?.isPaused = self.runningAnimations.count == 0
         }
     }
 
