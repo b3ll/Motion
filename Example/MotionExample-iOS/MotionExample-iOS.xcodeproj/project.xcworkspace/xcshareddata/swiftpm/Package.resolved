@@ -20,12 +20,21 @@
         }
       },
       {
+        "package": "SwiftDocCPlugin",
+        "repositoryURL": "https://github.com/apple/swift-docc-plugin",
+        "state": {
+          "branch": null,
+          "revision": "3303b164430d9a7055ba484c8ead67a52f7b74f6",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "swift-numerics",
         "repositoryURL": "https://github.com/apple/swift-numerics",
         "state": {
           "branch": null,
-          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
-          "version": "0.1.0"
+          "revision": "0a5bc04095a675662cf24757cc0640aa2204253b",
+          "version": "1.0.2"
         }
       }
     ]

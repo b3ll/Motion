@@ -173,6 +173,25 @@ final class MotionTests: XCTestCase {
         _ = spring
     }
 
+    #if os(iOS)
+    func testChangingAnimatorPreferredFrameRateRange() {
+        let defaultFPS = 60
+
+        if #available(iOS 15.0, *) {
+            Animator.shared.preferredFrameRateRange = .default
+        }
+
+        XCTAssert(Animator.shared.preferredFramesPerSecond == defaultFPS)
+
+        let proMotionFPS = 120
+        if #available(iOS 15.0, *) {
+            Animator.shared.preferredFrameRateRange = CAFrameRateRange(minimum: 80.0, maximum: Float(proMotionFPS), preferred: Float(proMotionFPS))
+        }
+
+        XCTAssert(Animator.shared.preferredFramesPerSecond == proMotionFPS)
+    }
+    #endif
+
     // MARK: - RubberBanding Tests
 
     func testRubberBandingScalar() {
