@@ -11,7 +11,9 @@ import QuartzCore
 import UIKit
 #endif
 
-class Animator: NSObject, AnimationDriverObserver {
+
+/// The default Animator that executes all of Motion's animations.
+public class Animator: NSObject, AnimationDriverObserver {
     private var animationDriver: AnimationDriver? {
         get {
             if let _animationDriverStore = _animationDriverStore {
@@ -26,11 +28,51 @@ class Animator: NSObject, AnimationDriverObserver {
     private var _animationDriverStore: AnimationDriver?
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
-    var preferredFramesPerSecond: Int {
-        animationDriver?.preferredFramesPerSecond ?? 60
+    #if os(iOS)
+    @available(iOS 15.0, macOS 12.0, *)
+    /**
+     The preferred frame rate range for animations being run.
+
+     Defaults to the highest available refresh rate based on the connected screens (i.e. 120hz on Pro Motion displays).
+
+     - Note: You'll also need to enable `CADisableMinimumFrameDurationOnPhone` in your Info.plist for this to take effect.
+     */
+    public var preferredFrameRateRange: CAFrameRateRange {
+        get {
+            return (animationDriver as? CoreAnimationDriver)?.preferredFrameRateRange ?? .default
+        }
+        set {
+            (animationDriver as? CoreAnimationDriver)?.preferredFrameRateRange = newValue
+        }
     }
 
-    internal static let shared = Animator()
+    var preferredFramesPerSecond: Int {
+        let defaultFPS = 60
+
+        if #available(iOS 15.0, macOS 12.0, *) {
+            // `.default` doesn't have any values, so we want to default to 60 fps.
+            if let preferredFrameRateRange = (animationDriver as? CoreAnimationDriver)?.preferredFrameRateRange {
+                if preferredFrameRateRange == .default {
+                    return defaultFPS
+                } else {
+                    return Int(preferredFrameRateRange.preferred ?? Float(defaultFPS))
+                }
+            }
+            return defaultFPS
+        } else {
+            return animationDriver?.preferredFramesPerSecond ?? defaultFPS
+        }
+    }
+    #else
+    var preferredFramesPerSecond: Int {
+        let defaultFPS = 60
+
+        return defaultFPS
+    }
+    #endif
+
+    // The shared animator that runs all of Motion's animations.
+    public static let shared = Animator()
 
     // MARK: - Animations
 

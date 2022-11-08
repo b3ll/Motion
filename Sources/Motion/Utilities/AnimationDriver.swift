@@ -24,9 +24,36 @@ final class CoreAnimationDriver: AnimationDriver {
         
     private var displayLink: CADisplayLink!
 
+    @available(iOS 15.0, macOS 12.0, *)
+    public var preferredFrameRateRange: CAFrameRateRange {
+        get {
+            return displayLink.preferredFrameRateRange
+        }
+        set {
+            displayLink.preferredFrameRateRange = newValue
+        }
+    }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    internal static var defaultPreferredFrameRateRange: CAFrameRateRange {
+        // Find the first connected scene that's a UIWindowScene and is active, then find the highest supported refresh rate.
+        let connectedScenes = UIApplication.shared.connectedScenes
+        let windowScene = connectedScenes.first { ($0 as? UIWindowScene)?.activationState == .foregroundActive } as? UIWindowScene
+        let maxFPS = Float(windowScene?.windows.map { $0.screen.maximumFramesPerSecond }.max() ?? 60)
+
+        // If we've got a high refresh display, we can use 80 as a minimum.
+        // https://developer.apple.com/documentation/quartzcore/optimizing_promotion_refresh_rates_for_iphone_13_pro_and_ipad_pro
+        let adjustedMinFPS: Float = maxFPS > 60.0 ? 80.0 : 60.0
+
+        return CAFrameRateRange(minimum: adjustedMinFPS, maximum: maxFPS, preferred: maxFPS)
+    }
+
     init?() {
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
         displayLink.add(to: .main, forMode: .common)
+        if #available(iOS 15.0, *) {
+            displayLink.preferredFrameRateRange = Self.defaultPreferredFrameRateRange
+        }
     }
     
     deinit {
