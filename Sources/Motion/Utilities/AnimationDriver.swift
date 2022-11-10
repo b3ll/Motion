@@ -24,7 +24,7 @@ final class CoreAnimationDriver: AnimationDriver {
         
     private var displayLink: CADisplayLink!
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
     public var preferredFrameRateRange: CAFrameRateRange {
         get {
             return displayLink.preferredFrameRateRange
@@ -34,7 +34,7 @@ final class CoreAnimationDriver: AnimationDriver {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
     internal static var defaultPreferredFrameRateRange: CAFrameRateRange {
         // Find the first connected scene that's a UIWindowScene and is active, then find the highest supported refresh rate.
         let connectedScenes = UIApplication.shared.connectedScenes
@@ -51,7 +51,7 @@ final class CoreAnimationDriver: AnimationDriver {
     init?() {
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
         displayLink.add(to: .main, forMode: .common)
-        if #available(iOS 15.0, *) {
+        if #available(iOS 15.0, tvOS 15.0, *) {
             displayLink.preferredFrameRateRange = Self.defaultPreferredFrameRateRange
         }
     }

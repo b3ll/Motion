@@ -29,7 +29,7 @@ public class Animator: NSObject, AnimationDriverObserver {
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
     #if os(iOS)
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
     /**
      The preferred frame rate range for animations being run.
 
@@ -49,7 +49,7 @@ public class Animator: NSObject, AnimationDriverObserver {
     var preferredFramesPerSecond: Int {
         let defaultFPS = 60
 
-        if #available(iOS 15.0, macOS 12.0, *) {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, *) {
             // `.default` doesn't have any values, so we want to default to 60 fps.
             if let preferredFrameRateRange = (animationDriver as? CoreAnimationDriver)?.preferredFrameRateRange {
                 if preferredFrameRateRange == .default {

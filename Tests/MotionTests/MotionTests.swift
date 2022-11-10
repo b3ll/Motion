@@ -177,14 +177,14 @@ final class MotionTests: XCTestCase {
     func testChangingAnimatorPreferredFrameRateRange() {
         let defaultFPS = 60
 
-        if #available(iOS 15.0, *) {
+        if #available(iOS 15.0, tvOS 15.0, *) {
             Animator.shared.preferredFrameRateRange = .default
         }
 
         XCTAssert(Animator.shared.preferredFramesPerSecond == defaultFPS)
 
         let proMotionFPS = 120
-        if #available(iOS 15.0, *) {
+        if #available(iOS 15.0, tvOS 15.0, *) {
             Animator.shared.preferredFrameRateRange = CAFrameRateRange(minimum: 80.0, maximum: Float(proMotionFPS), preferred: Float(proMotionFPS))
         }
 
