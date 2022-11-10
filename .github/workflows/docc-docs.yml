@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   deploy_docs:
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
 
