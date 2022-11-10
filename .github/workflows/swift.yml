@@ -11,11 +11,6 @@ jobs:
     runs-on: macos-12
 
     steps:
-      - name: Setup Swift 5.6.1
-        uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: '5.6.1'
-
       - uses: actions/checkout@v2
       - name: Build
         run: swift build -v
