@@ -8,7 +8,7 @@
 import Motion
 import UIKit
 
-fileprivate class BouncyView: UIView {
+internal class BouncyView: UIView {
 
     lazy var spring: SpringAnimation<CGFloat> = {
         let animation = SpringAnimation<CGFloat>(initialValue: 1.0)

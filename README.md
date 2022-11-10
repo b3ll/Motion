@@ -11,6 +11,7 @@ Motion is an animation engine for gesturally-driven user interfaces, animations,
     - [Spring Animation](#spring-animation)
     - [Decay Animation](#decay-animation)
     - [Basic Animation](#basic-animation)
+- SwiftUI Support
 - [Motion vs. Core Animation](#motion-vs-core-animation)
 - [Interruptibility](#interruptibility)
 - [SIMD](#simd)
@@ -109,6 +110,14 @@ basicAnimation.start()
 ```
 
 **Note**: All of these animations are to run and be interfaced with on the **main thread only**. There is no support for threading of any kind.
+
+# SwiftUI Support
+
+Motion supports SwiftUI out of the box! You can use any `Animation` subclass to animate `@State` changes manually.
+
+Checkout the example project's [SwiftUI Demo](https://github.com/b3ll/Motion/blob/main/Example/MotionExample-iOS/MotionExample-iOS/SwiftUIDemoView.swift) for more info!
+
+**Note**: Work is planned to support `TimelineView`. Stay tuned!
 
 # Motion vs. Core Animation
 
