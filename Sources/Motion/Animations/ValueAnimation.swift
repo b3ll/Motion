@@ -165,8 +165,11 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
         return true
     }
 
-    /// The default tolerance level for an animation to be considered finished.
-    public var resolvingEpsilon: Value.SIMDType.EpsilonType = 0.01
+    /// The default tolerance level for the value part of an animation to be considered finished.
+    public var valueEpsilon: Value.SIMDType.EpsilonType = 0.01
+
+    /// The default tolerance level for the velocity part of an animation to be considered finished (if supported).
+    public var velocityEpsilon: Value.SIMDType.EpsilonType = 0.01
 
     /**
      This is meant to be set only by the -onValueChanged: function vs. being set directly. It should be used inside of -tick: only.

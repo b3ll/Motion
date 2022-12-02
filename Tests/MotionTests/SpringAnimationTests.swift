@@ -62,7 +62,8 @@ final class SpringAnimationTests: XCTestCase {
 
         let spring2 = SpringAnimation(initialValue: CGRect.zero)
         spring2.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
-        spring2.resolvingEpsilon = 0.1
+        spring2.valueEpsilon = 0.1
+        spring2.velocityEpsilon = 0.1
 
         var spring2FrameCount = 0
         spring2.onValueChanged { _ in

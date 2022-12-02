@@ -209,15 +209,15 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     /// Returns whether or not the spring animation has resolved. It is considered resolved when the `toValue` is reached, and `velocity` is zero.
     public override func hasResolved() -> Bool {
-        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity)
+        let resolvedState = hasResolved(value: &_value, valueEpsilon: &valueEpsilon, velocityEpsilon: &velocityEpsilon, toValue: &_toValue, velocity: &_velocity)
         return resolvedState.valueResolved && resolvedState.velocityResolved
     }
 
     #if DEBUG
-    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, valueEpsilon: inout SIMDType.EpsilonType, velocityEpsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Below */
 
-        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: valueEpsilon)
         if !valueResolved {
             return (false, false)
         }
@@ -226,7 +226,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (valueResolved, true)
         }
 
-        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
+        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: velocityEpsilon)
         return (valueResolved, velocityResolved)
     }
     #else
@@ -244,10 +244,10 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, valueEpsilon: inout SIMDType.EpsilonType, velocityEpsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Above */
         
-        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: valueEpsilon)
         if !valueResolved {
             return (false, false)
         }
@@ -256,7 +256,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (valueResolved, true)
         }
 
-        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
+        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: velocityEpsilon)
         return (valueResolved, velocityResolved)
     }
     #endif
@@ -280,7 +280,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
         _valueChanged?(value)
 
-        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity)
+        let resolvedState = hasResolved(value: &_value, valueEpsilon: &valueEpsilon, velocityEpsilon: &velocityEpsilon, toValue: &_toValue, velocity: &_velocity)
 
         if resolvedState.valueResolved && resolvedState.velocityResolved {
             stop()

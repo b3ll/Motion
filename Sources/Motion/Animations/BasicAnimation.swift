@@ -125,7 +125,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
      If the value is outside the range, or we can't determine what it should be, we'll just start from the beginning, since that's already an unexpected state.
      */
     internal func attemptToUpdateAccumulatedTimeToMatchValue() {
-        if !_value.approximatelyEqual(to: _fromValue, epsilon: resolvingEpsilon) && !_value.approximatelyEqual(to: _toValue, epsilon: resolvingEpsilon) {
+        if !_value.approximatelyEqual(to: _fromValue, epsilon: valueEpsilon) && !_value.approximatelyEqual(to: _toValue, epsilon: valueEpsilon) {
             // Try to find out where we are in the animation.
             if let accumulatedTime = solveAccumulatedTime(easingFunction: &easingFunction, range: &_range, value: &_value) {
                 self.accumulatedTime = accumulatedTime * duration
@@ -162,7 +162,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     /// Returns whether or not this animation has resolved.
     public override func hasResolved() -> Bool {
-        return hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue)
+        return hasResolved(value: &_value, epsilon: &valueEpsilon, toValue: &_toValue)
     }
 
     #if DEBUG
@@ -205,6 +205,10 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
         set { }
     }
 
+    public override class var supportsVelocity: Bool {
+        return false
+    }
+
     // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
@@ -221,7 +225,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
         _valueChanged?(value)
 
-        if hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue) {
+        if hasResolved(value: &_value, epsilon: &valueEpsilon, toValue: &_toValue) {
             stop()
 
             completion?()
