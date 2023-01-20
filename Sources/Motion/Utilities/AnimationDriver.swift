@@ -41,9 +41,13 @@ final class CoreAnimationDriver: AnimationDriver {
         let windowScene = connectedScenes.first { ($0 as? UIWindowScene)?.activationState == .foregroundActive } as? UIWindowScene
         let maxFPS = Float(windowScene?.windows.map { $0.screen.maximumFramesPerSecond }.max() ?? 60)
 
-        // If we've got a high refresh display, we can use 80 as a minimum.
-        // https://developer.apple.com/documentation/quartzcore/optimizing_promotion_refresh_rates_for_iphone_13_pro_and_ipad_pro
-        let adjustedMinFPS: Float = maxFPS > 60.0 ? 80.0 : 60.0
+        /**
+         If we've got a high refresh display, we can use 80 as a minimum.
+         https://developer.apple.com/documentation/quartzcore/optimizing_promotion_refresh_rates_for_iphone_13_pro_and_ipad_pro
+
+         - Note: We choose 80 as a minimum to be considered high refresh rate, since some devices will erronously report 61fps as a maximum (see: https://github.com/b3ll/Motion/issues/25)
+         */
+        let adjustedMinFPS: Float = maxFPS > 80.0 ? 80.0 : 60.0
 
         return CAFrameRateRange(minimum: adjustedMinFPS, maximum: maxFPS, preferred: maxFPS)
     }
