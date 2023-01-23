@@ -92,7 +92,7 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
         var hasResolved = false
         while !hasResolved {
             tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &value, toValue: &_toValue, velocity: &velocity, clampingRange: &_clampingRange)
-            let resolvedState = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &velocity)
+            let resolvedState = self.hasResolved(value: &value, valueEpsilon: &valueEpsilon, velocityEpsilon: &velocityEpsilon, toValue: &_toValue, velocity: &velocity)
 
             if resolvesUponReachingToValue {
                 hasResolved = resolvedState.valueResolved
@@ -157,7 +157,7 @@ extension BasicAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
         var hasResolved = false
         while !hasResolved {
             tickOptimized(easingFunction: &easingFunction, range: &_range, fraction: Value.SIMDType.Scalar(t / duration), value: &value)
-            hasResolved = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue)
+            hasResolved = self.hasResolved(value: &value, epsilon: &valueEpsilon, toValue: &_toValue)
 
             let nsValue = Value(value).toKeyframeValue()
             values.append(nsValue)
