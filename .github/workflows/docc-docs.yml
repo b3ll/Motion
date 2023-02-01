@@ -8,13 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Swift 5.6.1
+      - name: Setup Swift 5.7
         uses: swift-actions/setup-swift@v1
         with:
-          swift-version: '5.6.1'
+          swift-version: '5.7'
 
       - name: Build Docs
-        uses: sersoft-gmbh/swifty-docs-action@v2
+        uses: sersoft-gmbh/swifty-docs-action@v2.0.3
         with:
           output: docs
           targets: Motion
