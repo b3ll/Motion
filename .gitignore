@@ -7,5 +7,5 @@ Pods
 Benchmark/Packages
 Benchmark/.build
 Benchmark/.swiftpm
-Resources/MotionLogo-Dark.mov
-Resources/MotionLogo-Light.mov
+Resources/deprecated/MotionLogo-Dark.mov
+Resources/deprecated/MotionLogo-Light.mov
