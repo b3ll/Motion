@@ -11,7 +11,7 @@ Motion is an animation engine for gesturally-driven user interfaces, animations,
     - [Spring Animation](#spring-animation)
     - [Decay Animation](#decay-animation)
     - [Basic Animation](#basic-animation)
-- SwiftUI Support
+- [SwiftUI Support](#swiftui-support)
 - [Motion vs. Core Animation](#motion-vs-core-animation)
 - [Interruptibility](#interruptibility)
 - [SIMD](#simd)
