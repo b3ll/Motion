@@ -223,13 +223,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (false, false)
         }
 
-        if !valueResolved, resolvesUponReachingToValue, let previousValueDelta = previousValueDelta {
+        if resolvesUponReachingToValue, !valueResolved, let previousValueDelta = previousValueDelta {
             let currentValueDelta = toValue - value
             let hasReachedOrExceededToValue = {
                 var index = 0
                 let count = currentValueDelta.scalarCount
                 var allValuesReachedOrExceededToValues = true
-                while index < count - 1, allValuesReachedOrExceededToValues {
+                while index < count, allValuesReachedOrExceededToValues {
                     /**
                      - Note: An overshoot has happened once the sign of the value before executing the spring is different than the sign of the value after the spring
 
@@ -273,13 +273,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (false, false)
         }
 
-        if !valueResolved, resolvesUponReachingToValue, let previousValueDelta = previousValueDelta {
+        if resolvesUponReachingToValue, !valueResolved, let previousValueDelta = previousValueDelta {
             let currentValueDelta = toValue - value
             let hasReachedOrExceededToValue = {
                 var index = 0
                 let count = currentValueDelta.scalarCount
                 var allValuesReachedOrExceededToValues = true
-                while index < count - 1, allValuesReachedOrExceededToValues {
+                while index < count, allValuesReachedOrExceededToValues {
                     /**
                      - Note: An overshoot has happened once the sign of the value before executing the spring is different than the sign of the value after the spring
 
@@ -317,7 +317,15 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
-        var previousValueDelta: Value.SIMDType? = _toValue - _value
+        // This subtraction here makes it approx 13%! slower
+        // Conditional negates it.
+        var previousValueDelta: Value.SIMDType?
+        if resolvesUponReachingToValue {
+            previousValueDelta = _toValue - _value
+        } else {
+            previousValueDelta = nil
+        }
+
         tickOptimized(Value.SIMDType.Scalar(frame.duration), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
         let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity, previousValueDelta: &previousValueDelta)
