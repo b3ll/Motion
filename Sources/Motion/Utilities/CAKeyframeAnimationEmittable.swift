@@ -87,12 +87,13 @@ extension SpringAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeA
     public func populateKeyframeAnimationData(dt: TimeInterval, values: inout [AnyObject], keyTimes: inout [NSNumber]) -> TimeInterval {
         var velocity = _velocity
         var value = _value
+        var previousValueDelta: Value.SIMDType? = nil
 
         var t = 0.0
         var hasResolved = false
         while !hasResolved {
             tickOptimized(Value.SIMDType.Scalar(dt), spring: &spring, value: &value, toValue: &_toValue, velocity: &velocity, clampingRange: &_clampingRange)
-            let resolvedState = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &velocity)
+            let resolvedState = self.hasResolved(value: &value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &velocity, previousValueDelta: &previousValueDelta)
 
             if resolvesUponReachingToValue {
                 hasResolved = resolvedState.valueResolved

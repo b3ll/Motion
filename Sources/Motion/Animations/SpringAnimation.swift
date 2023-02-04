@@ -209,21 +209,42 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
     /// Returns whether or not the spring animation has resolved. It is considered resolved when the `toValue` is reached, and `velocity` is zero.
     public override func hasResolved() -> Bool {
-        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity)
+        var previousValueDelta: Value.SIMDType? = nil
+        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity, previousValueDelta: &previousValueDelta)
         return resolvedState.valueResolved && resolvedState.velocityResolved
     }
 
     #if DEBUG
-    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType, previousValueDelta: inout SIMDType?) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Below */
 
         let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
-        if !valueResolved {
+        if !valueResolved, !resolvesUponReachingToValue {
             return (false, false)
         }
 
-        if resolvesUponReachingToValue {
-            return (valueResolved, true)
+        if !valueResolved, resolvesUponReachingToValue, let previousValueDelta = previousValueDelta {
+            let currentValueDelta = toValue - value
+            let hasReachedOrExceededToValue = {
+                var index = 0
+                let count = currentValueDelta.scalarCount
+                var allValuesReachedOrExceededToValues = true
+                while index < count - 1, allValuesReachedOrExceededToValues {
+                    /**
+                     - Note: An overshoot has happened once the sign of the value before executing the spring is different than the sign of the value after the spring
+
+                     For example: `SpringAnimation<CGFloat>` animating with `toValue` of 0.0, starting at 1.0, will have a value of ~0.1 on one frame, the next frame it could be either 0.0 or -0.1, in which case either the values have been reached or exeeded (sign changed from + to -).
+                     */
+                    allValuesReachedOrExceededToValues = allValuesReachedOrExceededToValues &&
+                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].approximatelyEqual(to: toValue[index], epsilon: 0.01))
+
+                    index += 1
+                }
+
+                return allValuesReachedOrExceededToValues
+            }()
+
+            return (hasReachedOrExceededToValue, true)
         }
 
         let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
@@ -244,16 +265,36 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType) -> (valueResolved: Bool, velocityResolved: Bool) {
+    internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType, previousValueDelta: inout SIMDType?) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Above */
         
         let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
-        if !valueResolved {
+        if !valueResolved, !resolvesUponReachingToValue {
             return (false, false)
         }
 
-        if resolvesUponReachingToValue {
-            return (valueResolved, true)
+        if !valueResolved, resolvesUponReachingToValue, let previousValueDelta = previousValueDelta {
+            let currentValueDelta = toValue - value
+            let hasReachedOrExceededToValue = {
+                var index = 0
+                let count = currentValueDelta.scalarCount
+                var allValuesReachedOrExceededToValues = true
+                while index < count - 1, allValuesReachedOrExceededToValues {
+                    /**
+                     - Note: An overshoot has happened once the sign of the value before executing the spring is different than the sign of the value after the spring
+
+                     For example: `SpringAnimation<CGFloat>` animating with `toValue` of 0.0, starting at 1.0, will have a value of ~0.1 on one frame, the next frame it could be either 0.0 or -0.1, in which case either the values have been reached or exeeded (sign changed from + to -).
+                     */
+                    allValuesReachedOrExceededToValues = allValuesReachedOrExceededToValues &&
+                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].approximatelyEqual(to: toValue[index], epsilon: 0.01))
+
+                    index += 1
+                }
+
+                return allValuesReachedOrExceededToValues
+            }()
+
+            return (hasReachedOrExceededToValue, true)
         }
 
         let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
@@ -276,11 +317,13 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
+        var previousValueDelta: Value.SIMDType? = _toValue - _value
         tickOptimized(Value.SIMDType.Scalar(frame.duration), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
-        _valueChanged?(value)
-
-        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity)
+        let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity, previousValueDelta: &previousValueDelta)
+        if !resolvedState.valueResolved || !resolvedState.velocityResolved {
+            _valueChanged?(value)
+        }
 
         if resolvedState.valueResolved && resolvedState.velocityResolved {
             stop()

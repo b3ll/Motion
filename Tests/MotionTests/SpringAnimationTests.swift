@@ -205,6 +205,51 @@ final class SpringAnimationTests: XCTestCase {
         wait(for: [expectValueChangedCalled, expectCompletionCalled], timeout: 0.0)
     }
 
+    func testSpringResolvesUponReachingToValueCGFloat() {
+        let spring = SpringAnimation(initialValue: 0.0)
+        spring.toValue = 10.0
+        spring.resolvesUponReachingToValue = true
+
+        let expectCompletionCalled = XCTestExpectation(description: "Spring completed")
+
+        spring.onValueChanged { newValue in
+            if newValue > 10.0 {
+                XCTFail("Overshot and didn't resolve upon reaching toValue.")
+            }
+        }
+        spring.completion = {
+            expectCompletionCalled.fulfill()
+        }
+
+        tickAnimationForDuration(spring, maxDuration: 10.0)
+        spring.stop(resolveImmediately: true, postValueChanged: true)
+
+        wait(for: [expectCompletionCalled], timeout: 0.0)
+    }
+
+    func testSpringResolvesUponReachingToValueSIMD64Double() {
+        let spring = SpringAnimation(initialValue: SIMD64(repeating: 0.0))
+        spring.toValue = .init(repeating: 10.0)
+        spring.resolvesUponReachingToValue = true
+
+        let expectCompletionCalled = XCTestExpectation(description: "Spring completed")
+
+        spring.onValueChanged { newValue in
+            let check = newValue .> .init(repeating: 10.0)
+            if any(check) {
+                XCTFail("Overshot and didn't resolve upon reaching toValue.")
+            }
+        }
+        spring.completion = {
+            expectCompletionCalled.fulfill()
+        }
+
+        tickAnimationForDuration(spring, maxDuration: 10.0)
+        spring.stop(resolveImmediately: true, postValueChanged: true)
+
+        wait(for: [expectCompletionCalled], timeout: 0.0)
+    }
+
     // MARK: - CAKeyframeAnimationEmittable Tests
 
     func testCreateCAKeyframeAnimationFromSpringAnimation() {
