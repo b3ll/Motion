@@ -12,13 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Swift 5.6.1
+      - name: Setup Swift 5.7
         uses: swift-actions/setup-swift@v1
         with:
-          swift-version: '5.6.1'
+          swift-version: '5.7'
 
       - name: Create xcframework
-        uses: b3ll/swift-create-xcframework@main
+        uses: unsignedapps/swift-create-xcframework@v2.3.0
 
       - name: Create Release
         id: create_release
