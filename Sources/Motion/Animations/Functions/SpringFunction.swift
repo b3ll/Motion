@@ -15,6 +15,7 @@ import simd
  - Note: This can be used on its own, but it's mainly used by `SpringAnimation`'s `tick` method.
  - SeeAlso: `SpringAnimation`
 */
+
 public struct SpringFunction<Value: SIMDRepresentable> {
 
     /**
@@ -165,12 +166,13 @@ public struct SpringFunction<Value: SIMDRepresentable> {
         typealias SIMDType = Value.SIMDType
         let x: SIMDType
         if dampingRatio < 1.0 {
-            let decayEnvelope = SIMDType.Scalar.exp(-dampingRatio * w0 * dt)
+            let dampingRatio_w0 = dampingRatio * w0
+            let decayEnvelope = SIMDType.Scalar.exp(-dampingRatio_w0 * dt)
 
             let sin_wD_dt = SIMDType.Scalar.sin(wD * dt)
             let cos_wD_dt = SIMDType.Scalar.cos(wD * dt)
 
-            let velocity_x0_dampingRatio_w0 = (velocity + x0 * (dampingRatio * w0))
+            let velocity_x0_dampingRatio_w0 = (velocity + x0 * dampingRatio_w0)
 
             let A = x0
             let B = velocity_x0_dampingRatio_w0 / wD
@@ -180,7 +182,7 @@ public struct SpringFunction<Value: SIMDRepresentable> {
 
             // Derivative of the above analytic equation to get the speed of a spring. (velocity)
             let d_x = velocity_x0_dampingRatio_w0 * cos_wD_dt - x0 * (wD * sin_wD_dt)
-            velocity = -(dampingRatio * w0 * x - decayEnvelope * d_x)
+            velocity = -(dampingRatio_w0 * x - decayEnvelope * d_x)
         } else if dampingRatio.approximatelyEqual(to: 1.0) {
             let decayEnvelope = SIMDType.Scalar.exp(-w0 * dt)
 
