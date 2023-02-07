@@ -121,7 +121,7 @@ Checkout the example project's [SwiftUI Demo](https://github.com/b3ll/Motion/blo
 
 # Motion vs. Core Animation
 
-Motion is not designed to be a general-purpose replacement for Core Animation. Core Animation animations are run in a special way, in another process, outside of your app and are designed to be smooth even when the main thread is being heavily used. Motion on the other head is all run in-process (like a game engine), and using it liberally without considering heavy stack traces, will result in poor performance and dropped frames. Motion itself is not slow (in fact it's really [fast](#performance)!), but calling methods to change view / layer properties or change layout at 60 FPS (or more) can be really taxing if not done carefully.
+Motion is not designed to be a general-purpose replacement for Core Animation. Core Animation animations are run in a special way, in another process, outside of your app and are designed to be smooth even when the main thread is being heavily used. Motion on the other hand is all run in-process (like a game engine), and using it liberally without considering heavy stack traces, will result in poor performance and dropped frames. Motion itself is not slow (in fact it's really [fast](#performance)!), but calling methods to change view / layer properties or change layout at 60 FPS (or more) can be really taxing if not done carefully.
 
 **tl;dr**: Treat Motion animations as you would a `UIScrollView` (since scrolling animations behave the same way). If you have too much going on in your `UIScrollView` it'll lag when it scrolls; the same applies to Motion.
 
