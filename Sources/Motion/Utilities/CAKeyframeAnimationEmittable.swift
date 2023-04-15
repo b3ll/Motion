@@ -128,7 +128,7 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
         var t = 0.0
         var hasResolved = false
         while !hasResolved {
-            tickOptimized(Value.SIMDType.Scalar(dt), decay: &decay, value: &value, velocity: &velocity)
+            tickOptimized(Value.SIMDType.Scalar(dt), decay: decay, value: &value, velocity: &velocity)
             hasResolved = self.hasResolved(velocity: &velocity)
 
             let nsValue = Value(value).toKeyframeValue()
@@ -138,7 +138,9 @@ extension DecayAnimation: CAKeyframeAnimationEmittable where Value: CAKeyframeAn
             t += dt
         }
 
-        t -= dt
+        values.append(toValue.toKeyframeValue())
+        keyTimes.append(t as NSNumber)
+        t += dt
 
         return t
     }

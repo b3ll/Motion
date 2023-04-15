@@ -23,6 +23,7 @@ public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, Equatab
     static func sin(_ x: Self) -> Self
     static func cos(_ x: Self) -> Self
     static func pow(_ x: Self, _ n: Int) -> Self
+    static func log(_ x: Self) -> Self
 
 }
 
