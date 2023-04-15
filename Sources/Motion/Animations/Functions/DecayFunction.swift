@@ -66,7 +66,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
      - Returns: The new value as its velocity decays.
      */
     @inlinable public func solveSIMD(dt: Value.SIMDType.Scalar, x0: Value.SIMDType, velocity: inout Value.SIMDType) -> Value.SIMDType {
-        let d_1000_dt = Value.SIMDType.Scalar.pow(decayConstant, 1000.0 * dt)
+        let d_1000_dt = Value.SIMDType.Scalar.pow(decayConstant, dt * 1000.0)
 
         // Analytic decay equation with constants extracted out.
         let x = x0 + velocity * ((d_1000_dt - 1.0) * one_ln_decayConstant_1000)
@@ -116,7 +116,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     @inlinable public func solveToValueSIMD<SIMDType: SupportedSIMD>(value: SIMDType, velocity: SIMDType, decayConstant: SIMDType.Scalar, roundingFactor: SIMDType.Scalar) -> SIMDType {
-        let decay = (1000.0 * SIMDType.Scalar.log(decayConstant))
+        let decay = (SIMDType.Scalar.log(decayConstant) * 1000.0)
         let toValue = value - velocity / decay
         return roundSIMD(toValue, toNearest: roundingFactor)
     }
@@ -164,7 +164,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     @inlinable public func solveVelocitySIMD<SIMDType: SupportedSIMD>(value: SIMDType, toValue: SIMDType, decayConstant: SIMDType.Scalar) -> SIMDType {
-        let decay = (1000.0 * SIMDType.Scalar.log(decayConstant))
+        let decay = (SIMDType.Scalar.log(decayConstant) * 1000.0)
         return (value - toValue) * decay
     }
 
