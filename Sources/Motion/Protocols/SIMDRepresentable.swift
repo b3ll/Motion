@@ -23,19 +23,20 @@ public protocol SupportedScalar: SIMDScalar, FloatingPointInitializable, Equatab
     static func sin(_ x: Self) -> Self
     static func cos(_ x: Self) -> Self
     static func pow(_ x: Self, _ n: Int) -> Self
+    static func log(_ x: Self) -> Self
 
 }
 
 extension Float: SupportedScalar {}
 extension Double: SupportedScalar {}
 
-extension SIMD2: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD3: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD4: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD8: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD16: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD32: SupportedSIMD where Scalar: SupportedScalar {}
-extension SIMD64: SupportedSIMD where Scalar: SupportedScalar {}
+extension SIMD2: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD3: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD4: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD8: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD16: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD32: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
+extension SIMD64: SupportedSIMD, Comparable, EquatableEnough where Scalar: SupportedScalar {}
 
 // MARK: - SIMDRepresentable
 

@@ -116,7 +116,7 @@ final class BasicAnimationTests: XCTestCase {
         basicAnimation.toValue = 10.0
         basicAnimation.duration = 1.0
 
-        let keyframeAnimation = basicAnimation.keyframeAnimation()
+        let keyframeAnimation = basicAnimation.keyframeAnimation(forFramerate: 60)
 
         XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
         XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
