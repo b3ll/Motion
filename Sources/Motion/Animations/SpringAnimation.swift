@@ -326,7 +326,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             previousValueDelta = nil
         }
 
-        tickOptimized(Value.SIMDType.Scalar(frame.duration), spring: &spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
+        tickOptimized(Value.SIMDType.Scalar(frame.duration), spring: spring, value: &_value, toValue: &_toValue, velocity: &_velocity, clampingRange: &_clampingRange)
 
         let resolvedState = hasResolved(value: &_value, epsilon: &resolvingEpsilon, toValue: &_toValue, velocity: &_velocity, previousValueDelta: &previousValueDelta)
         if !resolvedState.valueResolved || !resolvedState.velocityResolved {
@@ -351,12 +351,12 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
      Note that this optimization only happens on Release builds as building constantly for Debug is fairly slow.
      */
     #if DEBUG
-    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar, SIMDType == SIMDType.SIMDType {
         /* Must Be Mirrored Below */
 
         let x0 = toValue - value
 
-        let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
+        let x = spring.solveSIMD(dt: dt, x0: x0, velocity: &velocity)
 
         value = toValue - x
 
@@ -379,12 +379,12 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: inout SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+    internal func tickOptimized<SIMDType: SupportedSIMD>(_ dt: SIMDType.Scalar, spring: SpringFunction<SIMDType>, value: inout SIMDType, toValue: inout SIMDType, velocity: inout SIMDType, clampingRange: inout ClosedRange<SIMDType>?) where SIMDType.Scalar == SIMDType.SIMDType.Scalar, SIMDType == SIMDType.SIMDType {
         /* Must Be Mirrored Above */
 
         let x0 = toValue - value
 
-        let x = spring.solve(dt: dt, x0: x0, velocity: &velocity)
+        let x = spring.solveSIMD(dt: dt, x0: x0, velocity: &velocity)
 
         value = toValue - x
 

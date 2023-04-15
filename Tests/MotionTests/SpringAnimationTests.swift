@@ -257,12 +257,12 @@ final class SpringAnimationTests: XCTestCase {
         spring.toValue = CGRect(x: 0, y: 0, width: 320, height: 320)
         spring.configure(response: 1.0, dampingRatio: 1.0)
 
-        let keyframeAnimation = spring.keyframeAnimation()
+        let keyframeAnimation = spring.keyframeAnimation(forFramerate: 60)
 
         XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
         XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
         XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
-        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.383))
+        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.3999))
     }
 
     override class func tearDown() {
