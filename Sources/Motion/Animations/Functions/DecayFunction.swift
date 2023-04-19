@@ -232,7 +232,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
             return value
         }
 
-        let rounded = (value / roundingFactor).rounded(.up) * roundingFactor
+        let rounded = (value / roundingFactor).rounded(.toNearestOrAwayFromZero) * roundingFactor
         return rounded
     }
 

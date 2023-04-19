@@ -111,15 +111,15 @@ final class DecayAnimationTests: XCTestCase {
         decay.roundingFactor = 1.0
         decay.velocity = 200.0
 
-        XCTAssertTrue(decay.velocity.approximatelyEqual(to: 200.2, epsilon: 0.01))
-        XCTAssertTrue(decay.toValue.approximatelyEqual(to: 100.0, epsilon: 0.0001))
+        XCTAssertTrue(decay.velocity.approximatelyEqual(to: 200.2, epsilon: 0.001))
+        XCTAssertTrue(decay.toValue.approximatelyEqual(to: 100.0, epsilon: 0.001))
 
         let decay2 = DecayAnimation<CGFloat>()
         decay2.roundingFactor = 1.0 / 3.0 // i.e. 3x device
         decay2.velocity = 200.90
 
-        XCTAssertTrue(decay2.velocity.approximatelyEqual(to: 201.53, epsilon: 0.01))
-        XCTAssertTrue(decay2.toValue.approximatelyEqual(to: 100.6666, epsilon: 0.0001))
+        XCTAssertTrue(decay2.velocity.approximatelyEqual(to: 200.867, epsilon: 0.001))
+        XCTAssertTrue(decay2.toValue.approximatelyEqual(to: 100.333, epsilon: 0.001))
     }
 
     // MARK: - CAKeyframeAnimationEmittable Tests
