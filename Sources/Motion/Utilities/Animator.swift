@@ -92,6 +92,7 @@ public class Animator: NSObject, AnimationDriverObserver {
 
     internal func unobserve(_ animation: Animation) {
         runningAnimations.remove(animation)
+        animationDriver?.isPaused = runningAnimations.count == 0
         animation.enabledDidChange = { _ in }
     }
 
