@@ -19,7 +19,7 @@ public class Animator: NSObject, AnimationDriverObserver {
             if let _animationDriverStore = _animationDriverStore {
                 return _animationDriverStore
             }
-            _animationDriverStore = SystemAnimationDriver(environment: environment)
+            _animationDriverStore = SystemAnimationDriver(environment: environment ?? .default)
             _animationDriverStore?.observer = self
             return _animationDriverStore
         }
@@ -29,9 +29,9 @@ public class Animator: NSObject, AnimationDriverObserver {
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
     #if os(macOS)
-    private let environment: AnimationEnvironment
+    private weak var environment: AnimationEnvironment?
     #else
-    private let environment: AnimationEnvironment
+    private weak var environment: AnimationEnvironment?
     #endif
 
     internal init(environment: AnimationEnvironment) {
@@ -74,7 +74,7 @@ public class Animator: NSObject, AnimationDriverObserver {
         }
     }
     #else
-    var preferredFramesPerSecond: Int { environment.preferredFramesPerSecond }
+    var preferredFramesPerSecond: Int { environment?.preferredFramesPerSecond ?? DefaultAnimationEnvironment.shared.preferredFramesPerSecond }
     #endif
 
     #if canImport(UIKit)

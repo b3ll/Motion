@@ -39,7 +39,7 @@ open class Animation: AnimationDriverObserver {
      */
     open var completion: (() -> Void)? = nil
 
-    internal let environment: AnimationEnvironment
+    internal weak var environment: AnimationEnvironment?
 
     /// Default initializer. Animations must be strongly held to continue to animate.
     public init(environment: AnimationEnvironment) {
@@ -51,14 +51,14 @@ open class Animation: AnimationDriverObserver {
     private func registerWithAnimatorIfNeeded() {
         guard !registeredWithAnimator else { return }
 
-        environment.animator.observe(self)
+        environment?.animator.observe(self)
 
         registeredWithAnimator = true
     }
 
     deinit {
         if registeredWithAnimator {
-            environment.animator.unobserve(self)
+            environment?.animator.unobserve(self)
         }
     }
 
