@@ -155,9 +155,10 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
      - Parameters:
         - stiffness: How stiff the spring should be.
         - damping: How much friction should be exerted on the spring.
+        - environment: The ``AnimationEnvironment`` where this animation will run.
      */
-    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar) {
-        self.init(initialValue: initialValue)
+    public convenience init(initialValue: Value = .zero, stiffness: Value.SIMDType.Scalar, damping: Value.SIMDType.Scalar, environment: AnimationEnvironment = .default) {
+        self.init(initialValue: initialValue, environment: environment)
         configure(stiffness: stiffness, damping: damping)
     }
 
@@ -171,11 +172,12 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
           - `0.0`: An infinitely oscillating spring.
           - `1.0`: A critically damped spring.
           - `0.0 < value > 1.0`: An underdamped spring.
+        - environment: The ``AnimationEnvironment`` where this animation will run.
 
      - Note: For more information on how these values work, check out the WWDC talk on fluid animations: https://developer.apple.com/videos/play/wwdc2018/803/.
      */
-    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
-        self.init(initialValue: initialValue)
+    public convenience init(initialValue: Value = .zero, response: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar, environment: AnimationEnvironment = .default) {
+        self.init(initialValue: initialValue, environment: environment)
         configure(response: response, dampingRatio: dampingRatio)
     }
 
