@@ -46,20 +46,28 @@ open class Animation: AnimationDriverObserver {
         self.environment = environment
     }
 
-    private var registeredWithAnimator = false
+    private weak var animator: Animator?
 
     private func registerWithAnimatorIfNeeded() {
-        guard !registeredWithAnimator else { return }
+        assert(environment != nil)
 
-        environment?.animator.observe(self)
+        guard let currentAnimator = animator else {
+            self.animator = environment?.animator
+            self.animator?.observe(self)
+            return
+        }
 
-        registeredWithAnimator = true
+        if let environmentAnimator = environment?.animator {
+            if currentAnimator !== environmentAnimator {
+                currentAnimator.unobserve(self)
+                environmentAnimator.observe(self)
+                self.animator = environmentAnimator
+            }
+        }
     }
 
     deinit {
-        if registeredWithAnimator {
-            environment?.animator.unobserve(self)
-        }
+        animator?.unobserve(self)
     }
 
     /// Starts the animation if `hasResolved` is false.
