@@ -69,10 +69,11 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
      - Parameters:
         - easingFunction: The easing function the animation should use.
+        - environment: The ``AnimationEnvironment`` where this animation will run.
      */
-    public init(easingFunction: EasingFunction<Value.SIMDType> = .linear) {
+    public init(easingFunction: EasingFunction<Value.SIMDType> = .linear, environment: AnimationEnvironment = .default) {
         self.easingFunction = easingFunction
-        super.init()
+        super.init(environment: environment)
     }
 
     override public func start() {

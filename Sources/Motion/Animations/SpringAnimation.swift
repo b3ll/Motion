@@ -141,10 +141,11 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
 
      - Parameters:
         - initialValue: The value to start animating from.
+        - environment: The ``AnimationEnvironment`` where this animation will run.
      */
-    public init(initialValue: Value = .zero) {
+    public init(initialValue: Value = .zero, environment: AnimationEnvironment = .default) {
         self.spring = SpringFunction()
-        super.init()
+        super.init(environment: environment)
         self.value = initialValue
     }
 

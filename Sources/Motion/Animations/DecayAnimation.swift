@@ -115,11 +115,12 @@ public final class DecayAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
      - Parameters:
         - initialValue: The initial value to be set for `value`.
-        - decayConstnat: The decay constant. Defaults to `UIScrollViewDecayConstant`.
+        - decayConstant: The decay constant. Defaults to `UIScrollViewDecayConstant`.
+        - environment: The ``AnimationEnvironment`` where this animation will run.
      */
-    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIScrollViewDecayConstant)) {
+    public init(initialValue: Value = .zero, decayConstant: Value.SIMDType.Scalar = Value.SIMDType.Scalar(UIScrollViewDecayConstant), environment: AnimationEnvironment = .default) {
         self.decay = DecayFunction(decayConstant: decayConstant)
-        super.init()
+        super.init(environment: environment)
         self.value = initialValue
     }
 

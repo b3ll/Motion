@@ -52,7 +52,7 @@ final class CoreAnimationDriver: AnimationDriver {
         return CAFrameRateRange(minimum: adjustedMinFPS, maximum: maxFPS, preferred: maxFPS)
     }
 
-    init?() {
+    init?(environment: AnimationEnvironment) {
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
         displayLink.add(to: .main, forMode: .common)
         if #available(iOS 15.0, tvOS 15.0, *) {
@@ -108,10 +108,21 @@ final class CoreVideoDriver: AnimationDriver {
     private var displaylink: CVDisplayLink!
     private var nextFrame: Synchronized<AnimationFrame?> = .init(data: nil)
 
-    init?() {
+    let preferredFramesPerSecond: Int
+
+    init?(environment: AnimationEnvironment) {
+        self.preferredFramesPerSecond = environment.preferredFramesPerSecond
         var displayLinkRef: CVDisplayLink? = nil
-        var successLink = CVDisplayLinkCreateWithActiveCGDisplays(&displayLinkRef)
-        
+        var successLink: CVReturn
+
+        if let displayID = environment.displayID {
+            successLink = CVDisplayLinkCreateWithCGDisplay(displayID, &displayLinkRef)
+        } else {
+            // Should this be a precondition instead? 🤔
+            assertionFailure("CoreVideoDriver needs environment to provide a valid CGDirectDisplayID")
+            successLink = CVDisplayLinkCreateWithActiveCGDisplays(&displayLinkRef)
+        }
+
         if let displaylink = displayLinkRef {
             successLink = CVDisplayLinkSetOutputCallback(displaylink, { (displaylink, currentTime, outputTime, _, _, context) -> CVReturn in
                 if let context = context {
@@ -148,8 +159,6 @@ final class CoreVideoDriver: AnimationDriver {
     deinit {
         isPaused = true
     }
-
-    let preferredFramesPerSecond: Int = 60
     
     weak var observer: AnimationDriverObserver?
 
