@@ -23,6 +23,9 @@ open class Animation: AnimationDriverObserver {
     - Note: Calling `start` or `stop` enables (or disables) this value. Animations will only run when this is `true` and `hasResolved` is false.
     */
     open var enabled: Bool = false {
+        willSet {
+            registerWithAnimatorIfNeeded()
+        }
         didSet {
             enabledDidChange(enabled)
         }
@@ -36,13 +39,35 @@ open class Animation: AnimationDriverObserver {
      */
     open var completion: (() -> Void)? = nil
 
+    internal weak var environment: AnimationEnvironment?
+
     /// Default initializer. Animations must be strongly held to continue to animate.
-    public init() {
-        Animator.shared.observe(self)
+    public init(environment: AnimationEnvironment) {
+        self.environment = environment
+    }
+
+    private weak var animator: Animator?
+
+    private func registerWithAnimatorIfNeeded() {
+        assert(environment != nil)
+
+        guard let currentAnimator = animator else {
+            self.animator = environment?.animator
+            self.animator?.observe(self)
+            return
+        }
+
+        if let environmentAnimator = environment?.animator {
+            if currentAnimator !== environmentAnimator {
+                currentAnimator.unobserve(self)
+                environmentAnimator.observe(self)
+                self.animator = environmentAnimator
+            }
+        }
     }
 
     deinit {
-        Animator.shared.unobserve(self)
+        animator?.unobserve(self)
     }
 
     /// Starts the animation if `hasResolved` is false.

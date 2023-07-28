@@ -130,3 +130,14 @@ final class BasicAnimationTests: XCTestCase {
     }
 
 }
+
+#if os(macOS)
+extension Animator {
+    static let shared: Animator = {
+        guard let screen = NSScreen.main ?? NSScreen.screens.first else {
+            fatalError("Motion's tests can't run because this Mac doesn't have any screens!")
+        }
+        return screen.animator
+    }()
+}
+#endif

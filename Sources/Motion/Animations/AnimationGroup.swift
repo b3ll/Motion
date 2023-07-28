@@ -25,9 +25,9 @@ public final class AnimationGroup: Animation {
      - Parameters:
         - animations: The animations to run as a group.
      */
-    init(_ animations: Animation...) {
+    init(environment: AnimationEnvironment = .default, _ animations: Animation...) {
         self.animations = animations
-        super.init()
+        super.init(environment: environment)
     }
 
     /// Returns whether or not all of the animations have resolved.

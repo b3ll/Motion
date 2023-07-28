@@ -19,7 +19,7 @@ public class Animator: NSObject, AnimationDriverObserver {
             if let _animationDriverStore = _animationDriverStore {
                 return _animationDriverStore
             }
-            _animationDriverStore = SystemAnimationDriver()
+            _animationDriverStore = SystemAnimationDriver(environment: environment ?? .default)
             _animationDriverStore?.observer = self
             return _animationDriverStore
         }
@@ -28,7 +28,17 @@ public class Animator: NSObject, AnimationDriverObserver {
     private var _animationDriverStore: AnimationDriver?
     internal var runningAnimations: NSHashTable<Animation> = .weakObjects()
 
-    #if os(iOS)
+    #if os(macOS)
+    private weak var environment: AnimationEnvironment?
+    #else
+    private weak var environment: AnimationEnvironment?
+    #endif
+
+    internal init(environment: AnimationEnvironment) {
+        self.environment = environment
+    }
+
+    #if canImport(UIKit)
     @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
     /**
      The preferred frame rate range for animations being run.
@@ -64,15 +74,13 @@ public class Animator: NSObject, AnimationDriverObserver {
         }
     }
     #else
-    var preferredFramesPerSecond: Int {
-        let defaultFPS = 60
-
-        return defaultFPS
-    }
+    var preferredFramesPerSecond: Int { environment?.preferredFramesPerSecond ?? DefaultAnimationEnvironment.shared.preferredFramesPerSecond }
     #endif
 
+    #if canImport(UIKit)
     // The shared animator that runs all of Motion's animations.
-    public static let shared = Animator()
+    public static let shared = Animator(environment: .default)
+    #endif
 
     // MARK: - Animations
 
