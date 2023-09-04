@@ -7,6 +7,7 @@
 
 import CoreGraphics
 import Foundation
+import RealModule
 import simd
 
 // MARK: - FloatingPointInitializable
@@ -40,7 +41,7 @@ public protocol EquatableEnough: Comparable {
      Declares whether or not something else is equal to `self` within a given tolerance.
      (e.g. a floating point value that is equal to another floating point value within a given epsilon)
      */
-    func approximatelyEqual(to: Self, epsilon: EpsilonType) -> Bool
+    func isApproximatelyEqual(to: Self, epsilon: EpsilonType) -> Bool
 
 }
 
@@ -85,9 +86,11 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
     /**
      Declares whether or not something else is equal to `self` within a given tolerance.
      (e.g. a floating point value that is equal to another floating point value within a given epsilon)
+
+     Bridges to Swift Numerics' `isApproximatelyEqual` (https://github.com/schwa/ApproximateEquality/blob/main/Sources/ApproximateEquality/ApproximateEquality.swift).
      */
-    @inlinable func approximatelyEqual(to other: Self, epsilon: Self = .epsilon) -> Bool {
-        return abs(self - other) < epsilon
+    @inlinable func isApproximatelyEqual(to other: Self, epsilon: Self = .epsilon) -> Bool {
+        return isApproximatelyEqual(to: other, absoluteTolerance: epsilon, relativeTolerance: .zero)
     }
 
 }
@@ -118,9 +121,9 @@ public extension EquatableEnough where Self: FloatingPoint & FloatingPointInitia
 */
 extension SupportedSIMD where Self: EquatableEnough & Comparable, Scalar: SupportedScalar {
 
-    @inlinable public func approximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
+    @inlinable public func isApproximatelyEqual(to other: Self, epsilon: Scalar = .epsilon) -> Bool {
         for i in 0..<indices.count {
-            let equal = self[i].approximatelyEqual(to: other[i], epsilon: epsilon)
+            let equal = self[i].isApproximatelyEqual(to: other[i], epsilon: epsilon)
             if !equal {
                 return false
             }

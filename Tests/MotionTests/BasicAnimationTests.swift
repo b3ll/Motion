@@ -12,10 +12,10 @@ final class BasicAnimationTests: XCTestCase {
         let range: ClosedRange<CGFloat> = 0.0...10.0
 
         let startValue = easeIn.solveInterpolatedValue(range, fraction: 0.0)
-        XCTAssert(startValue.approximatelyEqual(to: range.lowerBound))
+        XCTAssert(startValue.isApproximatelyEqual(to: range.lowerBound))
 
         let endValue = easeIn.solveInterpolatedValue(range, fraction: 1.0)
-        XCTAssert(endValue.approximatelyEqual(to: range.upperBound))
+        XCTAssert(endValue.isApproximatelyEqual(to: range.upperBound))
     }
 
     func testBasicAnimationStartStop() {
@@ -96,7 +96,7 @@ final class BasicAnimationTests: XCTestCase {
 
         let timeAccumulatedDeterminedFromValue = basicAnimation.accumulatedTime
 
-        XCTAssertTrue(timeAccumulated.approximatelyEqual(to: timeAccumulatedDeterminedFromValue))
+        XCTAssertTrue(timeAccumulated.isApproximatelyEqual(to: timeAccumulatedDeterminedFromValue))
 
         let expectBasicAnimationCompletionCalled = XCTestExpectation(description: "Basic animation completed")
         basicAnimation.completion = {
@@ -121,7 +121,7 @@ final class BasicAnimationTests: XCTestCase {
         XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
         XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
         XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
-        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 1.0))
+        XCTAssertTrue(keyframeAnimation.duration.isApproximatelyEqual(to: 1.0))
     }
 
     override class func tearDown() {

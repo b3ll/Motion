@@ -126,7 +126,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
      If the value is outside the range, or we can't determine what it should be, we'll just start from the beginning, since that's already an unexpected state.
      */
     internal func attemptToUpdateAccumulatedTimeToMatchValue() {
-        if !_value.approximatelyEqual(to: _fromValue, epsilon: resolvingEpsilon) && !_value.approximatelyEqual(to: _toValue, epsilon: resolvingEpsilon) {
+        if !_value.isApproximatelyEqual(to: _fromValue, epsilon: resolvingEpsilon) && !_value.isApproximatelyEqual(to: _toValue, epsilon: resolvingEpsilon) {
             // Try to find out where we are in the animation.
             if let accumulatedTime = solveAccumulatedTime(easingFunction: easingFunction, range: &_range, value: &_value) {
                 self.accumulatedTime = accumulatedTime * duration
@@ -170,7 +170,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType) -> Bool {
         /* Must Be Mirrored Below */
 
-        return value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        return value.isApproximatelyEqual(to: toValue, epsilon: epsilon)
     }
     #else
     @_specialize(kind: partial, where SIMDType == SIMD2<Float>)
@@ -190,7 +190,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType) -> Bool {
         /* Must Be Mirrored Above */
 
-        return value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        return value.isApproximatelyEqual(to: toValue, epsilon: epsilon)
     }
     #endif
 
@@ -209,7 +209,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     // MARK: - AnimationDriverObserver
 
     public override func tick(frame: AnimationFrame) {
-        if duration.approximatelyEqual(to: 0.0) {
+        if duration.isApproximatelyEqual(to: 0.0) {
             stop(resolveImmediately: true, postValueChanged: true)
             return
         }

@@ -228,7 +228,7 @@ public struct DecayFunction<Value: SIMDRepresentable> {
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
     @inlinable public func roundSIMD<SIMDType: SupportedSIMD>(_ value: SIMDType, toNearest roundingFactor: SIMDType.Scalar) -> SIMDType {
-        if roundingFactor.approximatelyEqual(to: 0.0) {
+        if roundingFactor.isApproximatelyEqual(to: 0.0) {
             return value
         }
 

@@ -11,36 +11,36 @@ final class MotionTests: XCTestCase {
         let equalValue1 = 0.001
         let equalValue2 = 0.001
 
-        XCTAssert(equalValue1.approximatelyEqual(to: equalValue2) && (equalValue1 == equalValue2))
+        XCTAssert(equalValue1.isApproximatelyEqual(to: equalValue2) && (equalValue1 == equalValue2))
 
         // Mostly Equal
         let equalishValue3 = 0.0011
 
-        XCTAssert(equalValue1.approximatelyEqual(to: equalishValue3))
+        XCTAssert(equalValue1.isApproximatelyEqual(to: equalishValue3))
 
         // Gotta love copy paste.
         // Would be neat to iterate over all the types, but I'm unsure how to do that.
-        XCTAssert(SIMD2(repeating: equalValue1).approximatelyEqual(to: SIMD2(repeating: equalishValue3)))
-        XCTAssert(SIMD3(repeating: equalValue1).approximatelyEqual(to: SIMD3(repeating: equalishValue3)))
-        XCTAssert(SIMD4(repeating: equalValue1).approximatelyEqual(to: SIMD4(repeating: equalishValue3)))
-        XCTAssert(SIMD8(repeating: equalValue1).approximatelyEqual(to: SIMD8(repeating: equalishValue3)))
-        XCTAssert(SIMD16(repeating: equalValue1).approximatelyEqual(to: SIMD16(repeating: equalishValue3)))
-        XCTAssert(SIMD32(repeating: equalValue1).approximatelyEqual(to: SIMD32(repeating: equalishValue3)))
-        XCTAssert(SIMD64(repeating: equalValue1).approximatelyEqual(to: SIMD64(repeating: equalishValue3)))
+        XCTAssert(SIMD2(repeating: equalValue1).isApproximatelyEqual(to: SIMD2(repeating: equalishValue3)))
+        XCTAssert(SIMD3(repeating: equalValue1).isApproximatelyEqual(to: SIMD3(repeating: equalishValue3)))
+        XCTAssert(SIMD4(repeating: equalValue1).isApproximatelyEqual(to: SIMD4(repeating: equalishValue3)))
+        XCTAssert(SIMD8(repeating: equalValue1).isApproximatelyEqual(to: SIMD8(repeating: equalishValue3)))
+        XCTAssert(SIMD16(repeating: equalValue1).isApproximatelyEqual(to: SIMD16(repeating: equalishValue3)))
+        XCTAssert(SIMD32(repeating: equalValue1).isApproximatelyEqual(to: SIMD32(repeating: equalishValue3)))
+        XCTAssert(SIMD64(repeating: equalValue1).isApproximatelyEqual(to: SIMD64(repeating: equalishValue3)))
 
         // Not Equal
         let nonEqualValue1 = 0.001
-        let nonEqualValue2 = 0.002
+        let nonEqualValue2 = 0.0021
 
-        XCTAssertFalse(nonEqualValue1.approximatelyEqual(to: nonEqualValue2))
+        XCTAssertFalse(nonEqualValue1.isApproximatelyEqual(to: nonEqualValue2))
 
-        XCTAssertFalse(SIMD2(repeating: nonEqualValue1).approximatelyEqual(to: SIMD2(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD3(repeating: nonEqualValue1).approximatelyEqual(to: SIMD3(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD4(repeating: nonEqualValue1).approximatelyEqual(to: SIMD4(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD8(repeating: nonEqualValue1).approximatelyEqual(to: SIMD8(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD16(repeating: nonEqualValue1).approximatelyEqual(to: SIMD16(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD32(repeating: nonEqualValue1).approximatelyEqual(to: SIMD32(repeating: nonEqualValue2)))
-        XCTAssertFalse(SIMD64(repeating: nonEqualValue1).approximatelyEqual(to: SIMD64(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD2(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD2(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD3(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD3(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD4(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD4(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD8(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD8(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD16(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD16(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD32(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD32(repeating: nonEqualValue2)))
+        XCTAssertFalse(SIMD64(repeating: nonEqualValue1).isApproximatelyEqual(to: SIMD64(repeating: nonEqualValue2)))
 
         // Less than
         XCTAssert(SIMD2(repeating: nonEqualValue1) < SIMD2(repeating: nonEqualValue2))
@@ -56,15 +56,15 @@ final class MotionTests: XCTestCase {
         let nonEqualValue4 = 0.002
         let epsilon = 0.01
 
-        XCTAssertTrue(nonEqualValue3.approximatelyEqual(to: nonEqualValue4, epsilon: epsilon))
+        XCTAssertTrue(nonEqualValue3.isApproximatelyEqual(to: nonEqualValue4, epsilon: epsilon))
 
-        XCTAssertTrue(SIMD2(repeating: nonEqualValue3).approximatelyEqual(to: SIMD2(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD3(repeating: nonEqualValue3).approximatelyEqual(to: SIMD3(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD4(repeating: nonEqualValue3).approximatelyEqual(to: SIMD4(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD8(repeating: nonEqualValue3).approximatelyEqual(to: SIMD8(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD16(repeating: nonEqualValue3).approximatelyEqual(to: SIMD16(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD32(repeating: nonEqualValue3).approximatelyEqual(to: SIMD32(repeating: nonEqualValue4), epsilon: epsilon))
-        XCTAssertTrue(SIMD64(repeating: nonEqualValue3).approximatelyEqual(to: SIMD64(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD2(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD2(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD3(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD3(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD4(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD4(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD8(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD8(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD16(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD16(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD32(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD32(repeating: nonEqualValue4), epsilon: epsilon))
+        XCTAssertTrue(SIMD64(repeating: nonEqualValue3).isApproximatelyEqual(to: SIMD64(repeating: nonEqualValue4), epsilon: epsilon))
     }
 
     // MARK: - SIMDRepresentable Tests
@@ -72,42 +72,42 @@ final class MotionTests: XCTestCase {
     func testSIMDRepresentableScalarTypes() {
         let a: Float = 10.0
         let simdA = a.simdRepresentation()
-        XCTAssertTrue(a.approximatelyEqual(to: simdA[0]))
-        XCTAssertTrue(simdA[1].approximatelyEqual(to: 0.0))
+        XCTAssertTrue(a.isApproximatelyEqual(to: simdA[0]))
+        XCTAssertTrue(simdA[1].isApproximatelyEqual(to: 0.0))
 
         let b: Double = 20.0
         let simdB = b.simdRepresentation()
-        XCTAssertTrue(b.approximatelyEqual(to: simdB[0]))
-        XCTAssertTrue(simdB[1].approximatelyEqual(to: 0.0))
+        XCTAssertTrue(b.isApproximatelyEqual(to: simdB[0]))
+        XCTAssertTrue(simdB[1].isApproximatelyEqual(to: 0.0))
 
         let c: CGFloat = 30.0
         let simdC = c.simdRepresentation()
-        XCTAssertTrue(c.approximatelyEqual(to: CGFloat(simdC[0])))
-        XCTAssertTrue(simdC[1].approximatelyEqual(to: 0.0))
+        XCTAssertTrue(c.isApproximatelyEqual(to: CGFloat(simdC[0])))
+        XCTAssertTrue(simdC[1].isApproximatelyEqual(to: 0.0))
     }
 
     func testSIMDRepresentableCoreGraphicsTypes() {
         let point = CGPoint(x: 10.0, y: 20.0)
         let simdPoint = point.simdRepresentation()
 
-        XCTAssertTrue(point.x.approximatelyEqual(to: CGFloat(simdPoint[0])))
-        XCTAssertTrue(point.y.approximatelyEqual(to: CGFloat(simdPoint[1])))
+        XCTAssertTrue(point.x.isApproximatelyEqual(to: CGFloat(simdPoint[0])))
+        XCTAssertTrue(point.y.isApproximatelyEqual(to: CGFloat(simdPoint[1])))
         XCTAssertEqual(point, CGPoint(simdPoint))
 
         let size = CGSize(width: 30.0, height: 40.0)
         let simdSize = size.simdRepresentation()
 
-        XCTAssertTrue(size.width.approximatelyEqual(to: CGFloat(simdSize[0])))
-        XCTAssertTrue(size.height.approximatelyEqual(to: CGFloat(simdSize[1])))
+        XCTAssertTrue(size.width.isApproximatelyEqual(to: CGFloat(simdSize[0])))
+        XCTAssertTrue(size.height.isApproximatelyEqual(to: CGFloat(simdSize[1])))
         XCTAssertEqual(size, CGSize(simdSize))
 
         let rect = CGRect(origin: point, size: size)
         let simdRect = rect.simdRepresentation()
 
-        XCTAssertTrue(rect.origin.x.approximatelyEqual(to: CGFloat(simdRect[0])))
-        XCTAssertTrue(rect.origin.y.approximatelyEqual(to: CGFloat(simdRect[1])))
-        XCTAssertTrue(rect.size.width.approximatelyEqual(to: CGFloat(simdRect[2])))
-        XCTAssertTrue(rect.size.height.approximatelyEqual(to: CGFloat(simdRect[3])))
+        XCTAssertTrue(rect.origin.x.isApproximatelyEqual(to: CGFloat(simdRect[0])))
+        XCTAssertTrue(rect.origin.y.isApproximatelyEqual(to: CGFloat(simdRect[1])))
+        XCTAssertTrue(rect.size.width.isApproximatelyEqual(to: CGFloat(simdRect[2])))
+        XCTAssertTrue(rect.size.height.isApproximatelyEqual(to: CGFloat(simdRect[3])))
         XCTAssertEqual(rect, CGRect(simdRect))
     }
 
@@ -204,20 +204,20 @@ final class MotionTests: XCTestCase {
         let nonRubberbandedValue = rubberband(insideValue, boundsSize: boundsSize, contentSize: contentSize)
 
         // Is the value within the clamped range.
-        XCTAssertTrue(nonRubberbandedValue.approximatelyEqual(to: insideValue))
+        XCTAssertTrue(nonRubberbandedValue.isApproximatelyEqual(to: insideValue))
 
         // Does it handle values less than the range.
         let rubberbandedValueNegative = rubberband(outsideValueNegative, boundsSize: boundsSize, contentSize: contentSize)
-        XCTAssertTrue(rubberbandedValueNegative.approximatelyEqual(to: -5.213))
+        XCTAssertTrue(rubberbandedValueNegative.isApproximatelyEqual(to: -5.213))
 
         // Does it handle values more than the range.
         let rubberbandedValuePositive = rubberband(outsideValuePositive, boundsSize: boundsSize, contentSize: contentSize)
-        XCTAssertTrue(rubberbandedValuePositive.approximatelyEqual(to: 105.213 /* value + boundsSize ~= 205.213 */))
+        XCTAssertTrue(rubberbandedValuePositive.isApproximatelyEqual(to: 105.213 /* value + boundsSize ~= 205.213 */))
 
         // Does it handle both positive and negative values correctly?
         let deltaNegative = abs(rubberbandedValueNegative)
         let deltaPositive = abs(rubberbandedValuePositive - boundsSize)
-        XCTAssertTrue(deltaNegative.approximatelyEqual(to: deltaPositive))
+        XCTAssertTrue(deltaNegative.isApproximatelyEqual(to: deltaPositive))
     }
 
     override class func tearDown() {

@@ -111,7 +111,7 @@ public struct SpringFunction<Value: SIMDRepresentable> {
      */
     public mutating func configure(response response_: Value.SIMDType.Scalar, dampingRatio: Value.SIMDType.Scalar) {
         let response: Value.SIMDType.Scalar
-        if response_.approximatelyEqual(to: 0.0) {
+        if response_.isApproximatelyEqual(to: 0.0) {
             // Having a zero response is unsupported, so we'll just supply an arbitrarily small value.
             response = 0.0001
         } else {
@@ -183,7 +183,7 @@ public struct SpringFunction<Value: SIMDRepresentable> {
             // Derivative of the above analytic equation to get the speed of a spring. (velocity)
             let d_x = velocity_x0_dampingRatio_w0 * cos_wD_dt - x0 * (wD * sin_wD_dt)
             velocity = -(dampingRatio_w0 * x - decayEnvelope * d_x)
-        } else if dampingRatio.approximatelyEqual(to: 1.0) {
+        } else if dampingRatio.isApproximatelyEqual(to: 1.0) {
             let decayEnvelope = SIMDType.Scalar.exp(-w0 * dt)
 
             let A = x0

@@ -80,7 +80,7 @@ public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
     @inlinable internal func solveAccumulatedTimeSIMD(_ range: ClosedRange<Value.SIMDType>, value: Value.SIMDType) -> CFTimeInterval? {
         guard let usableIndex = value.indices.first(where: { i -> Bool in
             let fractionComplete = value[i] / (range.upperBound[i] - range.lowerBound[i])
-            return !(fractionComplete.approximatelyEqual(to: 0.0) || fractionComplete.approximatelyEqual(to: 1.0))
+            return !(fractionComplete.isApproximatelyEqual(to: 0.0) || fractionComplete.isApproximatelyEqual(to: 1.0))
         }) else { return nil }
 
         let fractionComplete = value[usableIndex] / (range.upperBound[usableIndex] - range.lowerBound[usableIndex])

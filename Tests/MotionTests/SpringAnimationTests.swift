@@ -133,13 +133,13 @@ final class SpringAnimationTests: XCTestCase {
         underDampedSpring.toValue = 10.0
         underDampedSpring.tick(frame: f)
 
-        XCTAssert(underDampedSpring.value.approximatelyEqual(to: 9.223))
+        XCTAssert(underDampedSpring.value.isApproximatelyEqual(to: 9.223))
 
         let criticallyDampedSpring = SpringAnimation<CGFloat>(response: 1.0, dampingRatio: 1.0)
         criticallyDampedSpring.toValue = 10.0
         criticallyDampedSpring.tick(frame: f)
 
-        XCTAssert(criticallyDampedSpring.value.approximatelyEqual(to: 8.210))
+        XCTAssert(criticallyDampedSpring.value.isApproximatelyEqual(to: 8.210))
 
         let overDampedSpring = SpringAnimation<CGFloat>(stiffness: 2.0, damping: 10.0)
         overDampedSpring.toValue = 10.0
@@ -262,7 +262,7 @@ final class SpringAnimationTests: XCTestCase {
         XCTAssertEqual(keyframeAnimation.calculationMode, .discrete)
         XCTAssertFalse(keyframeAnimation.values?.isEmpty ?? true)
         XCTAssertFalse(keyframeAnimation.keyTimes?.isEmpty ?? true)
-        XCTAssertTrue(keyframeAnimation.duration.approximatelyEqual(to: 2.3999))
+        XCTAssertTrue(keyframeAnimation.duration.isApproximatelyEqual(to: 2.3999))
     }
 
     override class func tearDown() {

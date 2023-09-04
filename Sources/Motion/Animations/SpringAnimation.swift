@@ -221,7 +221,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType, previousValueDelta: inout SIMDType?) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Below */
 
-        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        let valueResolved = value.isApproximatelyEqual(to: toValue, epsilon: epsilon)
         if !valueResolved, !resolvesUponReachingToValue {
             return (false, false)
         }
@@ -239,7 +239,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
                      For example: `SpringAnimation<CGFloat>` animating with `toValue` of 0.0, starting at 1.0, will have a value of ~0.1 on one frame, the next frame it could be either 0.0 or -0.1, in which case either the values have been reached or exeeded (sign changed from + to -).
                      */
                     allValuesReachedOrExceededToValues = allValuesReachedOrExceededToValues &&
-                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].approximatelyEqual(to: toValue[index], epsilon: 0.01))
+                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].isApproximatelyEqual(to: toValue[index], epsilon: 0.01))
 
                     index += 1
                 }
@@ -250,7 +250,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (hasReachedOrExceededToValue, true)
         }
 
-        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
+        let velocityResolved = velocity.isApproximatelyEqual(to: .zero, epsilon: epsilon)
         return (valueResolved, velocityResolved)
     }
     #else
@@ -271,7 +271,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
     internal func hasResolved<SIMDType: SupportedSIMD>(value: inout SIMDType, epsilon: inout SIMDType.EpsilonType, toValue: inout SIMDType, velocity: inout SIMDType, previousValueDelta: inout SIMDType?) -> (valueResolved: Bool, velocityResolved: Bool) {
         /* Must Be Mirrored Above */
         
-        let valueResolved = value.approximatelyEqual(to: toValue, epsilon: epsilon)
+        let valueResolved = value.isApproximatelyEqual(to: toValue, epsilon: epsilon)
         if !valueResolved, !resolvesUponReachingToValue {
             return (false, false)
         }
@@ -289,7 +289,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
                      For example: `SpringAnimation<CGFloat>` animating with `toValue` of 0.0, starting at 1.0, will have a value of ~0.1 on one frame, the next frame it could be either 0.0 or -0.1, in which case either the values have been reached or exeeded (sign changed from + to -).
                      */
                     allValuesReachedOrExceededToValues = allValuesReachedOrExceededToValues &&
-                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].approximatelyEqual(to: toValue[index], epsilon: 0.01))
+                    (previousValueDelta[index].sign != currentValueDelta[index].sign) || (value[index].isApproximatelyEqual(to: toValue[index], epsilon: 0.01))
 
                     index += 1
                 }
@@ -300,7 +300,7 @@ public final class SpringAnimation<Value: SIMDRepresentable>: ValueAnimation<Val
             return (hasReachedOrExceededToValue, true)
         }
 
-        let velocityResolved = velocity.approximatelyEqual(to: .zero, epsilon: epsilon)
+        let velocityResolved = velocity.isApproximatelyEqual(to: .zero, epsilon: epsilon)
         return (valueResolved, velocityResolved)
     }
     #endif
