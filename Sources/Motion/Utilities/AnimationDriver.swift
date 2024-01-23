@@ -45,10 +45,11 @@ final class CoreAnimationDriver: AnimationDriver {
          If we've got a high refresh display, we can use 80 as a minimum.
          https://developer.apple.com/documentation/quartzcore/optimizing_promotion_refresh_rates_for_iphone_13_pro_and_ipad_pro
 
-         - Note: We choose 80 as a minimum to be considered high refresh rate, since some devices will erronously report 61fps as a maximum (see: https://github.com/b3ll/Motion/issues/25)
+         - Note: We choose 80 as a minimum to be considered high refresh rate, since some devices will erronously report 61fps as a maximum (see: https://github.com/b3ll/Motion/issues/25). We also have the guard against the minimum being below the maximum because tvOS can run at less than 60fps.
          */
-        let adjustedMinFPS: Float = maxFPS > 80.0 ? 80.0 : 60.0
-
+        let baseMinFPS: Float = maxFPS > 80.0 ? 80.0 : 60.0
+		let adjustedMinFPS = min(baseMinFPS, maxFPS)
+		
         return CAFrameRateRange(minimum: adjustedMinFPS, maximum: maxFPS, preferred: maxFPS)
     }
 
