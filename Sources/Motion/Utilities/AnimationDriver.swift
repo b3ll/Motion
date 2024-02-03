@@ -15,6 +15,10 @@ protocol AnimationDriverObserver: AnyObject {
     func tick(frame: AnimationFrame)
 }
 
+#if os(visionOS)
+fileprivate let MaxFPSVisionOS = 90 // TODO: Hardcoded until I find a better API to query.
+#endif
+
 #if canImport(UIKit)
 import UIKit
 
@@ -39,7 +43,12 @@ final class CoreAnimationDriver: AnimationDriver {
         // Find the first connected scene that's a UIWindowScene and is active, then find the highest supported refresh rate.
         let connectedScenes = UIApplication.shared.connectedScenes
         let windowScene = connectedScenes.first { ($0 as? UIWindowScene)?.activationState == .foregroundActive } as? UIWindowScene
+
+        #if os(visionOS)
+        let maxFPS = Float(MaxFPSVisionOS) // TODO: Hardcoded until I find a better API to query.
+        #else
         let maxFPS = Float(windowScene?.windows.map { $0.screen.maximumFramesPerSecond }.max() ?? 60)
+        #endif
 
         /**
          If we've got a high refresh display, we can use 80 as a minimum.
@@ -80,7 +89,11 @@ final class CoreAnimationDriver: AnimationDriver {
     var preferredFramesPerSecond: Int {
         let fps = displayLink.preferredFramesPerSecond
         if fps == 0 {
+            #if os(visionOS)
+            return MaxFPSVisionOS
+            #else
             return UIScreen.main.maximumFramesPerSecond
+            #endif
         } else {
             return fps
         }
