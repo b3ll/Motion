@@ -18,7 +18,7 @@ jobs:
           swift-version: '5.9'
 
       - name: Create xcframework
-        uses: bsneed/swift-create-xcframework@bsneed/xcode15_fix
+        uses: samadhiBot/swift-create-xcframework@bsneed/xcode15_fix
 #        uses: unsignedapps/swift-create-xcframework@v2.3.0
 
       - name: Create Release
