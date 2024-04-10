@@ -1,6 +1,6 @@
 name: Create Release
 
-# Create XCFramework when a version is tagged
+# Create xcframework when a version is tagged
 on:
   create:
     tags:
@@ -8,20 +8,14 @@ on:
 jobs:
   create_release:
     name: Create Release
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
-          
       - uses: actions/checkout@v2
 
-      - name: Setup Swift 5.9
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: '5.9'
-
-      - run: bash ${GITHUB_WORKSPACE}/build_xcframework.sh
+      - run: ${GITHUB_WORKSPACE}/build_xcframework.sh
 
       - name: Create Release
         id: create_release

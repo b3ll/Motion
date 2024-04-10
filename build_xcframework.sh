@@ -11,7 +11,7 @@ git clone https://github.com/giginet/Scipio.git build/scipio
 
 pushd build/scipio
 
-swift run -c release scipio create ../../ --enable-library-evolution --support-simulators --only-use-versions-from-resolved-file --output ../output 
+swift run -c release scipio create ../../ --enable-library-evolution --support-simulators --only-use-versions-from-resolved-file --output ../output --verbose
 
 zip -r ../../Motion.zip ../output/Motion.xcframework
 
