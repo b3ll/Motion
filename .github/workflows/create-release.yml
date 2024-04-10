@@ -17,8 +17,7 @@ jobs:
         with:
           swift-version: '5.9'
 
-      - name: Create xcframework
-        uses: segment-integrations/swift-create-xcframework@v2
+      - run: bash ${GITHUB_WORKSPACE}/build_xcframework.sh
 
       - name: Create Release
         id: create_release
