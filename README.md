@@ -321,4 +321,4 @@ If you have any questions, or want to learn more, feel free to ask me anything!
 
 # Contact Info
 
-Feel free to follow me on twitter: [@b3ll](https://www.twitter.com/b3ll)!
+Feel free to follow me on Mastodon: [@b3ll](https://www.mastodon.social/@b3ll)!
