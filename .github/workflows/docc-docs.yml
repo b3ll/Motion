@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   deploy_docs:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Swift 5.9
+      - name: Setup Swift 6.0
         uses: swift-actions/setup-swift@v1
         with:
-          swift-version: '5.9'
+          swift-version: '6.0'
 
       - name: Build Docs
         uses: sersoft-gmbh/swifty-docs-action@v3.0.0
