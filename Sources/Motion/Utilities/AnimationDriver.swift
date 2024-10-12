@@ -136,6 +136,7 @@ import Cocoa
 
 typealias SystemAnimationDriver = CoreVideoDriver
 
+@MainActor
 final class CoreVideoDriver: AnimationDriver {
 
     private var displaylink: CVDisplayLink!
