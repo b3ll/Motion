@@ -11,9 +11,9 @@ import QuartzCore
 import UIKit
 #endif
 
-
 /// The default Animator that executes all of Motion's animations.
-public class Animator: NSObject, AnimationDriverObserver {
+@MainActor
+public class Animator: NSObject, AnimationDriverObserver, Sendable {
     private var animationDriver: AnimationDriver? {
         get {
             if let _animationDriverStore = _animationDriverStore {

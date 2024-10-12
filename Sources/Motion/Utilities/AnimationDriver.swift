@@ -3,16 +3,29 @@ protocol AnimationDriver {
     
     /// A Boolean value that indicates whether the system suspends the display link’s
     /// notifications to the target.
-    var isPaused: Bool { get set }
+    @MainActor var isPaused: Bool { get set }
 
     /// The preferred frame rate for the display link callback.
-    var preferredFramesPerSecond: Int { get }
-    
-    var observer: AnimationDriverObserver? { get set }
+    @MainActor var preferredFramesPerSecond: Int { get }
+
+    @MainActor var observer: AnimationDriverObserver? { get set }
+}
+
+protocol AsyncAnimationDriver: AnimationDriver {
+    nonisolated var isPaused: Bool { get set }
+
+    /// The preferred frame rate for the display link callback.
+    nonisolated var preferredFramesPerSecond: Int { get }
+
+    nonisolated var observer: AnimationDriverObserver? { get set }
 }
 
 protocol AnimationDriverObserver: AnyObject {
-    func tick(frame: AnimationFrame)
+    @MainActor func tick(frame: AnimationFrame)
+}
+
+protocol AsyncAnimationDriverObserver: AnimationDriverObserver {
+    nonisolated func tick(frame: AnimationFrame)
 }
 
 #if os(visionOS)
@@ -24,6 +37,7 @@ import UIKit
 
 typealias SystemAnimationDriver = CoreAnimationDriver
 
+@MainActor
 final class CoreAnimationDriver: AnimationDriver {
         
     private var displayLink: CADisplayLink!
@@ -69,12 +83,17 @@ final class CoreAnimationDriver: AnimationDriver {
             displayLink.preferredFrameRateRange = Self.defaultPreferredFrameRateRange
         }
     }
-    
-    deinit {
-        isPaused = true
-        displayLink.invalidate()
+
+    nonisolated func invalidateDisplayLink() {
+        Task { @MainActor in
+            displayLink.isPaused = true
+            displayLink.invalidate()
+        }
     }
 
+    deinit {
+        invalidateDisplayLink()
+    }
 
     var isPaused: Bool = true {
         didSet {
@@ -235,7 +254,7 @@ extension CVTimeStamp {
 #if targetEnvironment(simulator)
 // lol, calling private C-functions from Swift is definitely something
 // We also don't want to be doing this dlopen at 60+fps so we just cache the function pointer.
-internal var SimulatorSlowAnimationsCoefficient_: (@convention(c) () -> Float) = {
+nonisolated(unsafe) internal var SimulatorSlowAnimationsCoefficient_: (@convention(c) () -> Float) = {
     let handle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_NOW)
     let symbol = dlsym(handle, "UIAnimationDragCoefficient")
     let function = unsafeBitCast(symbol, to: (@convention(c) () -> Float).self)
