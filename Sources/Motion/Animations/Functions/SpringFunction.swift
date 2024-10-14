@@ -16,7 +16,7 @@ import simd
  - SeeAlso: `SpringAnimation`
 */
 
-public struct SpringFunction<Value: SIMDRepresentable> {
+public struct SpringFunction<Value: SIMDRepresentable>: Sendable {
 
     /**
      The stiffness coefficient of the string.
