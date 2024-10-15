@@ -10,6 +10,7 @@ public final class DefaultAnimationEnvironment: NSScreen {
     }
 }
 
+@MainActor
 extension NSScreen: AnimationEnvironment {
     private var environmentStorage: AnimationEnvironmentStorage { AnimationEnvironmentStorage.shared }
 
@@ -35,6 +36,7 @@ private extension NSDeviceDescriptionKey {
     static let screenNumber = NSDeviceDescriptionKey("NSScreenNumber")
 }
 
+@MainActor
 private final class AnimationEnvironmentStorage {
     static let shared = AnimationEnvironmentStorage()
 

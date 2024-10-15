@@ -16,6 +16,7 @@ import QuartzCore
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `ValueAnimation`
  */
+@MainActor
 open class Animation: AnimationDriverObserver {
 
     /**
@@ -67,7 +68,11 @@ open class Animation: AnimationDriverObserver {
     }
 
     deinit {
-        animator?.unobserve(self)
+        // TODO: This is "unsafe", but there's no better way to do this.
+        // Class is MainActor-only anyways, so it should be fine.
+        MainActor.assumeIsolated {
+            animator?.unobserve(self)
+        }
     }
 
     /// Starts the animation if `hasResolved` is false.
@@ -122,6 +127,7 @@ open class Animation: AnimationDriverObserver {
  - Note: This class is **not** thread-safe. It is meant to be run on the **main thread** only (much like any AppKit / UIKit operations should be main threaded).
  - SeeAlso: `BasicAnimation`, `DecayAnimation`, `SpringAnimation`.
  */
+@MainActor
 public class ValueAnimation<Value: SIMDRepresentable>: Animation {
 
     /**
@@ -256,19 +262,19 @@ public class ValueAnimation<Value: SIMDRepresentable>: Animation {
 
 extension ValueAnimation: Hashable, Equatable {
 
-    public static func == (lhs: ValueAnimation, rhs: ValueAnimation) -> Bool {
+    nonisolated public static func == (lhs: ValueAnimation, rhs: ValueAnimation) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
 
-    public func hash(into hasher: inout Hasher) {
+    nonisolated public func hash(into hasher: inout Hasher) {
         return hasher.combine(ObjectIdentifier(self).hashValue)
     }
 
 }
 
 /// Timestamps for the current animation frame.
-public struct AnimationFrame : Equatable {
-    
+public struct AnimationFrame : Equatable, Sendable {
+
     /// The timestamp that the frame started.
     public let timestamp: CFTimeInterval
     

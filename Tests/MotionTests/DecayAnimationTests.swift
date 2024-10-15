@@ -2,6 +2,7 @@ import XCTest
 
 @testable import Motion
 
+@MainActor
 final class DecayAnimationTests: XCTestCase {
 
     // MARK: - DecayAnimation Tests
@@ -137,8 +138,10 @@ final class DecayAnimationTests: XCTestCase {
     }
 
     override class func tearDown() {
-        // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
-        XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        Task { @MainActor in
+            // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
+            XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        }
     }
 
 }

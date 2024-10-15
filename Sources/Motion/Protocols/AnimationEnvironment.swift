@@ -15,14 +15,27 @@ public typealias CGDirectDisplayID = UInt32
  */
 public protocol AnimationEnvironment: AnyObject {
     /// The ``Animator`` type to be used for animations in this environment.
-    var animator: Animator { get }
+    @MainActor var animator: Animator { get }
 
     #if os(macOS)
     /// Identifier for the CoreGraphics display represented by this environment.
-    var displayID: CGDirectDisplayID? { get }
+    @MainActor var displayID: CGDirectDisplayID? { get }
 
     /// The preferred FPS for animations running in this environment.
-    var preferredFramesPerSecond: Int { get }
+    @MainActor var preferredFramesPerSecond: Int { get }
+    #endif
+}
+
+public protocol AsyncAnimationEnvironment: AnimationEnvironment {
+    /// The ``Animator`` type to be used for animations in this environment.
+    nonisolated var animator: Animator { get }
+
+    #if os(macOS)
+    /// Identifier for the CoreGraphics display represented by this environment.
+    nonisolated var displayID: CGDirectDisplayID? { get }
+
+    /// The preferred FPS for animations running in this environment.
+    nonisolated var preferredFramesPerSecond: Int { get }
     #endif
 }
 
@@ -47,10 +60,10 @@ public extension AnimationEnvironment where Self == DefaultAnimationEnvironment 
 
 #if canImport(UIKit)
 public extension AnimationEnvironment {
-    var animator: Animator { Animator.shared }
+    @MainActor var animator: Animator { Animator.shared }
 }
 
-public final class DefaultAnimationEnvironment: AnimationEnvironment {
+public final class DefaultAnimationEnvironment: AnimationEnvironment, Sendable {
     public static let shared = DefaultAnimationEnvironment()
 }
 #endif

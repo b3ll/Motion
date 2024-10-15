@@ -2,6 +2,7 @@ import XCTest
 
 @testable import Motion
 
+@MainActor
 final class MotionTests: XCTestCase {
 
     // MARK: - EquatableEnough Tests
@@ -221,16 +222,20 @@ final class MotionTests: XCTestCase {
     }
 
     override class func tearDown() {
-        // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
-        XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        Task { @MainActor in
+            // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
+            XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        }
     }
 
 }
 
+@MainActor
 internal func tickAnimationOnce(_ animation: Animation, dt: CFTimeInterval = 0.016) {
     animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
 }
 
+@MainActor
 internal func tickAnimationUntilResolved(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
         animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
@@ -240,6 +245,7 @@ internal func tickAnimationUntilResolved(_ animation: Animation, dt: CFTimeInter
     }
 }
 
+@MainActor
 internal func tickAnimationForDuration(_ animation: Animation, dt: CFTimeInterval = 0.016, maxDuration: CFTimeInterval = 10.0) {
     for _ in stride(from: 0.0, through: maxDuration, by: dt) {
         animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
