@@ -11,9 +11,10 @@ import Motion
 import SwiftUI
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
+@MainActor
 public struct ValueAnimationShape: Shape {
 
-    public enum GraphType {
+    public enum GraphType: Sendable {
         case position
         case velocity
     }
@@ -36,52 +37,55 @@ public struct ValueAnimationShape: Shape {
     }
 
     public func path(in rect: CGRect) -> Path {
-        let dt = 1.0 / 60.0
-
-        animation.stop()
-        animation.updateValue(to: 0.0)
-
-        let height = rect.size.height / 2.0
-
-        let points: [CGPoint] = stride(from: 0.0, to: duration, by: dt).map { (i) -> CGPoint in
-            let percent: CGFloat = CGFloat(i / duration)
-
-            let point: CGPoint
-
-            let position = { () -> CGPoint in
-                if let decayAnimation = animation as? DecayAnimation {
-                    return CGPoint(x: rect.width * percent, y: height - decayAnimation.value)
-                } else {
-                    return CGPoint(x: rect.width * percent, y: height + ((animation.toValue - animation.value) * height))
+        // lol.
+        MainActor.assumeIsolated {
+            let dt = 1.0 / 60.0
+            
+            animation.stop()
+            animation.updateValue(to: 0.0)
+            
+            let height = rect.size.height / 2.0
+            
+            let points: [CGPoint] = stride(from: 0.0, to: duration, by: dt).map { (i) -> CGPoint in
+                let percent: CGFloat = CGFloat(i / duration)
+                
+                let point: CGPoint
+                
+                let position = { () -> CGPoint in
+                    if let decayAnimation = animation as? DecayAnimation {
+                        return CGPoint(x: rect.width * percent, y: height - decayAnimation.value)
+                    } else {
+                        return CGPoint(x: rect.width * percent, y: height + ((animation.toValue - animation.value) * height))
+                    }
                 }
-            }
-
-            let velocity = { () -> CGPoint in
-                let velocity: CGFloat
-                if type(of: animation).supportsVelocity {
-                    velocity = animation.velocity
-                } else {
-                    return position()
+                
+                let velocity = { () -> CGPoint in
+                    let velocity: CGFloat
+                    if type(of: animation).supportsVelocity {
+                        velocity = animation.velocity
+                    } else {
+                        return position()
+                    }
+                    
+                    return CGPoint(x: rect.width * percent, y: height + velocity * height / 3.0)
                 }
-
-                return CGPoint(x: rect.width * percent, y: height + velocity * height / 3.0)
+                
+                switch graphType {
+                    case .position:
+                        point = position()
+                    case .velocity:
+                        point = velocity()
+                }
+                
+                animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
+                
+                return point
             }
-
-            switch graphType {
-            case .position:
-                point = position()
-            case .velocity:
-                point = velocity()
-            }
-
-            animation.tick(frame: .init(timestamp: 0, targetTimestamp: dt))
-
-            return point
+            
+            var path = Path()
+            path.addLines(points)
+            return path
         }
-
-        var path = Path()
-        path.addLines(points)
-        return path
     }
 
 }

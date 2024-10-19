@@ -83,7 +83,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     }
 
     #if DEBUG
-    internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
+    nonisolated internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
         /* Must Be Mirrored Below */
         
         if !range.contains(value) {
@@ -107,7 +107,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
+    nonisolated internal func solveAccumulatedTime<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, value: inout SIMDType) -> CFTimeInterval? {
         /* Must Be Mirrored Above */
 
         if !range.contains(value) {
@@ -231,7 +231,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
 
     // See docs in SpringAnimation.swift for why this `@_specialize` stuff exists.
     #if DEBUG
-    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+    nonisolated internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
         /* Must Be Mirrored Below */
 
         value = easingFunction.solveInterpolatedValueSIMD(range, fraction: fraction)
@@ -251,7 +251,7 @@ public final class BasicAnimation<Value: SIMDRepresentable>: ValueAnimation<Valu
     @_specialize(kind: partial, where SIMDType == SIMD32<Double>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Float>)
     @_specialize(kind: partial, where SIMDType == SIMD64<Double>)
-    internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
+    nonisolated internal func tickOptimized<SIMDType: SupportedSIMD>(easingFunction: EasingFunction<SIMDType>, range: inout ClosedRange<SIMDType>, fraction: SIMDType.Scalar, value: inout SIMDType) where SIMDType.Scalar == SIMDType.SIMDType.Scalar {
         /* Must Be Mirrored Above */
 
         value = easingFunction.solveInterpolatedValueSIMD(range, fraction: fraction)

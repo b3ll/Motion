@@ -10,6 +10,7 @@ import Benchmark
 import Motion
 import QuartzCore
 
+@MainActor
 func createAndAnimateSpringAnimations<Value: SIMDRepresentable>(to toValue: Value, count: Int, state: inout BenchmarkState) {
     autoreleasepool {
         let springAnimations = (0..<count).map { (_) -> SpringAnimation<Value> in
@@ -26,6 +27,7 @@ func createAndAnimateSpringAnimations<Value: SIMDRepresentable>(to toValue: Valu
     }
 }
 
+@MainActor
 func createAndAnimateBasicAnimations<Value: SIMDRepresentable>(to toValue: Value, count: Int, state: inout BenchmarkState) {
     autoreleasepool {
         let basicAnimations = (0..<count).map { (_) -> BasicAnimation<Value> in
@@ -43,7 +45,7 @@ func createAndAnimateBasicAnimations<Value: SIMDRepresentable>(to toValue: Value
     }
 }
 
-
+@MainActor
 func createAndAnimateDecayAnimations<Value: SIMDRepresentable>(velocity: Value, count: Int, state: inout BenchmarkState) {
     autoreleasepool {
         let decayAnimations = (0..<count).map { (_) -> DecayAnimation<Value> in
@@ -65,6 +67,7 @@ let ToValue = 320.0
 
 // Measure execution of 5000 animations of each type serially for each supported SIMD type.
 // SIMD go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+@MainActor
 public func RunBenchmark() {
     let springAnimationSuite = BenchmarkSuite(name: "SIMD SpringAnimations", settings: TimeUnit(.ms)) { suite in
         suite.benchmark("Execute 5000 CGFloat SpringAnimations") { state in

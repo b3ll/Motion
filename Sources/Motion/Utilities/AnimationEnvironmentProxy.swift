@@ -31,6 +31,7 @@ import AppKit
  it wouldn't be safe to start the animation in `viewDidLoad`. Generally, a safe place to start an animation tied to a view or view controller
  is any time after `viewDidAppear` and before `viewDidDisappear`, which is when the view is in a window, and its window is on screen.
  */
+@MainActor
 public protocol AnimationEnvironmentProxy: AnimationEnvironment {
     var proxiedAnimationEnvironment: AnimationEnvironment { get }
 }

@@ -14,6 +14,7 @@ import QuartzCore
  - Parameters:
     - block: The block that, when run, will have a new `CATransaction` created for it and will disable actions, which will be committed after the block completes.
  */
+@MainActor
 public func CADisableActions(_ block: () -> Void) {
     CATransaction.begin()
     CATransaction.setDisableActions(true)
@@ -35,6 +36,7 @@ public extension CALayer {
         - key: The key to be associated with the generated `CAKeyframeAnimation` when added to the layer.
         - keyPath: The key path to animate. The key path is relative to the layer.
      */
+    @MainActor
     func add(_ animation: CAKeyframeAnimationEmittable, forKey key: String, keyPath: String) {
         if keyPath.isEmpty {
             assertionFailure("The keyPath must not be nil.")

@@ -13,7 +13,7 @@ import Foundation
  - Note: This can be used on its own, but it's mainly used by `BasicAnimation`'s `tick` method.
  - SeeAlso: `BasicAnimation`
  */
-public struct EasingFunction<Value: SIMDRepresentable>: Hashable {
+public struct EasingFunction<Value: SIMDRepresentable>: Hashable, Sendable {
 
     /// An easing function with a linear bezier curve.
     public static var linear: Self {
@@ -146,7 +146,7 @@ extension EasingFunction where Value: SupportedSIMD {
 /**
  A Swift adaptation of UnitBezier from WebKit: https://opensource.apple.com/source/WebCore/WebCore-955.66/platform/graphics/UnitBezier.h
  */
-public struct Bezier<Scalar: FloatingPointInitializable>: Hashable {
+public struct Bezier<Scalar: FloatingPointInitializable>: Hashable, Sendable {
 
     /// The x value of the first point.
     public let x1: Scalar

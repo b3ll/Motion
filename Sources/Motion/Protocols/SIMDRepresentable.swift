@@ -7,7 +7,7 @@
 
 import CoreGraphics
 import Foundation
-import simd
+@preconcurrency import simd
 import RealModule
 
 // MARK: - Supported Types

@@ -19,7 +19,7 @@ import simd
  It really only exists so that when working with Scalars and SIMD, one can convert to / from them using Doubles or Floating point numbers.
  Technically there shouldn't be any overhead by this, it's just to make the compiler believe that it's ok to convert types.
  */
-public protocol FloatingPointInitializable: FloatingPoint & ExpressibleByFloatLiteral & Comparable {
+public protocol FloatingPointInitializable: FloatingPoint & ExpressibleByFloatLiteral & Comparable & Sendable {
 
     init(_ value: Float)
     init(_ value: Double)

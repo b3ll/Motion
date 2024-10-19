@@ -14,7 +14,6 @@ class AnimationWrapper<T: Motion.Animation>: ObservableObject {
         self.animation = animation
     }
 
-
     var animation: T
 
 }
@@ -48,7 +47,7 @@ struct SwiftUIDemoView: View {
                         // this allows subsequent drags to also work correctly.
                         animationWrapper.animation.updateValue(to: CGPoint(x: position.x + totalTranslation.x, y: position.y + totalTranslation.y), postValueChanged: true)
                         animationWrapper.animation.toValue = .zero
-                        animationWrapper.animation.velocity = dragGesture.velocity
+                        animationWrapper.animation.velocity = CGPoint(x: dragGesture.velocity.width, y: dragGesture.velocity.height)
                         animationWrapper.animation.start()
                     }
             )
@@ -63,29 +62,6 @@ struct SwiftUIDemoView: View {
         let halfCircleSize = circleSize / 2.0
         return CGPoint(x: dragGesture.startLocation.x + dragGesture.translation.width - halfCircleSize,
                        y: dragGesture.startLocation.y + dragGesture.translation.height - halfCircleSize)
-    }
-
-}
-
-extension DragGesture.Value {
-
-    /// h/t @lukaskubanek https://stackoverflow.com/questions/62906109/what-is-the-best-way-to-get-drag-velocity/73426600#73426600
-    internal var velocity: CGPoint {
-        let valueMirror = Mirror(reflecting: self)
-        for valueChild in valueMirror.children {
-            if valueChild.label == "velocity" {
-                let velocityMirror = Mirror(reflecting: valueChild.value)
-                for velocityChild in velocityMirror.children {
-                    if velocityChild.label == "valuePerSecond" {
-                        if let velocity = velocityChild.value as? CGSize {
-                            return CGPoint(x: velocity.width, y: velocity.height)
-                        }
-                    }
-                }
-            }
-        }
-        assertionFailure("Unable to retrieve velocity from \(Self.self)")
-        return .zero
     }
 
 }

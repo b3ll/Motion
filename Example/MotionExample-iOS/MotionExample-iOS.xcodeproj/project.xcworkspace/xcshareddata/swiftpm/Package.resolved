@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
-          "version": "0.3.1"
+          "revision": "41982a3656a71c768319979febd796c6fd111d5c",
+          "version": "1.5.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/google/swift-benchmark",
         "state": {
           "branch": null,
-          "revision": "8e0ef8bb7482ab97dcd2cd1d6855bd38921c345d",
-          "version": "0.1.0"
+          "revision": "8163295f6fe82356b0bcf8e1ab991645de17d096",
+          "version": "0.1.2"
         }
       },
       {
@@ -24,7 +24,16 @@
         "repositoryURL": "https://github.com/apple/swift-docc-plugin",
         "state": {
           "branch": null,
-          "revision": "3303b164430d9a7055ba484c8ead67a52f7b74f6",
+          "revision": "85e4bb4e1cd62cec64a4b8e769dcefdf0c5b9d64",
+          "version": "1.4.3"
+        }
+      },
+      {
+        "package": "SymbolKit",
+        "repositoryURL": "https://github.com/swiftlang/swift-docc-symbolkit",
+        "state": {
+          "branch": null,
+          "revision": "b45d1f2ed151d057b54504d653e0da5552844e34",
           "version": "1.0.0"
         }
       },

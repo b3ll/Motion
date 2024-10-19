@@ -2,6 +2,7 @@ import XCTest
 
 @testable import Motion
 
+@MainActor
 final class SpringAnimationTests: XCTestCase {
 
     // MARK: - SpringAnimation Tests
@@ -266,8 +267,10 @@ final class SpringAnimationTests: XCTestCase {
     }
 
     override class func tearDown() {
-        // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
-        XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        Task { @MainActor in
+            // All the animations should be deallocated by now. Hopefully NSMapTable plays nice.
+            XCTAssert(Animator.shared.runningAnimations.allObjects.count == 0)
+        }
     }
 
 }
