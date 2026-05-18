@@ -1,17 +1,19 @@
-#if os(macOS)
-
-import AppKit
-
 /**
  Protocol adopted by types that implement ``AnimationEnvironment`` by leveraging another type's implementation.
 
- Motion extends common AppKit interface elements so that they can be used as animation environments:
+ Motion extends common AppKit / UIKit interface elements so that they can be used as animation environments:
 
+ macOS:
  - `NSView`/`NSViewController`
  - `NSWindow`/`NSWindowController`
  - `NSApplication`
 
- The AppKit types above are listed from most to least specific.
+ iOS:
+ - `UIView`/`UIViewController`
+ - `UIWindow`
+ - `UIScreen`
+
+ The types above are listed from most to least specific.
  Prefer to use the most specific environment whenever possible to ensure the best results for your animations.
 
  For example, if you're configuring an animation inside of a view controller, you may use the view controller itself
@@ -34,6 +36,10 @@ import AppKit
 public protocol AnimationEnvironmentProxy: AnimationEnvironment {
     var proxiedAnimationEnvironment: AnimationEnvironment { get }
 }
+
+#if os(macOS)
+
+import AppKit
 
 public extension AnimationEnvironmentProxy {
     var displayID: CGDirectDisplayID? { proxiedAnimationEnvironment.displayID }
@@ -93,6 +99,46 @@ extension NSApplication: AnimationEnvironmentProxy {
             assertionFailure("Motion can't run an animation on application \(self) without any visible window")
             return DefaultAnimationEnvironment.shared
         }
+    }
+}
+
+#endif
+
+#if canImport(UIKit)
+
+import UIKit
+
+public extension AnimationEnvironmentProxy {
+    var animator: Animator { proxiedAnimationEnvironment.animator }
+    var animationScreen: UIScreen? { proxiedAnimationEnvironment.animationScreen }
+}
+
+extension UIScreen: AnimationEnvironment {
+    public var animationScreen: UIScreen? { self }
+}
+
+extension UIView: AnimationEnvironmentProxy {
+    public var proxiedAnimationEnvironment: AnimationEnvironment {
+        if let window = self as? UIWindow {
+            if let scene = window.windowScene {
+                scene.screen
+            } else {
+                // CarPlay / external displays don't expose a `UIWindowScene`,
+                // so fallback to `UIWindow.screen`.
+                window.screen 				
+            }
+        } else if let window {
+            window
+        } else {
+            DefaultAnimationEnvironment.shared
+        }
+    }
+}
+
+
+extension UIViewController: AnimationEnvironmentProxy {
+    public var proxiedAnimationEnvironment: AnimationEnvironment {
+        isViewLoaded ? view : DefaultAnimationEnvironment.shared
     }
 }
 
