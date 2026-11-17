@@ -63,7 +63,11 @@ final class CoreAnimationDriver: AnimationDriver {
     }
 
     init?(environment: AnimationEnvironment) {
-        displayLink = CADisplayLink(target: self, selector: #selector(tick))
+        displayLink = if let screen = environment.animationScreen {
+            screen.displayLink(withTarget: self, selector: #selector(tick))
+        } else {
+            CADisplayLink(target: self, selector: #selector(tick))
+        }
         displayLink.add(to: .main, forMode: .common)
         if #available(iOS 15.0, tvOS 15.0, *) {
             displayLink.preferredFrameRateRange = Self.defaultPreferredFrameRateRange
